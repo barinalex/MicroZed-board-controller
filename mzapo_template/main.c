@@ -26,26 +26,72 @@
 #include "mzapo_phys.h"
 #include "mzapo_regs.h"
 
+void led_control(){
+
+}
+
 int main(int argc, char *argv[])
 {
-  uint16_t color;
-  uint32_t *knobs = map_phys_address(SPILED_REG_BASE_PHYS + SPILED_REG_KNOBS_8BIT_o, 4, false);
-  unsigned char *parlcd_mem_base = map_phys_address(PARLCD_REG_BASE_PHYS, PARLCD_REG_SIZE, 0);
-  parlcd_hx8357_init(parlcd_mem_base);
-  parlcd_write_cmd(parlcd_mem_base, 0x2c);
+	unsigned char *mem_base;
+	mem_base = map_phys_address(SPILED_REG_BASE_PHYS, SPILED_REG_SIZE, 0);
+	if (mem_base == NULL) exit(1);
+	
+	uint32_t *knobs = map_phys_address(SPILED_REG_BASE_PHYS + SPILED_REG_KNOBS_8BIT_o, 4, false);
+	uint32_t rgb_knobs_value; 
+	
+	unsigned char *led1_mem_base = mem_base + SPILED_REG_LED_RGB1_o;
+	unsigned char *led2_mem_base = mem_base + SPILED_REG_LED_RGB2_o;
+	
+	unsigned char *parlcd_mem_base;
+	parlcd_mem_base = map_phys_address(PARLCD_REG_BASE_PHYS, PARLCD_REG_SIZE, 0);
+	if (parlcd_mem_base == NULL)  exit(1);
+	parlcd_hx8357_init(parlcd_mem_base);
+	
+	uint16_t rk, gk, bk, rb, gb, bb;
+	uint16_t color = 0;
+		
+	while(true){
+		printf("%x\n", *knobs);
+		parlcd_write_cmd(parlcd_mem_base, 0x2c);
+		rgb_knobs_value = *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
 
-  while(true){
-    color = *knobs;
-    printf("%x\n", *knobs);
-    //parlcd_write_data2x(parlcd_mem_base, color);
-	parlcd_write_cmd(parlcd_mem_base, 0x2c);
-    for (int i = 0; i < 320 ; i++) {
-      for (int j = 0; j < 480 ; j++) {
-        parlcd_write_data2x(parlcd_mem_base, j < 420 ? color : 0);
-      }
-    }
+		bk =  rgb_knobs_value      & 0xFF; // blue knob position
+		gk = (rgb_knobs_value>>8)  & 0xFF; // green knob position
+		rk = (rgb_knobs_value>>16) & 0xFF; // red knob position
+		bb = (rgb_knobs_value>>24) & 1;    // blue button
+		gb = (rgb_knobs_value>>25) & 1;    // green button
+		rb = (rgb_knobs_value>>26) & 1;    // red buttom
+		
+		*led1_mem_base = bk;
+		*(led1_mem_base+1) = gk;
+		*(led1_mem_base+2) = rk;
+		*led2_mem_base = bk;
+		*(led2_mem_base+1) = gk;
+		*(led2_mem_base+2) = rk;
+		
+		if(bb == 1){
+			*led1_mem_base = bb;
+			*led2_mem_base = bb;
+		}
+		if(gb == 1){
+			*(led1_mem_base+1) = gb;
+			*(led2_mem_base+1) = gb;
+		}
+		if(rb == 1){
+			*(led1_mem_base+2) = rb;
+			*(led2_mem_base+2) = rb;
+		}
+	
+		color = ((rk >> 3) << 11) | ((gk >> 2) << 5) | (bk >> 3);
+				for (int i = 0; i < 320 ; i++) {
+			for (int j = 0; j < 480 ; j++) {
+				*(volatile uint16_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = color;
+				//parlcd_write_data(parlcd_mem_base, j < 420 ? color : 0);
+			}
+		}		
+	}
 
-  }
-
-  return 0;
+	return 0;
 }
+
+
