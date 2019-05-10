@@ -46,12 +46,19 @@ typedef struct{
 	uint8_t b_button;	
 } knobs_;
 
+typedef struct{
+	unsigned long start_time; // = get_cur_time()
+	unsigned long cur_time;
+}flash_time_;
 
 typedef struct{
 	bool change;
 	unsigned char *mem_base;
 	HSV hsv;
 	RGB rgb;
+	HSV hsv2;
+	RGB rgb2;
+	unsigned long cur_time;
 }LED;
 
 LED led1;
@@ -159,7 +166,7 @@ uint16_t change(uint16_t data, uint8_t new_value, uint8_t old_value, uint16_t ma
 		}
 		data = (data > max_data) ? max_data: data;
 		data = (data < 0) ? 0: data;
-		//printf("data: %d\n", data);
+		printf("data: %d\n", data);
 		return data;
 }
 
@@ -286,12 +293,106 @@ void static_menu(){
 	}
 }
 
-void flashing_menu(){
+int change_uint(int data, uint8_t new_value, uint8_t old_value){
+		if(new_value > old_value + 1){
+			data++;
+		}
+		else if(new_value < old_value - 1){
+			data--;
+		}
+		data = (data < 0) ? 0: data;
+		return data;
+}
+
+void choose_time(){
+	knobs_ knobs;
+	knobs_ prev_knobs;
+	get_knobs_data(&prev_knobs);
+	int time;
+	char str[12];
+	while(true){
+		printf("%x\n", *knobs_base);
+		get_knobs_data(&knobs);
+		if(knobs.r_button) {
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(knobs.b_button) {
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		time = change_uint(time, knobs.b_knob, prev_knobs.b_knob);
+		sprintf(str, "%d", time);
+		strToFrame(str, 130, 240, WHITE, BLACK, big_text);
+		frameToLCD();
+		prev_knobs = knobs;
+	}
+}
+
+void flash_pos_chosed(int menu_pos){
+	switch(menu_pos){
+		case 0:
+			led1.change = true;
+			led2.change = false;
+			color_menu(menu_pos);
+			break;
+		case 1:
+			led1.change = false;
+			led2.change = true;
+			color_menu(menu_pos);
+			break;
+		case 2:
+			choose_time();
+			break;
+	}
+}
+
+void choose_flash(){
 	clear_screen();
 	bool choosing_color = false;	
 	knobs_ knobs;
 	get_knobs_data(&knobs);
 	uint8_t prev_blue_knob_value = knobs.b_knob;
+	
+	menu_ menu;
+	menu.buttons_number = 3;
+	menu.menu_pos = 0;
+	menu.button0 = "Color 1";
+	menu.button1 = "Color 2";
+	menu.button2 = "Shift";
+	menu.comment = "Exit: red. Choose: blue";
+	
+	while(true){
+		printf("%x\n", *knobs_base);
+		get_knobs_data(&knobs);
+		if(knobs.r_button) {
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(knobs.b_button) {
+			usleep(DELAY);
+			choosing_color = !choosing_color;
+		}
+		if(!choosing_color){
+			menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_blue_knob_value, menu.menu_pos);
+		}else{
+			flash_pos_chosed(menu.menu_pos);
+			choosing_color = !choosing_color;
+		}
+		prev_blue_knob_value = knobs.b_knob;
+		menu_template(menu);
+	}
+}
+
+void flashing_menu(){
+	clear_screen();
+	bool choosing_color = false;	
+	knobs_ knobs;
+	knobs_ prev_knobs;
+	get_knobs_data(&prev_knobs);
 	
 	menu_ menu;
 	menu.buttons_number = 4;
@@ -315,12 +416,12 @@ void flashing_menu(){
 			choosing_color = !choosing_color;
 		}
 		if(!choosing_color){
-			menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_blue_knob_value, menu.menu_pos);
+			menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_knobs.b_knob, menu.menu_pos);
 		}else{
-			static_pos_chosed(menu.menu_pos);
+			choose_flash();
 			choosing_color = !choosing_color;
 		}
-		prev_blue_knob_value = knobs.b_knob;
+		prev_knobs = knobs;
 		menu_template(menu);
 	}
 }
@@ -347,8 +448,7 @@ void main_desk_menu(){
 	menu.button2 = "Flashing";
 	menu.comment = "Exit: red. Choose: blue";
 	
-	get_knobs_data(&knobs);
-	prev_knobs = knobs;
+	get_knobs_data(&prev_knobs);
 
 	while(true){
 		printf("%x\n", *knobs_base);
@@ -391,19 +491,11 @@ void main_menu(void *vargp){
 	menu.button2 = "Change Text Size";
 	menu.comment = "Exit: red. Choose: blue";
 	
-	get_knobs_data(&knobs);
-	prev_knobs = knobs;
+	get_knobs_data(&prev_knobs);
 	
 	big_text = false;
 	
-	unsigned long start_time = get_cur_time();
-	unsigned long cur_time;
 	while(true){
-		cur_time = get_cur_time();
-		if((cur_time - start_time)/1000000 > 1){
-			led1.rgb.b = (led1.rgb.b == 255) ? 0: 255;
-			start_time = get_cur_time();
-		}
 		printf("%x\n", *knobs_base);
 		get_knobs_data(&knobs);
 		menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_knobs.b_knob, menu.menu_pos);
@@ -432,14 +524,10 @@ void main_menu(void *vargp){
 int main(int argc, char *argv[])
 {
 	if(initialize_adresses() != 0) exit(1);
-	led1.rgb.b = 255;
-	led1.rgb.g = 0;
-	led1.rgb.r = 0;
    	pthread_t thread_id; 
     pthread_create(&thread_id, NULL, led_thread, (void *)&thread_id);
     pthread_create(&thread_id, NULL, main_menu, (void *)&thread_id);
     pthread_exit(NULL);
-    //main_menu();
 	return 0;
 }
 
