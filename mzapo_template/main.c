@@ -45,6 +45,16 @@ typedef struct{
 	uint8_t b_button;	
 } knobs_;
 
+
+typedef struct{
+	bool change;
+	unsigned char *mem_base;
+	HSV hsv;
+	RGB rgb;
+}LED;
+
+LED led1;
+LED led2;
 unsigned char *mem_base;
 uint32_t *knobs_base;
 unsigned char *led1_mem_base;
@@ -58,15 +68,15 @@ int get_knobs_value();
 void get_rgb_values(uint32_t rgb_knobs_value, uint8_t *r, uint8_t *g, uint8_t *b);
 void get_buttons_value(uint32_t rgb_knobs_value, uint8_t *r, uint8_t *g, uint8_t *b);
 void to_led(unsigned char *led_mem_base, uint32_t rgb_knobs_value);
-void rectangle_to_lcd(knobs_ knobs, rect_ rect);
+void rectangle_to_lcd(RGB rgb, rect_ rect);
 void static_menu();
 int initialize_adresses();
 void menu_template(menu_ menu);
 void get_knobs_data(knobs_ *knobs);
 	
-void rectangle_to_lcd(knobs_ knobs, rect_ rect){
+void rectangle_to_lcd(RGB rgb, rect_ rect){
 	uint16_t color = 0;
-	color = ((knobs.r_knob >> 3) << 11) | ((knobs.g_knob >> 2) << 5) | (knobs.b_knob >> 3);
+	color = ((rgb.r >> 3) << 11) | ((rgb.g >> 2) << 5) | (rgb.b >> 3);
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
 			if(r >= rect.top && r < rect.bottom && c >= rect.left && c < rect.right){
@@ -87,6 +97,16 @@ void to_led(unsigned char *led_mem_base, uint32_t rgb_knobs_value){
 	*led_mem_base = bk;
 	*(led_mem_base+1) = gk;
 	*(led_mem_base+2) = rk;
+}
+
+void to_led_(LED led1, LED led2){
+	*led1.mem_base = led1.rgb.b;
+	*(led1.mem_base + 1) = led1.rgb.g;
+	*(led1.mem_base + 2) = led1.rgb.r;
+	
+	*led2.mem_base = led2.rgb.b;
+	*(led2.mem_base + 1) = led2.rgb.g;
+	*(led2.mem_base + 2) = led2.rgb.r;
 }
 
 void menu_template(menu_ menu){
@@ -128,29 +148,97 @@ void get_buttons_value(uint32_t rgb_knobs_value, uint8_t *r, uint8_t *g, uint8_t
 	*r = (rgb_knobs_value>>26) & 1; // red buttom
 }
 
-void static_menu_led_control(int menu_pos, int rgb_knobs_value, int *last_changed_led){
+uint16_t change(uint16_t data, uint8_t new_value, uint8_t old_value, uint16_t max_data){
+		if(new_value > old_value + 1){
+			data++;
+			data %= (max_data + 1);
+		}
+		else if(new_value < old_value - 1){
+			data--;
+		}
+		data = (data > max_data) ? max_data: data;
+		data = (data < 0) ? 0: data;
+		//printf("data: %d\n", data);
+		return data;
+}
+
+void color_menu(int menu_pos){
+	rect_ rect_led1 = set_rect(0);
+	rect_ rect_led2 = set_rect(1);
+	LED new_led1 = led1;
+	LED new_led2 = led2;
+	
+	knobs_ knobs;
+	knobs_ prev_knobs;
+	get_knobs_data(&knobs);
+	prev_knobs = knobs;
+	while(true){
+		get_knobs_data(&knobs);
+		if(knobs.r_button) {
+			to_led_(led1, led2);
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(knobs.b_button) {
+			led1 = new_led1;
+			led2 = new_led2;
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(led1.change){
+			new_led1.hsv.h = change(new_led1.hsv.h, knobs.r_knob, prev_knobs.r_knob, 360); 
+			new_led1.hsv.s = change(new_led1.hsv.s, knobs.g_knob, prev_knobs.g_knob, 100); 
+			new_led1.hsv.v = change(new_led1.hsv.v, knobs.b_knob, prev_knobs.b_knob, 100);
+			new_led1.rgb = HsvToRgb(new_led1.hsv);
+			printf("%d %d %d\n", new_led1.hsv.h, new_led1.hsv.s, new_led1.hsv.v);
+			printf("%d %d %d\n", new_led1.rgb.r, new_led1.rgb.g, new_led1.rgb.b);
+			if(menu_pos == 0 || menu_pos == 2) rectangle_to_lcd(new_led1.rgb, rect_led1);
+		}
+		if(led2.change){
+			new_led2.hsv.h = change(new_led2.hsv.h, knobs.r_knob, prev_knobs.r_knob, 360); 
+			new_led2.hsv.s = change(new_led2.hsv.s, knobs.g_knob, prev_knobs.g_knob, 100); 
+			new_led2.hsv.v = change(new_led2.hsv.v, knobs.b_knob, prev_knobs.b_knob, 100);
+			new_led2.rgb = HsvToRgb(new_led2.hsv);
+			printf("%d %d %d\n", new_led2.hsv.h, new_led2.hsv.s, new_led2.hsv.v);
+			printf("%d %d %d\n", new_led2.rgb.r, new_led2.rgb.g, new_led2.rgb.b);
+			if(menu_pos == 1 || menu_pos == 2) rectangle_to_lcd(new_led2.rgb, rect_led2);
+		}
+		prev_knobs = knobs;
+		to_led_(new_led1, new_led2);
+		frameToLCD();
+	}
+	led1.change = false;
+	led2.change = false;
+}
+
+void static_pos_chosed(int menu_pos){
 	switch(menu_pos){
 		case 0:
-			to_led(led1_mem_base, rgb_knobs_value);
-			led1_rgb_value = rgb_knobs_value;
-			*last_changed_led = 0;
+			led1.change = true;
+			led2.change = false;
+			color_menu(menu_pos);
 			break;
 		case 1:
-			to_led(led2_mem_base, rgb_knobs_value);
-			led2_rgb_value = rgb_knobs_value; 
-			*last_changed_led = 1;
+			led1.change = false;
+			led2.change = true;
+			color_menu(menu_pos);
 			break;
 		case 2:
-			to_led(led1_mem_base, rgb_knobs_value);
-			to_led(led2_mem_base, rgb_knobs_value);
+			led1.change = true;
+			led2.change = true;
+			color_menu(menu_pos);
 			break;
 		case 3:
-			if(*last_changed_led == 0){
-				to_led(led2_mem_base, led1_rgb_value);
-			}
-			else{
-				to_led(led1_mem_base, led2_rgb_value);
-			}
+			led2.hsv = led1.hsv;
+			led2.rgb = led1.rgb;
+			to_led_(led1, led2);
+			break;
+		case 4:
+			led1.hsv = led2.hsv;
+			led1.rgb = led2.rgb;
+			to_led_(led1, led2);
 			break;
 	}
 }
@@ -165,12 +253,13 @@ void static_menu(){
 	uint8_t prev_blue_knob_value = knobs.b_knob;
 	
 	menu_ menu;
-	menu.buttons_number = 4;
+	menu.buttons_number = 5;
 	menu.menu_pos = 0;
 	menu.button0 = "Led 1";
 	menu.button1 = "Led 2";
 	menu.button2 = "Both";
-	menu.button3 = "Copy";
+	menu.button3 = "Led 1 to Led 2";
+	menu.button4 = "Led 2 to Led 1";
 	menu.comment = "Exit: red. Choose: blue";
 	
 	while(true){
@@ -183,15 +272,13 @@ void static_menu(){
 		}
 		if(knobs.b_button) {
 			usleep(DELAY);
-			clear_screen();
 			choosing_color = !choosing_color;
 		}
 		if(!choosing_color){
 			menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_blue_knob_value, menu.menu_pos);
-		}else{	
-			if(menu.menu_pos != 3) rectangle_to_lcd(knobs, set_rect(menu.menu_pos));
-			static_menu_led_control(menu.menu_pos, knobs.rgb_value, &last_changed_led);
-			if(menu.menu_pos == 3) choosing_color = false;
+		}else{
+			static_pos_chosed(menu.menu_pos);
+			choosing_color = !choosing_color;
 		}
 		prev_blue_knob_value = knobs.b_knob;
 		menu_template(menu);
@@ -249,7 +336,7 @@ int main(int argc, char *argv[])
 	knobs_ knobs;
 	knobs_ prev_knobs;
 	menu_ menu;
-		menu.buttons_number = 3;
+	menu.buttons_number = 3;
 	menu.menu_pos = 0;
 	menu.button0 = "This";
 	menu.button1 = "Choose another";
@@ -292,6 +379,8 @@ int initialize_adresses(){
 	knobs_base = map_phys_address(SPILED_REG_BASE_PHYS + SPILED_REG_KNOBS_8BIT_o, 4, false);
 	led1_mem_base = mem_base + SPILED_REG_LED_RGB1_o;
 	led2_mem_base = mem_base + SPILED_REG_LED_RGB2_o;
+	led1.mem_base = mem_base + SPILED_REG_LED_RGB1_o;
+	led2.mem_base = mem_base + SPILED_REG_LED_RGB2_o;
 	return 0;
 }
 
