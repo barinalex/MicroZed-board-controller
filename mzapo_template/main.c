@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 #include "mzapo_parlcd.h"
 #include "mzapo_phys.h"
@@ -57,10 +58,6 @@ LED led1;
 LED led2;
 unsigned char *mem_base;
 uint32_t *knobs_base;
-unsigned char *led1_mem_base;
-unsigned char *led2_mem_base;
-uint32_t led1_rgb_value;
-uint32_t led2_rgb_value;
 uint16_t frame[FRAME_H][FRAME_W];
 bool big_text;
 	
@@ -91,14 +88,6 @@ int get_knobs_value(){
 	return *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
 }
 
-void to_led(unsigned char *led_mem_base, uint32_t rgb_knobs_value){
-	uint8_t rk, gk, bk; 
-	get_rgb_values(rgb_knobs_value, &rk, &gk, &bk);
-	*led_mem_base = bk;
-	*(led_mem_base+1) = gk;
-	*(led_mem_base+2) = rk;
-}
-
 void to_led_(LED led1, LED led2){
 	*led1.mem_base = led1.rgb.b;
 	*(led1.mem_base + 1) = led1.rgb.g;
@@ -107,6 +96,18 @@ void to_led_(LED led1, LED led2){
 	*led2.mem_base = led2.rgb.b;
 	*(led2.mem_base + 1) = led2.rgb.g;
 	*(led2.mem_base + 2) = led2.rgb.r;
+}
+
+void led_thread(void *vargp){
+	while(true){
+		*led1.mem_base = led1.rgb.b;
+		*(led1.mem_base + 1) = led1.rgb.g;
+		*(led1.mem_base + 2) = led1.rgb.r;
+		
+		*led2.mem_base = led2.rgb.b;
+		*(led2.mem_base + 1) = led2.rgb.g;
+		*(led2.mem_base + 2) = led2.rgb.r;
+	}
 }
 
 void menu_template(menu_ menu){
@@ -175,8 +176,8 @@ void color_menu(int menu_pos){
 	while(true){
 		get_knobs_data(&knobs);
 		if(knobs.r_button) {
-			to_led_(led1, led2);
 			usleep(DELAY);
+			to_led_(led1, led2);
 			clear_screen();
 			break;
 		}
@@ -228,6 +229,8 @@ void static_pos_chosed(int menu_pos){
 		case 2:
 			led1.change = true;
 			led2.change = true;
+			led2.hsv = led1.hsv;
+			led2.rgb = led1.rgb;
 			color_menu(menu_pos);
 			break;
 		case 3:
@@ -245,9 +248,7 @@ void static_pos_chosed(int menu_pos){
 
 void static_menu(){
 	clear_screen();
-	bool choosing_color = false;
-	int last_changed_led = 0;
-	
+	bool choosing_color = false;	
 	knobs_ knobs;
 	get_knobs_data(&knobs);
 	uint8_t prev_blue_knob_value = knobs.b_knob;
@@ -260,6 +261,45 @@ void static_menu(){
 	menu.button2 = "Both";
 	menu.button3 = "Led 1 to Led 2";
 	menu.button4 = "Led 2 to Led 1";
+	menu.comment = "Exit: red. Choose: blue";
+	
+	while(true){
+		printf("%x\n", *knobs_base);
+		get_knobs_data(&knobs);
+		if(knobs.r_button) {
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(knobs.b_button) {
+			usleep(DELAY);
+			choosing_color = !choosing_color;
+		}
+		if(!choosing_color){
+			menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_blue_knob_value, menu.menu_pos);
+		}else{
+			static_pos_chosed(menu.menu_pos);
+			choosing_color = !choosing_color;
+		}
+		prev_blue_knob_value = knobs.b_knob;
+		menu_template(menu);
+	}
+}
+
+void flashing_menu(){
+	clear_screen();
+	bool choosing_color = false;	
+	knobs_ knobs;
+	get_knobs_data(&knobs);
+	uint8_t prev_blue_knob_value = knobs.b_knob;
+	
+	menu_ menu;
+	menu.buttons_number = 4;
+	menu.menu_pos = 0;
+	menu.button0 = "Led 1";
+	menu.button1 = "Led 2";
+	menu.button2 = "Both";
+	menu.button3 = "Shift";
 	menu.comment = "Exit: red. Choose: blue";
 	
 	while(true){
@@ -310,7 +350,6 @@ void main_desk_menu(){
 	get_knobs_data(&knobs);
 	prev_knobs = knobs;
 
-		
 	while(true){
 		printf("%x\n", *knobs_base);
 		get_knobs_data(&knobs);
@@ -322,17 +361,26 @@ void main_desk_menu(){
 		menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_knobs.b_knob, menu.menu_pos);
 		prev_knobs = knobs;
 		menu_template(menu);
-		if(menu.menu_pos == 0 && knobs.b_button){
-			usleep(DELAY);
-			static_menu();
-			menu.menu_pos = 0;
+		if(knobs.b_button){
+			switch(menu.menu_pos){
+				case 0:
+					usleep(DELAY);
+					static_menu();
+					menu.menu_pos = 0;
+					get_knobs_data(&prev_knobs);
+					break;
+				case 2:
+					usleep(DELAY);
+					flashing_menu();
+					menu.menu_pos = 0;
+					get_knobs_data(&prev_knobs);
+					break;
+			}
 		}
 	}
 }
 
-int main(int argc, char *argv[])
-{
-	if(initialize_adresses() != 0) exit(1);
+void main_menu(void *vargp){
 	knobs_ knobs;
 	knobs_ prev_knobs;
 	menu_ menu;
@@ -347,26 +395,51 @@ int main(int argc, char *argv[])
 	prev_knobs = knobs;
 	
 	big_text = false;
-		
+	
+	unsigned long start_time = get_cur_time();
+	unsigned long cur_time;
 	while(true){
+		cur_time = get_cur_time();
+		if((cur_time - start_time)/1000000 > 1){
+			led1.rgb.b = (led1.rgb.b == 255) ? 0: 255;
+			start_time = get_cur_time();
+		}
 		printf("%x\n", *knobs_base);
 		get_knobs_data(&knobs);
 		menu.menu_pos = change_menu_pos(menu.buttons_number, knobs.b_knob, prev_knobs.b_knob, menu.menu_pos);
 		prev_knobs = knobs;
 		menu_template(menu);
-		if(menu.menu_pos == 0 && knobs.b_button){
-			usleep(DELAY);
-			main_desk_menu();
-			menu.menu_pos = 0;
+		if(knobs.b_button){
+			switch(menu.menu_pos){
+				case 0:
+					usleep(DELAY);
+					main_desk_menu();
+					menu.menu_pos = 0;
+					get_knobs_data(&prev_knobs);
+					break;
+				case 2:
+					big_text = !big_text;
+					usleep(DELAY);
+					clear_screen();
+					break;
+			}
 		}
-		if(menu.menu_pos == 2 && knobs.b_button){
-			big_text = !big_text;
-			usleep(DELAY);
-			clear_screen();
-		}
+		//cur_time = get_cur_time();
+		//printf("%ld\n", (cur_time - start_time) / 1000000);
 	}
-	
-	main_desk_menu();
+}
+
+int main(int argc, char *argv[])
+{
+	if(initialize_adresses() != 0) exit(1);
+	led1.rgb.b = 255;
+	led1.rgb.g = 0;
+	led1.rgb.r = 0;
+   	pthread_t thread_id; 
+    pthread_create(&thread_id, NULL, led_thread, (void *)&thread_id);
+    pthread_create(&thread_id, NULL, main_menu, (void *)&thread_id);
+    pthread_exit(NULL);
+    //main_menu();
 	return 0;
 }
 
@@ -377,8 +450,6 @@ int initialize_adresses(){
 	if (parlcd_mem_base == NULL) return 1;
 	parlcd_hx8357_init(parlcd_mem_base);
 	knobs_base = map_phys_address(SPILED_REG_BASE_PHYS + SPILED_REG_KNOBS_8BIT_o, 4, false);
-	led1_mem_base = mem_base + SPILED_REG_LED_RGB1_o;
-	led2_mem_base = mem_base + SPILED_REG_LED_RGB2_o;
 	led1.mem_base = mem_base + SPILED_REG_LED_RGB1_o;
 	led2.mem_base = mem_base + SPILED_REG_LED_RGB2_o;
 	return 0;

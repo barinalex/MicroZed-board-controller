@@ -7,6 +7,13 @@
 
 #include "utils.h"
 
+unsigned long get_cur_time(){
+	struct timeval tv;
+	gettimeofday(&tv,NULL);
+	unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+	return time_in_micros;
+}
+
 int change_menu_pos(int buttons_number, uint8_t button_value, uint8_t prev_button_value, int menu_pos){
 		if(((button_value > prev_button_value + 1) && !(button_value > 250 && prev_button_value < 5)) || (button_value < 5 && prev_button_value > 250)){
 			menu_pos++;
@@ -62,19 +69,12 @@ RGB HsvToRgb(HSV hsv) {
 	{
 		int i;
 		double f, p, q, t;
-
-		if (h == 360)
-			h = 0;
-		else
-			h = h / 60;
-
+		h = (h == 360) ? 0: h / 60;
 		i = (int)trunc(h);
 		f = h - i;
-
 		p = v * (1.0 - s);
 		q = v * (1.0 - (s * f));
 		t = v * (1.0 - (s * (1.0 - f)));
-
 		switch (i)
 		{
 		case 0:
@@ -115,11 +115,9 @@ RGB HsvToRgb(HSV hsv) {
 		}
 
 	}
-
 	RGB rgb;
 	rgb.r = r * 255;
 	rgb.g = g * 255;
 	rgb.b = b * 255;
-
 	return rgb;
 }

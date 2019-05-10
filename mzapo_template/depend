@@ -31,11 +31,15 @@ main.o: main.c \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/confname.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/getopt.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stdbool.h \
- mzapo_parlcd.h mzapo_phys.h \
- /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sys/types.h \
- /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/pthreadtypes.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/pthread.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/endian.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/endian.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sched.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/sched.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/pthreadtypes.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/setjmp.h \
+ mzapo_parlcd.h mzapo_phys.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sys/types.h \
  mzapo_regs.h lcdframe.h utils.h
 mzapo_phys.o: mzapo_phys.c \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdc-predef.h \
