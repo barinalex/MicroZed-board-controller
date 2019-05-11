@@ -14,16 +14,27 @@ unsigned long get_cur_time(){
 	return time_in_micros;
 }
 
-int change_menu_pos(int buttons_number, uint8_t button_value, uint8_t prev_button_value, int menu_pos){
-		if(((button_value > prev_button_value + 1) && !(button_value > 250 && prev_button_value < 5)) || (button_value < 5 && prev_button_value > 250)){
+int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos){
+		if(is_increased(cur_value, prev_value)){
 			menu_pos++;
 			menu_pos = (menu_pos > buttons_number - 1) ? buttons_number - 1: menu_pos;
 		}
-		else if(button_value < prev_button_value - 1 || (button_value > 250 && prev_button_value < 5)){
+		else if(is_decreased(cur_value, prev_value)){
 			menu_pos--;
 			menu_pos = (menu_pos < 0) ? 0: menu_pos;
 		}
 		return menu_pos;
+}
+
+bool is_increased(uint8_t cur_value, uint8_t prev_value){
+	return ((cur_value > prev_value + 1) &&
+			!(cur_value > 250 && prev_value < 5)) ||
+			(cur_value < 5 && prev_value > 250);
+}
+
+bool is_decreased(uint8_t cur_value, uint8_t prev_value){
+	return cur_value < prev_value - 1 || 
+			(cur_value > 250 && prev_value < 5);
 }
 
 rect_ set_rect(int menu_pos){

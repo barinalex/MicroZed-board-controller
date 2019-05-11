@@ -2,6 +2,7 @@
 #define _UTILS_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct{
 	int top;
@@ -23,8 +24,15 @@ typedef struct{
 }RGB;
 
 unsigned long get_cur_time();
+
 rect_ set_rect(int menu_pos);
-int change_menu_pos(int buttons_number, uint8_t button_value, uint8_t prev_button_value, int menu_pos);
+
+int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos);
+
 RGB HsvToRgb(HSV hsv);
+
+bool is_increased(uint8_t cur_value, uint8_t prev_value);
+
+bool is_decreased(uint8_t cur_value, uint8_t prev_value);
 
 #endif

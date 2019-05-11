@@ -24,17 +24,7 @@
 #include "mzapo_regs.h"
 #include "lcdframe.h"
 #include "utils.h"
-
-typedef struct{
-	int buttons_number;
-	int menu_pos;
-	char *button0;
-	char *button1;
-	char *button2;
-	char *button3;
-	char *button4;
-	char *comment;
-} menu_;
+#include "menu.h"
 
 typedef struct{
 	uint32_t rgb_value;
@@ -53,6 +43,7 @@ typedef struct{
 
 typedef struct{
 	bool change;
+	bool flashing;
 	unsigned char *mem_base;
 	HSV hsv;
 	RGB rgb;
@@ -105,7 +96,7 @@ void to_led_(LED led1, LED led2){
 	*(led2.mem_base + 2) = led2.rgb.r;
 }
 
-void led_thread(void *vargp){
+void* led_thread(void *vargp){
 	while(true){
 		*led1.mem_base = led1.rgb.b;
 		*(led1.mem_base + 1) = led1.rgb.g;
@@ -115,6 +106,7 @@ void led_thread(void *vargp){
 		*(led2.mem_base + 1) = led2.rgb.g;
 		*(led2.mem_base + 2) = led2.rgb.r;
 	}
+	return NULL;
 }
 
 void menu_template(menu_ menu){
@@ -156,12 +148,12 @@ void get_buttons_value(uint32_t rgb_knobs_value, uint8_t *r, uint8_t *g, uint8_t
 	*r = (rgb_knobs_value>>26) & 1; // red buttom
 }
 
-uint16_t change(uint16_t data, uint8_t new_value, uint8_t old_value, uint16_t max_data){
-		if(new_value > old_value + 1){
+uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data){
+		if(is_increased(cur_value, prev_value)){
 			data++;
 			data %= (max_data + 1);
 		}
-		else if(new_value < old_value - 1){
+		else if(is_decreased(cur_value, prev_value)){
 			data--;
 		}
 		data = (data > max_data) ? max_data: data;
@@ -308,7 +300,7 @@ void choose_time(){
 	knobs_ knobs;
 	knobs_ prev_knobs;
 	get_knobs_data(&prev_knobs);
-	int time;
+	int time = 0;
 	char str[12];
 	while(true){
 		printf("%x\n", *knobs_base);
@@ -480,7 +472,7 @@ void main_desk_menu(){
 	}
 }
 
-void main_menu(void *vargp){
+void* main_menu(void *vargp){
 	knobs_ knobs;
 	knobs_ prev_knobs;
 	menu_ menu;
@@ -519,6 +511,7 @@ void main_menu(void *vargp){
 		//cur_time = get_cur_time();
 		//printf("%ld\n", (cur_time - start_time) / 1000000);
 	}
+	return NULL;
 }
 
 int main(int argc, char *argv[])
