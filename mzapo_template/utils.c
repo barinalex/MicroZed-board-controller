@@ -6,12 +6,62 @@
 #include <math.h>
 
 #include "utils.h"
+#include "reg_manager.h"
+
+void get_knobs_data(knobs_ *knobs){
+	knobs->rgb_value = get_knobs_value();
+	knobs->b_knob =  knobs->rgb_value      & 0xFF; // blue knob position
+	knobs->g_knob = (knobs->rgb_value>>8)  & 0xFF; // green knob position
+	knobs->r_knob = (knobs->rgb_value>>16) & 0xFF; // red knob position
+	knobs->b_button = (knobs->rgb_value>>24) & 1; // blue button
+	knobs->g_button = (knobs->rgb_value>>25) & 1; // green button
+	knobs->r_button = (knobs->rgb_value>>26) & 1; // red buttom
+}
 
 unsigned long get_cur_time(){
 	struct timeval tv;
 	gettimeofday(&tv,NULL);
 	unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
 	return time_in_micros;
+}
+
+	
+void rectangle_to_lcd(RGB rgb, rect_ rect){
+	uint16_t color = 0;
+	color = ((rgb.r >> 3) << 11) | ((rgb.g >> 2) << 5) | (rgb.b >> 3);
+	for (int r = 0; r < 320 ; r++) {
+		for (int c = 0; c < 480 ; c++) {
+			if(r >= rect.top && r < rect.bottom && c >= rect.left && c < rect.right){
+				frame[r][c] = color;
+			}
+		}
+	}
+	frameToLCD(parlcd_mem_base);
+}
+
+uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data){
+		if(is_increased(cur_value, prev_value)){
+			data++;
+			data %= (max_data + 1);
+		}
+		else if(is_decreased(cur_value, prev_value)){
+			data--;
+		}
+		data = (data > max_data) ? max_data: data;
+		data = (data < 0) ? 0: data;
+		printf("data: %d\n", data);
+		return data;
+}
+
+int change_int(int data, uint8_t cur_value, uint8_t prev_value){
+		if(is_increased(cur_value, prev_value)){
+			data++;
+		}
+		else if(is_decreased(cur_value, prev_value)){
+			data--;
+		}
+		data = (data < 0) ? 0: data;
+		return data;
 }
 
 int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos){
