@@ -15,7 +15,7 @@ void change_text_size(menu_ *menu);
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
 	while(true){
-		//printf("%x\n", *knobs_base);
+		printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
 		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, menu.prev_knobs.b_knob, menu.pos);
 		menu.prev_knobs = menu.cur_knobs;
@@ -25,6 +25,7 @@ void menu(menu_ menu){
 			continue;
 		}
 		if(menu.cur_knobs.b_button){
+			usleep(DELAY);
 			switch(menu.pos){
 				case 0:
 					menu.func0(&menu);
@@ -42,6 +43,7 @@ void menu(menu_ menu){
 					menu.func4(&menu);
 					break;
 			}
+			get_knobs_data(&(menu.prev_knobs));
 		}
 	}
 }
@@ -73,128 +75,47 @@ void draw_menu(menu_ menu){
 	frameToLCD();
 }
 
-void choose_option(menu_ *menu){
-	switch(menu->pos){
-		case 0:
-			led1.change = true;
-			led2.change = false;
-			choose_color(menu->pos);
-			break;
-		case 1:
-			led1.change = false;
-			led2.change = true;
-			choose_color(menu->pos);
-			break;
-		case 2:
-			led1.change = true;
-			led2.change = true;
-			led2.hsv = led1.hsv;
-			led2.rgb = led1.rgb;
-			choose_color(menu->pos);
-			break;
-		case 3:
-			led2.hsv = led1.hsv;
-			led2.rgb = led1.rgb;
-			to_led_(led1, led2);
-			break;
-		case 4:
-			led1.hsv = led2.hsv;
-			led1.rgb = led2.rgb;
-			to_led_(led1, led2);
-			break;
-	}
-}
-
-void choose_color(int menu_pos){
-	rect_ rect_led1 = set_rect(0);
-	rect_ rect_led2 = set_rect(1);
-	LED new_led1 = led1;
-	LED new_led2 = led2;
-	
-	knobs_ knobs;
-	knobs_ prev_knobs;
-	get_knobs_data(&prev_knobs);
-	while(true){
-		get_knobs_data(&knobs);
-		if(knobs.r_button) {
-			usleep(DELAY);
-			to_led_(led1, led2);
-			clear_screen();
-			break;
-		}
-		if(knobs.b_button) {
-			led1 = new_led1;
-			led2 = new_led2;
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		if(led1.change){
-			new_led1.hsv.h = change(new_led1.hsv.h, knobs.r_knob, prev_knobs.r_knob, 360); 
-			new_led1.hsv.s = change(new_led1.hsv.s, knobs.g_knob, prev_knobs.g_knob, 100); 
-			new_led1.hsv.v = change(new_led1.hsv.v, knobs.b_knob, prev_knobs.b_knob, 100);
-			new_led1.rgb = HsvToRgb(new_led1.hsv);
-			printf("%d %d %d\n", new_led1.hsv.h, new_led1.hsv.s, new_led1.hsv.v);
-			printf("%d %d %d\n", new_led1.rgb.r, new_led1.rgb.g, new_led1.rgb.b);
-			if(menu_pos == 0 || menu_pos == 2) rectangle_to_lcd(new_led1.rgb, rect_led1);
-		}
-		if(led2.change){
-			new_led2.hsv.h = change(new_led2.hsv.h, knobs.r_knob, prev_knobs.r_knob, 360); 
-			new_led2.hsv.s = change(new_led2.hsv.s, knobs.g_knob, prev_knobs.g_knob, 100); 
-			new_led2.hsv.v = change(new_led2.hsv.v, knobs.b_knob, prev_knobs.b_knob, 100);
-			new_led2.rgb = HsvToRgb(new_led2.hsv);
-			printf("%d %d %d\n", new_led2.hsv.h, new_led2.hsv.s, new_led2.hsv.v);
-			printf("%d %d %d\n", new_led2.rgb.r, new_led2.rgb.g, new_led2.rgb.b);
-			if(menu_pos == 1 || menu_pos == 2) rectangle_to_lcd(new_led2.rgb, rect_led2);
-		}
-		prev_knobs = knobs;
-		to_led_(new_led1, new_led2);
-		frameToLCD();
-	}
-	led1.change = false;
-	led2.change = false;
-}
 
 void go_next_menu(menu_ *menu){
 	switch(menu->pos){
 		case 0:
 			if(menu->next0 != NULL){
-				usleep(DELAY);
 				clear_screen();
 				menu->pos = 0;
 				*menu = *(menu->next0);
+				menu->prev_menu_pos = 0;
 			}
 			break;
 		case 1:
 			if(menu->next1 != NULL){
-				usleep(DELAY);
 				clear_screen();
 				menu->pos = 0;
 				*menu = *(menu->next1);
+				menu->prev_menu_pos = 1;
 			}
 			break;
 		case 2:
 			if(menu->next2 != NULL){
-				usleep(DELAY);
 				clear_screen();
 				menu->pos = 0;
 				*menu = *(menu->next2);
+				menu->prev_menu_pos = 2;
 			}
 			break;
 		case 3:
 			if(menu->next3 != NULL){
-				usleep(DELAY);
 				clear_screen();
 				menu->pos = 0;
 				*menu = *(menu->next3);
+				menu->prev_menu_pos = 3;
 			}
 			break;
 		case 4:
 			if(menu->next4 != NULL){
-				usleep(DELAY);
 				clear_screen();
 				menu->pos = 0;
 				*menu = *(menu->next4);
+				menu->prev_menu_pos = 4;
 			}
 			break;				
 	}
@@ -213,6 +134,7 @@ void go_prev_menu(menu_ *menu){
 }
 
 void change_text_size(menu_ *menu){
+	clear_screen();
 	big_text = !big_text;
 }
 
@@ -237,6 +159,21 @@ void *create_menu(void *vargp){
 	
 	desk_menu.next2 = &flash_menu;
 	flash_menu.prev = &desk_menu;
+	
+	menu_ flash_color_menu_led1;
+	menu_ flash_color_menu_led2;
+	menu_ flash_color_menu_both;
+	create_flash_color_menu(&flash_color_menu_led1);
+	create_flash_color_menu(&flash_color_menu_led2);
+	create_flash_color_menu(&flash_color_menu_both);
+	
+	flash_menu.next0 = &flash_color_menu_led1;
+	flash_menu.next1 = &flash_color_menu_led2;
+	flash_menu.next2 = &flash_color_menu_both;
+	
+	flash_color_menu_led1.prev = &flash_menu;
+	flash_color_menu_led2.prev = &flash_menu;
+	flash_color_menu_both.prev = &flash_menu;
 	
 	menu(main_menu);
 	return NULL;

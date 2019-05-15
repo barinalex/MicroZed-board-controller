@@ -48,7 +48,7 @@ uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_da
 			data--;
 		}
 		data = (data > max_data) ? max_data: data;
-		data = (data < 0) ? 0: data;
+		data = (data < 0) ? max_data: data;
 		printf("data: %d\n", data);
 		return data;
 }

@@ -11,11 +11,12 @@ typedef struct{
 	RGB rgb;
 	HSV hsv2;
 	RGB rgb2;
+	unsigned long flash_time;
 	unsigned long cur_time;
 }LED;
 
-extern LED led1;
-extern LED led2;
+LED led1;
+LED led2;
 
 void to_led_(LED led1, LED led2);
 

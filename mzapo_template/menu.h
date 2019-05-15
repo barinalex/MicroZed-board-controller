@@ -16,6 +16,7 @@
 
 typedef struct menu_{
 	int buttons_number;
+	int prev_menu_pos;
 	int pos;
 	
 	knobs_ cur_knobs;
@@ -49,8 +50,6 @@ void menu(menu_ menu);
 void draw_menu(menu_ menu);
 void go_next_menu(menu_ *menu);
 void go_prev_menu(menu_ *menu);
-void choose_color(int menu_pos);
-void choose_option(menu_ *menu);
 void set_no_links(menu_ *menu);
 
 #endif
