@@ -240,6 +240,17 @@ led_control.o: led_control.c \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stdint.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdint.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/wchar.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/math.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/math-vector.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/libm-simd-decl-stubs.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/huge_val.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/huge_valf.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/huge_vall.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/inf.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/nan.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/mathdef.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/mathcalls.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/mathinline.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/xlocale.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/unistd.h \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/posix_opt.h \
@@ -489,6 +500,66 @@ flash_menu.o: flash_menu.c \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stdbool.h \
  lcdframe.h utils.h reg_manager.h mzapo_parlcd.h mzapo_phys.h \
  mzapo_regs.h led_control.h flash_menu.h
+continuous_menu.o: continuous_menu.c \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdc-predef.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdlib.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/features.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sys/cdefs.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/wordsize.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/gnu/stubs.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/gnu/stubs-hard.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stddef.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/waitflags.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/waitstatus.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/endian.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/endian.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/byteswap.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/types.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/typesizes.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/byteswap-16.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sys/types.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/time.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sys/select.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/select.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/sigset.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/time.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/sys/sysmacros.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/pthreadtypes.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/alloca.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/stdlib-bsearch.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/stdlib-float.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdio.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/libio.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/_G_config.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/wchar.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stdarg.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/stdio_lim.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/sys_errlist.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/stdio.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stdint.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdint.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/wchar.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/xlocale.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/unistd.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/posix_opt.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/environments.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/confname.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/getopt.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/math.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/math-vector.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/libm-simd-decl-stubs.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/huge_val.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/huge_valf.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/huge_vall.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/inf.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/nan.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/mathdef.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/mathcalls.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/bits/mathinline.h \
+ menu.h \
+ /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/lib/gcc/arm-cortexa8-linux-gnueabihf/5.4.0/include/stdbool.h \
+ lcdframe.h utils.h reg_manager.h mzapo_parlcd.h mzapo_phys.h \
+ mzapo_regs.h led_control.h continuous_menu.h
 font_prop14x16.o: font_prop14x16.c \
  /opt/OSELAS.Toolchain-2016.06.1/arm-cortexa8-linux-gnueabihf/gcc-5.4.0-glibc-2.23-binutils-2.26-kernel-4.6-sanitized/sysroot-arm-cortexa8-linux-gnueabihf/usr/include/stdc-predef.h \
  font_types.h \

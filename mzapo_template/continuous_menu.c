@@ -5,29 +5,39 @@
 #include <unistd.h>
 #include <math.h>
 #include "menu.h"
-#include "flash_menu.h"
+#include "continuous_menu.h"
 
-void turn_on_off(menu_ *menu){
+void turn_on_off_continuous(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
-			led1.continuous = false;
-			led1.flashing = !led1.flashing;
+			led1.flashing = false;
+			led1.continuous = !led1.continuous;
+			if(led1.continuous){
+				led1.hsv_current = led1.hsv_c1;
+			}
 			break;
 		case 1:
-			led1.continuous = false;
-			led2.flashing = !led2.flashing;
+			led2.flashing = false;
+			led2.continuous = !led2.continuous;
+			if(led2.continuous){
+				led2.hsv_current = led2.hsv_c1;
+			}
 			break;
 		case 2:
-			led1.continuous = false;
-			led2.continuous = false;
-			led1.flashing = !led1.flashing;
-			led2.flashing = led1.flashing;
-			led2.last_color_f1 = led1.last_color_f1;
+			led1.flashing = false;
+			led2.flashing = false;
+			led1.continuous = !led1.continuous;
+			led2.continuous = led1.continuous;
+			
+			if(led1.continuous){
+				led1.hsv_current = led1.hsv_c1;
+				led2.hsv_current = led2.hsv_c1;
+			}
 			break;
 	}
 }
 
-void change_flash(menu_ *menu){
+void change_continuous(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
 			led1.change = true;
@@ -40,16 +50,16 @@ void change_flash(menu_ *menu){
 		case 2:
 			led1.change = true;
 			led2.change = true;
-			led2.hsv_f1 = led1.hsv_f1;
-			led2.rgb_f1 = led1.rgb_f1;
-			led2.hsv_f2 = led1.hsv_f2;
-			led2.rgb_f2 = led1.rgb_f2;
+			led2.hsv_c1 = led1.hsv_c1;
+			led2.rgb_c1 = led1.rgb_c1;
+			led2.hsv_c2 = led1.hsv_c2;
+			led2.rgb_c2 = led1.rgb_c2;
 			break;
 	}
-	change_flash_colors(menu->pos);
+	change_continuous_colors(menu->pos);
 }
 
-void choose_time(menu_ *menu){
+void choose_time_continuous(menu_ *menu){
 	knobs_ knobs;
 	knobs_ prev_knobs;
 	get_knobs_data(&prev_knobs);
@@ -65,7 +75,7 @@ void choose_time(menu_ *menu){
 		case 2:	
 			led1.change = true;
 			led2.change = true;
-			led2.flash_time = led1.flash_time;
+			led2.continuous_time = led1.continuous_time;
 			break;
 	}
 	
@@ -87,95 +97,67 @@ void choose_time(menu_ *menu){
 			break;
 		}
 		if(led1.change){
-			led1.flash_time = change_int(led1.flash_time, knobs.b_knob, prev_knobs.b_knob, 100);
-			int_to_frame(led1.flash_time, 130, 240, WHITE, BLACK, big_text);
+			led1.continuous_time = change_int(led1.continuous_time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			int_to_frame(led1.continuous_time, 130, 240, WHITE, BLACK, big_text);
 		}
 		if(led2.change){
-			led2.flash_time = change_int(led2.flash_time, knobs.b_knob, prev_knobs.b_knob, 100);
-			int_to_frame(led2.flash_time, 130, 240, WHITE, BLACK, big_text);
+			led2.continuous_time = change_int(led2.continuous_time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			int_to_frame(led2.continuous_time, 130, 240, WHITE, BLACK, big_text);
 		}
 		frameToLCD();
 		prev_knobs = knobs;
 	}
 }
 
-void choose_shift(menu_ *menu){
-	knobs_ knobs;
-	knobs_ prev_knobs;
-	get_knobs_data(&prev_knobs);
-	LED saved_led2 = led2;
-	while(true){
-		printf("%x\n", *knobs_mem_base);
-		get_knobs_data(&knobs);
-		if(knobs.r_button) {
-			led2 = saved_led2;
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		if(knobs.b_button) {
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		led2.shift = change_int(led2.shift, knobs.b_knob, prev_knobs.b_knob, 100);
-		int_to_frame(led2.shift, 180, 240, WHITE, BLACK, big_text);
-		frameToLCD();
-		prev_knobs = knobs;
-	}
-}
-
-void create_flash_menu(menu_ *menu){
-	menu->buttons_number = 4;
+void create_continuous_menu(menu_ *menu){
+	menu->buttons_number = 3;
 	menu->pos = 0;
 	menu->button0 = "Led 1";
 	menu->button1 = "Led 2";
 	menu->button2 = "Both";
-	menu->button3 = "Shift";
 	menu->comment = "Exit: red. Choose: blue";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &go_next_menu;
 	menu->func2 = &go_next_menu;
-	menu->func3 = &choose_shift;
 	set_no_links(menu);
 }
 
-void create_flash_color_menu(menu_ *menu){
+void create_continuous_color_menu(menu_ *menu){
 	menu->buttons_number = 4;
 	menu->pos = 0;
 	menu->button0 = "Color 1";
 	menu->button1 = "Color 2";
-	menu->button2 = "Shift";
-	menu->button3 = "on/off flashing";
+	menu->button2 = "Changing time";
+	menu->button3 = "on/off continuous";
 	menu->comment = "Exit: red. Choose: blue";
 	
-	menu->func0 = &change_flash;
-	menu->func1 = &change_flash;
-	menu->func2 = &choose_time;
-	menu->func3 = &turn_on_off;
+	menu->func0 = &change_continuous;
+	menu->func1 = &change_continuous;
+	menu->func2 = &choose_time_continuous;
+	menu->func3 = &turn_on_off_continuous;
 	set_no_links(menu);
 }
 
-void change_flash_colors(int menu_pos){
+void change_continuous_colors(int menu_pos){
 	rect_ rect_led;
 	HSV* led1hsv, *led2hsv;
 	RGB* led1rgb, *led2rgb;
 	
 	rect_led = set_rect(0);
-	led1hsv = &(led1.hsv_f1);
-	led1rgb = &(led1.rgb_f1);
-	led2hsv = &(led2.hsv_f1);
-	led2rgb = &(led2.rgb_f1);
+	led1hsv = &(led1.hsv_c1);
+	led1rgb = &(led1.rgb_c1);
+	led2hsv = &(led2.hsv_c1);
+	led2rgb = &(led2.rgb_c1);
 	switch(menu_pos){
 		case 0:
 			break;
 		case 1:
 			rect_led = set_rect(1);
-			led1hsv = &(led1.hsv_f2);
-			led1rgb = &(led1.rgb_f2);
-			led2hsv = &(led2.hsv_f2);
-			led2rgb = &(led2.rgb_f2);
+			led1hsv = &(led1.hsv_c2);
+			led1rgb = &(led1.rgb_c2);
+			led2hsv = &(led2.hsv_c2);
+			led2rgb = &(led2.rgb_c2);
 			break;
 	}
 	LED saved_led1 = led1;

@@ -18,7 +18,7 @@ void choose_desk(menu_ *menu){
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
 	while(true){
-		printf("%x\n", *knobs_mem_base);
+		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
 		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, menu.prev_knobs.b_knob, menu.pos);
 		menu.prev_knobs = menu.cur_knobs;
@@ -156,6 +156,28 @@ void *create_menu(void *vargp){
 	
 	desk_menu.next0 = &static_menu;
 	static_menu.prev = &desk_menu;
+	
+	menu_ continuous_menu;
+	create_continuous_menu(&continuous_menu);
+	
+	desk_menu.next1 = &continuous_menu;
+	continuous_menu.prev = &desk_menu;
+	
+	
+	menu_ continuous_color_menu_led1;
+	menu_ continuous_color_menu_led2;
+	menu_ continuous_color_menu_both;
+	create_continuous_color_menu(&continuous_color_menu_led1);
+	create_continuous_color_menu(&continuous_color_menu_led2);
+	create_continuous_color_menu(&continuous_color_menu_both);
+	
+	continuous_menu.next0 = &continuous_color_menu_led1;
+	continuous_menu.next1 = &continuous_color_menu_led2;
+	continuous_menu.next2 = &continuous_color_menu_both;
+	
+	continuous_color_menu_led1.prev = &continuous_menu;
+	continuous_color_menu_led2.prev = &continuous_menu;
+	continuous_color_menu_both.prev = &continuous_menu;
 	
 	menu_ flash_menu;
 	create_flash_menu(&flash_menu);

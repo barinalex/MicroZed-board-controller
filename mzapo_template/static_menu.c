@@ -75,9 +75,11 @@ void choose_color(int menu_pos){
 		if(knobs.b_button) {
 			if(led1.change){
 				led1.flashing = false;
+				led1.continuous = false;
 			}
 			if(led2.change){
-				led2.flashing = false;	
+				led2.flashing = false;
+				led2.continuous = false;	
 			}
 			usleep(DELAY);
 			clear_screen();
