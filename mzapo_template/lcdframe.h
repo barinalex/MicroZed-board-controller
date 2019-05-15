@@ -16,7 +16,8 @@ extern uint16_t frame [FRAME_H][FRAME_W]; // velikost displeje
 void clear_screen();
 void frameToLCD();
 int charToFrame(char c, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor);
-int strToFrame(char *str, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big); 
+int strToFrame(char *str, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big);
+int int_to_frame(int number, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big); 
 
 #ifdef __cplusplus
 } /* extern "C" */

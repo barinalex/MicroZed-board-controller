@@ -25,6 +25,9 @@ unsigned long get_cur_time(){
 	return time_in_micros;
 }
 
+unsigned long get_cur_time_in_mlsec(){
+	return get_cur_time() / 1000;
+}
 	
 void rectangle_to_lcd(RGB rgb, rect_ rect){
 	uint16_t color = 0;
@@ -53,12 +56,12 @@ uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_da
 		return data;
 }
 
-int change_int(int data, uint8_t cur_value, uint8_t prev_value){
+int change_int(int data, uint8_t cur_value, uint8_t prev_value, int step){
 		if(is_increased(cur_value, prev_value)){
-			data++;
+			data += step;
 		}
 		else if(is_decreased(cur_value, prev_value)){
-			data--;
+			data -= step;
 		}
 		data = (data < 0) ? 0: data;
 		return data;

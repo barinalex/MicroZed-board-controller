@@ -82,6 +82,21 @@ int strToFrame(char *str, int yRow, int xColumn, uint16_t forecolor, uint16_t ba
 	return w; // pixelova sirka napsaneho textu, abychom vedeli, kde muzeme psat dalsi znak
 }
 
+int int_to_frame(int number, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big){
+		char str[12];
+		str[11] = '\0';
+		sprintf(str, "%d", number);
+		for(int i = 0; i < 12; ++i){
+			if(str[i] == '\0'){
+				for(int j = i; j < 11; ++j){
+					str[j] = ' ';
+				}
+				break;
+			}
+		}
+		strToFrame(str, yRow, xColumn, forecolor, backcolor, big);
+}
+
 void clear_screen(){
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {

@@ -12,6 +12,9 @@ void create_main_menu(menu_ *menu);
 void create_desk_menu(menu_ *menu);
 void change_text_size(menu_ *menu);
 
+void choose_desk(menu_ *menu){
+}
+
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
 	while(true){
@@ -197,6 +200,7 @@ void create_main_menu(menu_ *menu){
 	menu->comment = "Exit: red. Choose: blue";
 	
 	menu->func0 = &go_next_menu;
+	menu->func1 = &choose_desk;
 	menu->func2 = &change_text_size;
 	set_no_links(menu);
 }

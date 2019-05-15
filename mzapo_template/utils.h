@@ -40,6 +40,8 @@ void rectangle_to_lcd(RGB rgb, rect_ rect);
 
 unsigned long get_cur_time();
 
+unsigned long get_cur_time_in_mlsec();
+
 rect_ set_rect(int menu_pos);
 
 int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos);
@@ -52,6 +54,6 @@ bool is_decreased(uint8_t cur_value, uint8_t prev_value);
 
 uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data);
 
-int change_int(int data, uint8_t cur_value, uint8_t prev_value);
+int change_int(int data, uint8_t cur_value, uint8_t prev_value, int step);
 
 #endif
