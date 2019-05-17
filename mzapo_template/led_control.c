@@ -18,6 +18,41 @@ void to_led_(LED led1, LED led2){
 	*(led2.mem_base + 2) = led2.rgb.r;
 }
 
+void change_hsv(uint16_t *data, uint16_t data1, uint16_t data2, bool *to_2){
+		if(data1 < data2){
+			if(*to_2){
+				(*data) ++;
+				if((*data) >= data2){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv2.h;
+				}	
+			}
+			else{
+				led->cont.hsv_cur.h = (led->cont.hsv_cur.h == 0) ? 0: led->cont.hsv_cur.h - 1;	
+				if(led->cont.hsv_cur.h <= led->cont.hsv.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv.h;
+				}
+			}
+		}
+		else{
+			if(!*to_2){
+				led->cont.hsv_cur.h ++;
+				if(led->cont.hsv_cur.h >= led->cont.hsv2.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv2.h;
+				}	
+			}
+			else{
+				led->cont.hsv_cur.h = (led->cont.hsv_cur.h == 0) ? 0: led->cont.hsv_cur.h - 1;	
+				if(led->cont.hsv_cur.h <= led->cont.hsv.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv.h;
+				}
+			}
+		}	
+}
+
 void continuously_changing(LED *led){
 	unsigned long cur_time = get_cur_time_in_mlsec();
 	if( (cur_time - (led->cont.change_time / fabs((double)(led->cont.hsv.h - led->cont.hsv2.h)))) > led->cont.last_change_time){
