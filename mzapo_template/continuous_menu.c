@@ -103,7 +103,8 @@ void create_continuous_menu(menu_ *menu){
 	menu->button0 = "Led 1";
 	menu->button1 = "Led 2";
 	menu->button2 = "Both";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &go_next_menu;
@@ -116,9 +117,10 @@ void create_continuous_color_menu(menu_ *menu){
 	menu->pos = 0;
 	menu->button0 = "Color 1";
 	menu->button1 = "Color 2";
-	menu->button2 = "Changing time";
-	menu->button3 = "on/off continuous";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->button2 = "Period";
+	menu->button3 = "on/off";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &change_continuous_color;
 	menu->func1 = &change_continuous_color;

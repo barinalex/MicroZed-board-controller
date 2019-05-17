@@ -19,10 +19,11 @@ void choose_desk(menu_ *menu){
 
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
+	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
-		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, menu.prev_knobs.b_knob, menu.pos);
+		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, &prev_b_knob, menu.pos);
 		menu.prev_knobs = menu.cur_knobs;
 		draw_menu(menu);
 		if(menu.cur_knobs.r_button && menu.prev != NULL){
@@ -76,7 +77,8 @@ void draw_menu(menu_ menu){
 			strToFrame(menu.button4, 230, 50, BLUE, BLACK, big_text);
 			break;
 	}
-	strToFrame(menu.comment, 280, 50, BLUE, BLACK, big_text);
+	strToFrame(menu.comment, 280, 50, RED, BLACK, big_text);
+	strToFrame(menu.comment2, 280, 350, BLUE, BLACK, big_text);
 	frameToLCD();
 }
 
@@ -233,7 +235,8 @@ void create_main_menu(menu_ *menu){
 	menu->button0 = "This";
 	menu->button1 = "Choose another";
 	menu->button2 = "Change Text Size";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &choose_desk;
@@ -248,7 +251,8 @@ void create_desk_menu(menu_ *menu){
 	menu->button1 = "Continuous";
 	menu->button2 = "Color flash";
 	menu->button3 = "Flash";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &go_next_menu;

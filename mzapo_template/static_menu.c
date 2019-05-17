@@ -45,7 +45,8 @@ void create_static_menu(menu_ *menu){
 	menu->button2 = "Both";
 	menu->button3 = "Led 1 to Led 2";
 	menu->button4 = "Led 2 to Led 1";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &change_static_led1;
 	menu->func1 = &change_static_led2;

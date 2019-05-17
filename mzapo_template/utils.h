@@ -6,6 +6,7 @@
 #include "lcdframe.h"
 
 #define BLACK 0x0
+#define RED 0xF800
 #define BLUE 0x001F
 #define WHITE 0xFFFF
 #define GREEN 0x07E0
@@ -97,7 +98,7 @@ unsigned long get_cur_time_in_mlsec();
 
 rect_ set_rect(int menu_pos);
 
-int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos);
+int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t *prev_value, int menu_pos);
 
 RGB hsv_to_rgb(HSV hsv);
 

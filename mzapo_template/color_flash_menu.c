@@ -88,7 +88,8 @@ void create_color_flash_menu(menu_ *menu){
 	menu->button1 = "Led 2";
 	menu->button2 = "Both";
 	menu->button3 = "Shift";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &go_next_menu;
@@ -103,8 +104,9 @@ void create_color_flash_led_menu(menu_ *menu){
 	menu->button0 = "Color 1";
 	menu->button1 = "Color 2";
 	menu->button2 = "Shift";
-	menu->button3 = "on/off flashing";
-	menu->comment = "Exit: red. Choose: blue";
+	menu->button3 = "on/off";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
 	
 	menu->func0 = &change_color_flash_color;
 	menu->func1 = &change_color_flash_color;

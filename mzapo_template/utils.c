@@ -179,14 +179,16 @@ unsigned long change_long(long long data, uint8_t cur_value, uint8_t prev_value,
 		return data;
 }
 
-int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos){
-		if(is_increased(cur_value, prev_value)){
+int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t *prev_value, int menu_pos){
+		if(is_increased(cur_value, *prev_value)){
 			menu_pos++;
 			menu_pos = (menu_pos > buttons_number - 1) ? buttons_number - 1: menu_pos;
+			*prev_value = cur_value;
 		}
-		else if(is_decreased(cur_value, prev_value)){
+		else if(is_decreased(cur_value, *prev_value)){
 			menu_pos--;
 			menu_pos = (menu_pos < 0) ? 0: menu_pos;
+			*prev_value = cur_value;
 		}
 		return menu_pos;
 }
@@ -206,13 +208,13 @@ int get_difference(uint8_t cur_value, uint8_t prev_value){
 }
 
 bool is_increased(uint8_t cur_value, uint8_t prev_value){
-	return ((cur_value > prev_value) &&
+	return ((cur_value > prev_value + 3) &&
 			!(cur_value > 250 && prev_value < 5)) ||
 			(cur_value < 5 && prev_value > 250);
 }
 
 bool is_decreased(uint8_t cur_value, uint8_t prev_value){
-	return cur_value < prev_value || 
+	return cur_value < prev_value - 3|| 
 			(cur_value > 250 && prev_value < 5);
 }
 
@@ -328,14 +330,11 @@ HSV rgb_to_hsv(RGB rgb) {
 	v = Max(Max(rgb.r, rgb.g), rgb.b);
 	delta = v - min;
 
-	if (v == 0.0)
-		s = 0;
-	else
-		s = delta / v;
+	s = (v == 0.0) ? 0 : delta / v;
 
-	if (s == 0)
+	if (s == 0){
 		h = 0.0;
-
+	}
 	else
 	{
 		if (rgb.r == v)
