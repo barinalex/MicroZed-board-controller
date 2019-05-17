@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <math.h>
 
@@ -35,11 +36,11 @@ void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
 			break;
 		}
 		if(led1.change){
-			change_hsv_rgb(led1hsv, led1rgb, knobs, prev_knobs);
+			change_rgb_hsv(led1hsv, led1rgb, knobs, prev_knobs);
 			rectangle_to_lcd(*led1rgb, rect_led);
 		}
 		if(led2.change){
-			change_hsv_rgb(led2hsv, led2rgb, knobs, prev_knobs);
+			change_rgb_hsv(led2hsv, led2rgb, knobs, prev_knobs);
 			rectangle_to_lcd(*led2rgb, rect_led);
 		}
 		prev_knobs = knobs;
@@ -55,7 +56,6 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos){
 	LED saved_led2 = led2;
 	
 	while(true){
-		printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&knobs);
 		if(knobs.r_button) {
 			led1 = saved_led1;
@@ -102,14 +102,22 @@ void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *m
 			break;
 	}
 }
+void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs){
+	rgb->r = change_rgb(rgb->r, knobs.r_knob, prev_knobs.r_knob, 255); 
+	rgb->g = change_rgb(rgb->g, knobs.g_knob, prev_knobs.g_knob, 255); 
+	rgb->b = change_rgb(rgb->b, knobs.b_knob, prev_knobs.b_knob, 255);
+	printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);
+	*hsv = rgb_to_hsv(*rgb);
+	printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
+}
 
 void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs){
 	hsv->h = change(hsv->h, knobs.r_knob, prev_knobs.r_knob, 360); 
 	hsv->s = change(hsv->s, knobs.g_knob, prev_knobs.g_knob, 100); 
 	hsv->v = change(hsv->v, knobs.b_knob, prev_knobs.b_knob, 100);
-	*rgb = HsvToRgb(*hsv);
-	printf("%d %d %d\n", hsv->h, hsv->s, hsv->v);
-	printf("%d %d %d\n", rgb->r, rgb->g, rgb->b);	
+	*rgb = hsv_to_rgb(*hsv);
+	printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
+	printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);	
 }
 
 void get_knobs_data(knobs_ *knobs){
@@ -146,7 +154,7 @@ void rectangle_to_lcd(RGB rgb, rect_ rect){
 	frameToLCD(parlcd_mem_base);
 }
 
-uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data){
+uint8_t change_rgb(int data, uint8_t cur_value, uint8_t prev_value, int max_data){
 		data += get_difference(cur_value, prev_value);
 		data %= (max_data + 1);
 		data = (data > max_data) ? max_data: data;
@@ -155,9 +163,19 @@ uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_da
 		return data;
 }
 
-unsigned long change_long(unsigned long data, uint8_t cur_value, uint8_t prev_value, int step){
+uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, int max_data){
+		data += get_difference(cur_value, prev_value);
+		data %= (max_data + 1);
+		data = (data > max_data) ? max_data: data;
+		data = (data < 0) ? max_data: data;
+		printf("data: %d\n", data);
+		return data;
+}
+
+unsigned long change_long(long long data, uint8_t cur_value, uint8_t prev_value, int step){
 		data += get_difference(cur_value, prev_value) * step;
 		data = (data < 0) ? 0: data;
+		printf("data: %lld\n", data);
 		return data;
 }
 
@@ -175,10 +193,10 @@ int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, i
 
 int get_difference(uint8_t cur_value, uint8_t prev_value){
 	int difference;
-	if(cur_value < 30 && prev_value > 225){
+	if(cur_value < 50 && prev_value > 200){
 		difference = cur_value + (255 - prev_value);
 	}
-	else if(cur_value > 225 && prev_value < 30){
+	else if(cur_value > 200 && prev_value < 50){
 		difference = - prev_value - (255 - cur_value);
 	}
 	else{
@@ -227,7 +245,7 @@ rect_ set_rect(int menu_pos){
 	return rect;
 }
 
-RGB HsvToRgb(HSV hsv) {
+RGB hsv_to_rgb(HSV hsv) {
 	double r = 0, g = 0, b = 0;
 	double h = (double)hsv.h, s = (double)hsv.s/100, v = (double)hsv.v/100;
 
@@ -292,4 +310,51 @@ RGB HsvToRgb(HSV hsv) {
 	rgb.g = g * 255;
 	rgb.b = b * 255;
 	return rgb;
+}
+
+static uint8_t Min(uint8_t a, uint8_t b) {
+	return a <= b ? a : b;
+}
+
+static uint8_t Max(uint8_t a, uint8_t b) {
+	return a >= b ? a : b;
+}
+
+HSV rgb_to_hsv(RGB rgb) {
+	double delta, min;
+	double h = 0, s, v;
+
+	min = Min(Min(rgb.r, rgb.g), rgb.b);
+	v = Max(Max(rgb.r, rgb.g), rgb.b);
+	delta = v - min;
+
+	if (v == 0.0)
+		s = 0;
+	else
+		s = delta / v;
+
+	if (s == 0)
+		h = 0.0;
+
+	else
+	{
+		if (rgb.r == v)
+			h = (rgb.g - rgb.b) / delta;
+		else if (rgb.g == v)
+			h = 2 + (rgb.b - rgb.r) / delta;
+		else if (rgb.b == v)
+			h = 4 + (rgb.r - rgb.g) / delta;
+
+		h *= 60;
+
+		if (h < 0.0)
+			h = h + 360;
+	}
+
+	HSV hsv;
+	hsv.h = (uint16_t)h;
+	hsv.s = (uint8_t)(s * 100);
+	hsv.v = (uint8_t)((v / 255) * 100);
+
+	return hsv;
 }

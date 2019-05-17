@@ -86,21 +86,11 @@ void choose_color(int menu_pos){
 			break;
 		}
 		if(led1.change){
-			led1.hsv.h = change(led1.hsv.h, knobs.r_knob, prev_knobs.r_knob, 360); 
-			led1.hsv.s = change(led1.hsv.s, knobs.g_knob, prev_knobs.g_knob, 100); 
-			led1.hsv.v = change(led1.hsv.v, knobs.b_knob, prev_knobs.b_knob, 100);
-			led1.rgb = HsvToRgb(led1.hsv);
-			printf("%d %d %d\n", led1.hsv.h, led1.hsv.s, led1.hsv.v);
-			printf("%d %d %d\n", led1.rgb.r, led1.rgb.g, led1.rgb.b);
+			change_rgb_hsv(&(led1.hsv), &(led1.rgb), knobs, prev_knobs);
 			if(menu_pos == 0 || menu_pos == 2) rectangle_to_lcd(led1.rgb, rect_led1);
 		}
 		if(led2.change){
-			led2.hsv.h = change(led2.hsv.h, knobs.r_knob, prev_knobs.r_knob, 360); 
-			led2.hsv.s = change(led2.hsv.s, knobs.g_knob, prev_knobs.g_knob, 100); 
-			led2.hsv.v = change(led2.hsv.v, knobs.b_knob, prev_knobs.b_knob, 100);
-			led2.rgb = HsvToRgb(led2.hsv);
-			printf("%d %d %d\n", led2.hsv.h, led2.hsv.s, led2.hsv.v);
-			printf("%d %d %d\n", led2.rgb.r, led2.rgb.g, led2.rgb.b);
+			change_rgb_hsv(&(led2.hsv), &(led2.rgb), knobs, prev_knobs);
 			if(menu_pos == 1 || menu_pos == 2) rectangle_to_lcd(led2.rgb, rect_led2);
 		}
 		prev_knobs = knobs;

@@ -83,6 +83,8 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos);
 
 void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color);
 
+void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
+
 void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
 
 void get_knobs_data(knobs_ *knobs);
@@ -97,14 +99,17 @@ rect_ set_rect(int menu_pos);
 
 int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, int menu_pos);
 
-RGB HsvToRgb(HSV hsv);
+RGB hsv_to_rgb(HSV hsv);
+
+HSV rgb_to_hsv(RGB rgb);
 
 bool is_increased(uint8_t cur_value, uint8_t prev_value);
 
 bool is_decreased(uint8_t cur_value, uint8_t prev_value);
 
-uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data);
+uint8_t change_rgb(int data, uint8_t cur_value, uint8_t prev_value, int max_data);
+uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, int max_data);
 
-unsigned long change_long(unsigned long data, uint8_t cur_value, uint8_t prev_value, int step);
+unsigned long change_long(long long data, uint8_t cur_value, uint8_t prev_value, int step);
 
 #endif

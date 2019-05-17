@@ -65,7 +65,7 @@ void continuously_changing(LED *led){
 		led->cont.v_last_change_time = get_cur_time_in_mlsec();
 	}
 	printf("%d %d %d\n", led->cont.hsv_cur.h, led->cont.hsv_cur.s, led->cont.hsv_cur.v);
-	led->cont.rgb_cur = HsvToRgb(led->cont.hsv_cur);	
+	led->cont.rgb_cur = hsv_to_rgb(led->cont.hsv_cur);	
 	
 	if(led->illuminate){
 		*(led->mem_base) = led->cont.rgb_cur.b;
@@ -94,17 +94,20 @@ void color_flashing(LED *led){
 	if((get_cur_time_in_mlsec() - led->color_flash.last_change_time > led->color_flash.change_time) && 
 	(get_cur_time_in_mlsec() - led1.color_flash.last_change_time > led->color_flash.shift)){
 		if(led->color_flash.to_2){
-			*(led->mem_base) = led->color_flash.rgb2.b;
-			*(led->mem_base + 1) = led->color_flash.rgb2.g;
-			*(led->mem_base + 2) = led->color_flash.rgb2.r;
+			led->color_flash.rgb_cur = led->color_flash.rgb2;
 		}
 		else{
-			*(led->mem_base) = led->color_flash.rgb.b;
-			*(led->mem_base + 1) = led->color_flash.rgb.g;
-			*(led->mem_base + 2) = led->color_flash.rgb.r;
+			led->color_flash.rgb_cur = led->color_flash.rgb;
 		}
 		led->color_flash.to_2 = !led->color_flash.to_2;
 		led->color_flash.last_change_time = get_cur_time_in_mlsec();
+	}
+	if(led->illuminate){
+		*(led->mem_base) = led->color_flash.rgb_cur.b;
+		*(led->mem_base + 1) = led->color_flash.rgb_cur.g;
+		*(led->mem_base + 2) = led->color_flash.rgb_cur.r;
+	}else{
+		light_off(led);
 	}
 }
 

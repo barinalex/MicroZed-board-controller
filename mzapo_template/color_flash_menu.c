@@ -12,10 +12,12 @@ void turn_on_off_color_flash(menu_ *menu){
 		case 0:
 			led1.cont.on = false;
 			led1.color_flash.on = !led1.color_flash.on;
+			led1.color_flash.rgb_cur = led1.color_flash.rgb;
 			break;
 		case 1:
-			led1.cont.on = false;
+			led2.cont.on = false;
 			led2.color_flash.on = !led2.color_flash.on;
+			led2.color_flash.rgb_cur = led2.color_flash.rgb;
 			break;
 		case 2:
 			led1.cont.on = false;
@@ -23,6 +25,9 @@ void turn_on_off_color_flash(menu_ *menu){
 			led1.color_flash.on = !led1.color_flash.on;
 			led2.color_flash.on = led1.color_flash.on;
 			led2.color_flash.to_2 = led1.color_flash.to_2;
+			
+			led1.color_flash.rgb_cur = led1.color_flash.rgb;
+			led2.color_flash.rgb_cur = led2.color_flash.rgb;
 			break;
 	}
 }
