@@ -10,45 +10,22 @@
 void turn_on_off_flash(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
-			led1.cont.on = false;
 			led1.flash.on = !led1.flash.on;
+			led1.flash.illuminate = led1.flash.on;
 			break;
 		case 1:
-			led1.cont.on = false;
 			led2.flash.on = !led2.flash.on;
+			led2.flash.illuminate = led2.flash.on;
 			break;
 		case 2:
-			led1.cont.on = false;
-			led2.cont.on = false;
 			led1.flash.on = !led1.flash.on;
 			led2.flash.on = led1.flash.on;
 			led2.flash.to_2 = led1.flash.to_2;
+			led1.flash.illuminate = led1.flash.on;			
+			led2.flash.illuminate = led1.flash.on;
 			break;
 	}
 }
-
-void change_flash_color(menu_ *menu){
-	switch(menu->prev_menu_pos){
-		case 0:
-			led1.change = true;
-			led2.change = false;
-			break;
-		case 1:
-			led1.change = false;
-			led2.change = true;
-			break;
-		case 2:
-			led1.change = true;
-			led2.change = true;
-			led2.flash.hsv = led1.flash.hsv;
-			led2.flash.rgb = led1.flash.rgb;
-			led2.flash.hsv2 = led1.flash.hsv2;
-			led2.flash.rgb2 = led1.flash.rgb2;
-			break;
-	}
-	choose_colors(menu->pos, &(led1.flash), &(led2.flash));
-}
-
 
 void change_flash_time(menu_ *menu){
 	switch(menu->prev_menu_pos){
@@ -63,16 +40,21 @@ void change_flash_time(menu_ *menu){
 		case 2:	
 			led1.change = true;
 			led2.change = true;
-			led2.flash.change_time = led1.flash.change_time;
 			break;
 	}
-	choose_time(&(led1.flash.change_time), &(led2.flash.change_time), 130);
+	switch(menu->pos){
+		case 0:
+			choose_time(&(led1.flash.illumination_time), &(led2.flash.illumination_time), 30);
+			break;
+		case 1:
+			choose_time(&(led1.flash.extinction_time), &(led2.flash.extinction_time), 80);
+			break;
+	}
 }
 
 void choose_shift_flash(menu_ *menu){	
 	led1.change = false;
 	led2.change = true;
-	
 	choose_time(&(led1.flash.shift), &(led2.flash.shift), 180);
 }
 
@@ -93,18 +75,16 @@ void create_flash_menu(menu_ *menu){
 }
 
 void create_flash_led_menu(menu_ *menu){
-	menu->buttons_number = 4;
+	menu->buttons_number = 3;
 	menu->pos = 0;
-	menu->button0 = "Color 1";
-	menu->button1 = "Color 2";
-	menu->button2 = "Shift";
-	menu->button3 = "on/off flashing";
+	menu->button0 = "Illumination time";
+	menu->button1 = "Extinction time";
+	menu->button2 = "on/off flashing";
 	menu->comment = "Exit: red. Choose: blue";
 	
-	menu->func0 = &change_flash_color;
-	menu->func1 = &change_flash_color;
-	menu->func2 = &change_flash_time;
-	menu->func3 = &turn_on_off_flash;
+	menu->func0 = &change_flash_time;
+	menu->func1 = &change_flash_time;
+	menu->func2 = &turn_on_off_flash;
 	set_no_links(menu);
 }
 

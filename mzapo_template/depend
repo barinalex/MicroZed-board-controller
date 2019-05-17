@@ -539,7 +539,8 @@ menu.o: menu.c /usr/arm-linux-gnueabihf/include/stdc-predef.h \
  /usr/arm-linux-gnueabihf/include/bits/mathinline.h menu.h \
  /usr/lib/gcc-cross/arm-linux-gnueabihf/7/include/stdbool.h lcdframe.h \
  utils.h reg_manager.h mzapo_parlcd.h mzapo_phys.h mzapo_regs.h \
- led_control.h static_menu.h color_flash_menu.h continuous_menu.h
+ led_control.h static_menu.h color_flash_menu.h flash_menu.h \
+ continuous_menu.h
 static_menu.o: static_menu.c \
  /usr/arm-linux-gnueabihf/include/stdc-predef.h \
  /usr/arm-linux-gnueabihf/include/stdlib.h \

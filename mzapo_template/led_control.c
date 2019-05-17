@@ -62,6 +62,20 @@ void continuously_changing(LED *led){
 	*(led->mem_base + 2) = led->cont.rgb_cur.r;
 }
 
+void flashing(LED *led){
+	if(led->flash.illuminate){
+		if((get_cur_time_in_mlsec() - led->flash.illumination_start_time) > led->flash.illumination_time){
+			led->flash.illuminate = false;
+			led->flash.extinction_start_time = get_cur_time_in_mlsec();
+		}
+	}
+	else if((get_cur_time_in_mlsec() - led->flash.extinction_start_time) < led->flash.extinction_time * 2){
+		
+	}else{
+		led->flash.illuminate = true;
+	}
+}
+
 void color_flashing(LED *led){
 	if((get_cur_time_in_mlsec() - led->color_flash.last_change_time > led->color_flash.change_time) && 
 	(get_cur_time_in_mlsec() - led1.color_flash.last_change_time > led->color_flash.shift)){

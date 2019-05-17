@@ -7,6 +7,7 @@
 #include "menu.h"
 #include "static_menu.h"
 #include "color_flash_menu.h"
+#include "flash_menu.h"
 #include "continuous_menu.h"
 
 void create_main_menu(menu_ *menu);
@@ -192,7 +193,7 @@ void *create_menu(void *vargp){
 	color_flash_menu_led1.prev = &color_flash_menu;
 	color_flash_menu_led2.prev = &color_flash_menu;
 	color_flash_menu_both.prev = &color_flash_menu;
-	/*
+	
 	menu_ flash_menu;
 	create_flash_menu(&flash_menu);
 	desk_menu.next3 = &flash_menu;
@@ -211,7 +212,7 @@ void *create_menu(void *vargp){
 	flash_menu_led1.prev = &flash_menu;
 	flash_menu_led2.prev = &flash_menu;
 	flash_menu_both.prev = &flash_menu;
-	*/
+
 	
 	menu(main_menu);
 	return NULL;

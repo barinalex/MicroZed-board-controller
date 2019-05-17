@@ -43,6 +43,7 @@ typedef struct{
 
 typedef struct{
 	bool on;
+	bool illuminate;
 	bool to_2;
 	HSV hsv;
 	RGB rgb;
@@ -52,7 +53,9 @@ typedef struct{
 	RGB rgb_cur;
 
 	unsigned long illumination_time; //milisec
+	unsigned long illumination_start_time; //milisec
 	unsigned long extinction_time; //milisec
+	unsigned long extinction_start_time; //milisec
 	unsigned long change_time; //milisec
 	unsigned long last_change_time; //milisec
 	unsigned long shift; //milisec
