@@ -146,6 +146,13 @@ void rectangle_to_lcd(RGB rgb, rect_ rect){
 	color = ((rgb.r >> 3) << 11) | ((rgb.g >> 2) << 5) | (rgb.b >> 3);
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
+			/*if(((r < rect.top && r >= rect.top - 2) && c >= rect.left - 2 && c <= rect.right + 2) ||
+				((r > rect.bottom && r <= rect.bottom + 2) && c >= rect.left - 2 && c <= rect.right + 2) ||
+				((c < rect.left && c >= rect.left - 2) && r >= rect.top && r <= rect.bottom) ||
+				((c > rect.right && c <= rect.right + 2) && r >= rect.top && r <= rect.bottom)
+			){
+				frame[r][c] = WHITE;
+			}*/
 			if(r >= rect.top && r < rect.bottom && c >= rect.left && c < rect.right){
 				frame[r][c] = color;
 			}

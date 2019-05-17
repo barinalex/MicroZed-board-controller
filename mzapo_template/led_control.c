@@ -91,8 +91,7 @@ void flashing(LED *led){
 }
 
 void color_flashing(LED *led){
-	if((get_cur_time_in_mlsec() - led->color_flash.last_change_time > led->color_flash.change_time) && 
-	(get_cur_time_in_mlsec() - led1.color_flash.last_change_time > led->color_flash.shift)){
+	if((get_cur_time_in_mlsec() - led->color_flash.last_change_time > led->color_flash.change_time)){
 		if(led->color_flash.to_2){
 			led->color_flash.rgb_cur = led->color_flash.rgb2;
 		}

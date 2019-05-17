@@ -82,19 +82,17 @@ void choose_shift_color_flash(menu_ *menu){
 }
 
 void create_color_flash_menu(menu_ *menu){
-	menu->buttons_number = 4;
+	menu->buttons_number = 3;
 	menu->pos = 0;
 	menu->button0 = "Led 1";
 	menu->button1 = "Led 2";
 	menu->button2 = "Both";
-	menu->button3 = "Shift";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &go_next_menu;
 	menu->func2 = &go_next_menu;
-	menu->func3 = &choose_shift_color_flash;
 	set_no_links(menu);
 }
 
@@ -103,7 +101,7 @@ void create_color_flash_led_menu(menu_ *menu){
 	menu->pos = 0;
 	menu->button0 = "Color 1";
 	menu->button1 = "Color 2";
-	menu->button2 = "Shift";
+	menu->button2 = "Period";
 	menu->button3 = "on/off";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
