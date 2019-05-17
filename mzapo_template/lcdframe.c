@@ -94,7 +94,7 @@ int int_to_frame(int number, int yRow, int xColumn, uint16_t forecolor, uint16_t
 				break;
 			}
 		}
-		strToFrame(str, yRow, xColumn, forecolor, backcolor, big);
+		return strToFrame(str, yRow, xColumn, forecolor, backcolor, big);
 }
 
 void clear_screen(){

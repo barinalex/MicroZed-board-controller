@@ -7,31 +7,49 @@
 #include "menu.h"
 #include "continuous_menu.h"
 
+void cont_on(LED *led){
+		led->cont.hsv_cur = led->cont.hsv;
+		
+		led->cont.h_to_2 = true;
+		led->cont.s_to_2 = true;
+		led->cont.v_to_2 = true;
+		
+		led->cont.h_decrement = (led->cont.hsv.h < led->cont.hsv2.h) ? 1: -1;
+		led->cont.s_decrement = (led->cont.hsv.s < led->cont.hsv2.s) ? 1: -1;
+		led->cont.v_decrement = (led->cont.hsv.v < led->cont.hsv2.v) ? 1: -1;
+		
+		led->cont.h_last_change_time = get_cur_time_in_mlsec();
+		led->cont.s_last_change_time = get_cur_time_in_mlsec();
+		led->cont.v_last_change_time = get_cur_time_in_mlsec();
+}
+
 void turn_on_off_continuous(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
-			led1.flash.on = false;
+			led1.color_flash.on = false;
 			led1.cont.on = !led1.cont.on;
 			if(led1.cont.on){
-				led1.cont.hsv_cur = led1.cont.hsv;
+				cont_on(&led1);
 			}
 			break;
 		case 1:
-			led2.flash.on = false;
+			led2.color_flash.on = false;
 			led2.cont.on = !led2.cont.on;
 			if(led2.cont.on){
-				led2.cont.hsv_cur = led2.cont.hsv;
+				cont_on(&led2);
 			}
 			break;
 		case 2:
-			led1.flash.on = false;
-			led2.flash.on = false;
+			led1.color_flash.on = false;
+			led2.color_flash.on = false;
 			led1.cont.on = !led1.cont.on;
 			led2.cont.on = led1.cont.on;
 			
 			if(led1.cont.on){
-				led1.cont.hsv_cur = led1.cont.hsv;
-				led2.cont.hsv_cur = led2.cont.hsv;
+				cont_on(&led1);
+				cont_on(&led2);
+				led1.cont.to_2 = (led1.cont.hsv.h < led1.cont.hsv2.h);
+				led2.cont.to_2 = (led2.cont.hsv.h < led2.cont.hsv2.h);
 			}
 			break;
 	}

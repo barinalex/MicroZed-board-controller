@@ -10,6 +10,7 @@ typedef struct{
 	mode_ cont;
 	
 	bool change;
+	bool illuminate;
 
 	HSV hsv;
 	RGB rgb;

@@ -11,18 +11,22 @@ void turn_on_off_flash(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
 			led1.flash.on = !led1.flash.on;
-			led1.flash.illuminate = led1.flash.on;
+			led1.flash.last_change_time = get_cur_time_in_mlsec();
+			led1.illuminate = true;
 			break;
 		case 1:
 			led2.flash.on = !led2.flash.on;
-			led2.flash.illuminate = led2.flash.on;
+			led2.flash.last_change_time = get_cur_time_in_mlsec();
+			led2.illuminate = true;
 			break;
 		case 2:
 			led1.flash.on = !led1.flash.on;
 			led2.flash.on = led1.flash.on;
 			led2.flash.to_2 = led1.flash.to_2;
-			led1.flash.illuminate = led1.flash.on;			
-			led2.flash.illuminate = led1.flash.on;
+			led1.flash.last_change_time = get_cur_time_in_mlsec();
+			led2.flash.last_change_time = get_cur_time_in_mlsec();
+			led1.illuminate = true;
+			led2.illuminate = true;
 			break;
 	}
 }
@@ -40,6 +44,8 @@ void change_flash_time(menu_ *menu){
 		case 2:	
 			led1.change = true;
 			led2.change = true;
+			led2.flash.illumination_time = led1.flash.illumination_time;
+			led2.flash.extinction_time = led1.flash.extinction_time;
 			break;
 	}
 	switch(menu->pos){

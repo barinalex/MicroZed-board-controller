@@ -43,8 +43,16 @@ typedef struct{
 
 typedef struct{
 	bool on;
-	bool illuminate;
 	bool to_2;
+	
+	bool h_to_2;
+	bool s_to_2;
+	bool v_to_2;
+	
+	int h_decrement;
+	int s_decrement;
+	int v_decrement;
+	
 	HSV hsv;
 	RGB rgb;
 	HSV hsv2;
@@ -53,16 +61,21 @@ typedef struct{
 	RGB rgb_cur;
 
 	unsigned long illumination_time; //milisec
-	unsigned long illumination_start_time; //milisec
 	unsigned long extinction_time; //milisec
-	unsigned long extinction_start_time; //milisec
 	unsigned long change_time; //milisec
 	unsigned long last_change_time; //milisec
+	
+	unsigned long h_last_change_time; //milisec
+	unsigned long s_last_change_time; //milisec
+	unsigned long v_last_change_time; //milisec
+	
 	unsigned long shift; //milisec
 }mode_;
 
 
 bool big_text;
+
+int get_difference(uint8_t cur_value, uint8_t prev_value);
 
 void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2);
 
@@ -92,6 +105,6 @@ bool is_decreased(uint8_t cur_value, uint8_t prev_value);
 
 uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data);
 
-int change_int(int data, uint8_t cur_value, uint8_t prev_value, int step);
+unsigned long change_long(unsigned long data, uint8_t cur_value, uint8_t prev_value, int step);
 
 #endif

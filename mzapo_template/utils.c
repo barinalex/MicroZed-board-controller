@@ -53,6 +53,7 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos){
 	get_knobs_data(&prev_knobs);
 	LED saved_led1 = led1;
 	LED saved_led2 = led2;
+	
 	while(true){
 		printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&knobs);
@@ -69,12 +70,14 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos){
 			break;
 		}
 		if(led1.change){
-			*led1time = change_int(*led1time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			*led1time = change_long(*led1time, knobs.b_knob, prev_knobs.b_knob, 100);
 			int_to_frame(*led1time, lcd_pos, 240, WHITE, BLACK, big_text);
+			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		if(led2.change){
-			*led2time = change_int(*led2time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			*led2time = change_long(*led2time, knobs.b_knob, prev_knobs.b_knob, 100);
 			int_to_frame(*led2time, lcd_pos, 240, WHITE, BLACK, big_text);
+			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		frameToLCD();
 		prev_knobs = knobs;
@@ -144,26 +147,16 @@ void rectangle_to_lcd(RGB rgb, rect_ rect){
 }
 
 uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, uint16_t max_data){
-		if(is_increased(cur_value, prev_value)){
-			data++;
-			data %= (max_data + 1);
-		}
-		else if(is_decreased(cur_value, prev_value)){
-			data--;
-		}
+		data += get_difference(cur_value, prev_value);
+		data %= (max_data + 1);
 		data = (data > max_data) ? max_data: data;
 		data = (data < 0) ? max_data: data;
 		printf("data: %d\n", data);
 		return data;
 }
 
-int change_int(int data, uint8_t cur_value, uint8_t prev_value, int step){
-		if(is_increased(cur_value, prev_value)){
-			data += step;
-		}
-		else if(is_decreased(cur_value, prev_value)){
-			data -= step;
-		}
+unsigned long change_long(unsigned long data, uint8_t cur_value, uint8_t prev_value, int step){
+		data += get_difference(cur_value, prev_value) * step;
 		data = (data < 0) ? 0: data;
 		return data;
 }
@@ -180,14 +173,28 @@ int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t prev_value, i
 		return menu_pos;
 }
 
+int get_difference(uint8_t cur_value, uint8_t prev_value){
+	int difference;
+	if(cur_value < 30 && prev_value > 225){
+		difference = cur_value + (255 - prev_value);
+	}
+	else if(cur_value > 225 && prev_value < 30){
+		difference = - prev_value - (255 - cur_value);
+	}
+	else{
+		difference = cur_value - prev_value;
+	}
+	return difference;
+}
+
 bool is_increased(uint8_t cur_value, uint8_t prev_value){
-	return ((cur_value > prev_value + 1) &&
+	return ((cur_value > prev_value) &&
 			!(cur_value > 250 && prev_value < 5)) ||
 			(cur_value < 5 && prev_value > 250);
 }
 
 bool is_decreased(uint8_t cur_value, uint8_t prev_value){
-	return cur_value < prev_value - 1 || 
+	return cur_value < prev_value || 
 			(cur_value > 250 && prev_value < 5);
 }
 
