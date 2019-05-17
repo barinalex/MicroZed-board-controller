@@ -7,6 +7,7 @@
 
 #include "led_control.h"
 
+void change_hsv(uint16_t *cur_color_param, uint16_t color1_param, uint16_t color2_param, bool *to_2);
 
 void to_led_(LED led1, LED led2){
 	*led1.mem_base = led1.rgb.b;
@@ -18,36 +19,36 @@ void to_led_(LED led1, LED led2){
 	*(led2.mem_base + 2) = led2.rgb.r;
 }
 
-void change_hsv(uint16_t *data, uint16_t data1, uint16_t data2, bool *to_2){
-		if(data1 < data2){
+void change_hsv(uint16_t *cur_color_param, uint16_t color1_param, uint16_t color2_param, bool *to_2){
+		if(color1_param < color2_param){
 			if(*to_2){
-				(*data) ++;
-				if((*data) >= data2){
-					led->cont.to_2 = !led->cont.to_2;
-					led->cont.hsv_cur.h = led->cont.hsv2.h;
+				(*cur_color_param) ++;
+				if((*cur_color_param) >= color2_param){
+					(*to_2) = !(*to_2);
+					(*cur_color_param) = color2_param;
 				}	
 			}
 			else{
-				led->cont.hsv_cur.h = (led->cont.hsv_cur.h == 0) ? 0: led->cont.hsv_cur.h - 1;	
-				if(led->cont.hsv_cur.h <= led->cont.hsv.h){
-					led->cont.to_2 = !led->cont.to_2;
-					led->cont.hsv_cur.h = led->cont.hsv.h;
+				(*cur_color_param) = ((*cur_color_param) == 0) ? 0: (*cur_color_param) - 1;	
+				if((*cur_color_param) <= color1_param){
+					(*to_2) = !(*to_2);
+					(*cur_color_param) = color1_param;
 				}
 			}
 		}
 		else{
 			if(!*to_2){
-				led->cont.hsv_cur.h ++;
-				if(led->cont.hsv_cur.h >= led->cont.hsv2.h){
-					led->cont.to_2 = !led->cont.to_2;
-					led->cont.hsv_cur.h = led->cont.hsv2.h;
+				(*cur_color_param) ++;
+				if((*cur_color_param) >= color2_param){
+					(*to_2) = !(*to_2);
+					(*cur_color_param) = color2_param;
 				}	
 			}
 			else{
-				led->cont.hsv_cur.h = (led->cont.hsv_cur.h == 0) ? 0: led->cont.hsv_cur.h - 1;	
-				if(led->cont.hsv_cur.h <= led->cont.hsv.h){
-					led->cont.to_2 = !led->cont.to_2;
-					led->cont.hsv_cur.h = led->cont.hsv.h;
+				(*cur_color_param) = ((*cur_color_param) == 0) ? 0: (*cur_color_param) - 1;	
+				if((*cur_color_param) <= color1_param){
+					(*to_2) = !(*to_2);
+					(*cur_color_param) = color1_param;
 				}
 			}
 		}	
@@ -56,6 +57,8 @@ void change_hsv(uint16_t *data, uint16_t data1, uint16_t data2, bool *to_2){
 void continuously_changing(LED *led){
 	unsigned long cur_time = get_cur_time_in_mlsec();
 	if( (cur_time - (led->cont.change_time / fabs((double)(led->cont.hsv.h - led->cont.hsv2.h)))) > led->cont.last_change_time){
+		change_hsv(&(led->cont.hsv_cur.h), led->cont.hsv.h, led->cont.hsv2.h, &(led->cont.to_2));
+		/*
 		if(led->cont.hsv.h < led->cont.hsv2.h){
 			if(led->cont.to_2){
 				led->cont.hsv_cur.h ++;
@@ -88,6 +91,7 @@ void continuously_changing(LED *led){
 				}
 			}
 		}
+		*/
 		led->cont.last_change_time = get_cur_time_in_mlsec();
 	}
 	printf("%d %d %d\n", led->cont.hsv_cur.h, led->cont.hsv_cur.s, led->cont.hsv_cur.v);

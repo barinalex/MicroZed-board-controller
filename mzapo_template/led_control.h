@@ -18,6 +18,7 @@ typedef struct{
 LED led1;
 LED led2;
 
+
 void to_led_(LED led1, LED led2);
 void static_lighting(LED *led);
 
