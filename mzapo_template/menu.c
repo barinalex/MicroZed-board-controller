@@ -202,9 +202,9 @@ void *create_menu(void *vargp){
 	menu_ flash_menu_led1;
 	menu_ flash_menu_led2;
 	menu_ flash_menu_both;
-	create_flash_menu(&flash_menu_led1);
-	create_flash_menu(&flash_menu_led2);
-	create_flash_menu(&flash_menu_both);
+	create_flash_led_menu(&flash_menu_led1);
+	create_flash_led_menu(&flash_menu_led2);
+	create_flash_led_menu(&flash_menu_both);
 	
 	flash_menu.next0 = &flash_menu_led1;
 	flash_menu.next1 = &flash_menu_led2;
