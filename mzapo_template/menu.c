@@ -174,25 +174,44 @@ void *create_menu(void *vargp){
 	continuous_color_menu_led2.prev = &continuous_menu;
 	continuous_color_menu_both.prev = &continuous_menu;
 	
+	menu_ color_flash_menu;
+	create_color_flash_menu(&color_flash_menu);
+	desk_menu.next2 = &color_flash_menu;
+	color_flash_menu.prev = &desk_menu;
+	
+	menu_ color_flash_menu_led1;
+	menu_ color_flash_menu_led2;
+	menu_ color_flash_menu_both;
+	create_color_flash_led_menu(&color_flash_menu_led1);
+	create_color_flash_led_menu(&color_flash_menu_led2);
+	create_color_flash_led_menu(&color_flash_menu_both);
+	
+	color_flash_menu.next0 = &color_flash_menu_led1;
+	color_flash_menu.next1 = &color_flash_menu_led2;
+	color_flash_menu.next2 = &color_flash_menu_both;
+	color_flash_menu_led1.prev = &color_flash_menu;
+	color_flash_menu_led2.prev = &color_flash_menu;
+	color_flash_menu_both.prev = &color_flash_menu;
+	/*
 	menu_ flash_menu;
 	create_flash_menu(&flash_menu);
-	
-	desk_menu.next2 = &flash_menu;
+	desk_menu.next3 = &flash_menu;
 	flash_menu.prev = &desk_menu;
 	
-	menu_ flash_color_menu_led1;
-	menu_ flash_color_menu_led2;
-	menu_ flash_color_menu_both;
-	create_flash_color_menu(&flash_color_menu_led1);
-	create_flash_color_menu(&flash_color_menu_led2);
-	create_flash_color_menu(&flash_color_menu_both);
+	menu_ flash_menu_led1;
+	menu_ flash_menu_led2;
+	menu_ flash_menu_both;
+	create_flash_menu(&flash_menu_led1);
+	create_flash_menu(&flash_menu_led2);
+	create_flash_menu(&flash_menu_both);
 	
-	flash_menu.next0 = &flash_color_menu_led1;
-	flash_menu.next1 = &flash_color_menu_led2;
-	flash_menu.next2 = &flash_color_menu_both;
-	flash_color_menu_led1.prev = &flash_menu;
-	flash_color_menu_led2.prev = &flash_menu;
-	flash_color_menu_both.prev = &flash_menu;
+	flash_menu.next0 = &flash_menu_led1;
+	flash_menu.next1 = &flash_menu_led2;
+	flash_menu.next2 = &flash_menu_both;
+	flash_menu_led1.prev = &flash_menu;
+	flash_menu_led2.prev = &flash_menu;
+	flash_menu_both.prev = &flash_menu;
+	*/
 	
 	menu(main_menu);
 	return NULL;
@@ -222,15 +241,17 @@ void create_main_menu(menu_ *menu){
 }
 
 void create_desk_menu(menu_ *menu){
-	menu->buttons_number = 3;
+	menu->buttons_number = 4;
 	menu->pos = 0;
 	menu->button0 = "Static";
 	menu->button1 = "Continuous";
-	menu->button2 = "Flashing";
+	menu->button2 = "Color flash";
+	menu->button3 = "Flash";
 	menu->comment = "Exit: red. Choose: blue";
 	
 	menu->func0 = &go_next_menu;
 	menu->func1 = &go_next_menu;
 	menu->func2 = &go_next_menu;
+	menu->func3 = &go_next_menu;
 	set_no_links(menu);
 }

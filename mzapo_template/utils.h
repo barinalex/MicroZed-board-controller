@@ -51,12 +51,19 @@ typedef struct{
 	HSV hsv_cur;
 	RGB rgb_cur;
 
+	unsigned long illumination_time; //milisec
+	unsigned long extinction_time; //milisec
 	unsigned long change_time; //milisec
 	unsigned long last_change_time; //milisec
 	unsigned long shift; //milisec
 }mode_;
 
-void change_colors(int menu_pos, mode_ *mode1, mode_ *mode2);
+
+bool big_text;
+
+void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2);
+
+void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos);
 
 void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color);
 

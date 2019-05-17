@@ -62,21 +62,21 @@ void continuously_changing(LED *led){
 	*(led->mem_base + 2) = led->cont.rgb_cur.r;
 }
 
-void flashing(LED *led){
-	if((get_cur_time_in_mlsec() - led->flash.last_change_time > led->flash.change_time) && 
-	(get_cur_time_in_mlsec() - led1.flash.last_change_time > led->flash.shift)){
-		if(led->flash.to_2){
-			*(led->mem_base) = led->flash.rgb2.b;
-			*(led->mem_base + 1) = led->flash.rgb2.g;
-			*(led->mem_base + 2) = led->flash.rgb2.r;
+void color_flashing(LED *led){
+	if((get_cur_time_in_mlsec() - led->color_flash.last_change_time > led->color_flash.change_time) && 
+	(get_cur_time_in_mlsec() - led1.color_flash.last_change_time > led->color_flash.shift)){
+		if(led->color_flash.to_2){
+			*(led->mem_base) = led->color_flash.rgb2.b;
+			*(led->mem_base + 1) = led->color_flash.rgb2.g;
+			*(led->mem_base + 2) = led->color_flash.rgb2.r;
 		}
 		else{
-			*(led->mem_base) = led->flash.rgb.b;
-			*(led->mem_base + 1) = led->flash.rgb.g;
-			*(led->mem_base + 2) = led->flash.rgb.r;
+			*(led->mem_base) = led->color_flash.rgb.b;
+			*(led->mem_base + 1) = led->color_flash.rgb.g;
+			*(led->mem_base + 2) = led->color_flash.rgb.r;
 		}
-		led->flash.to_2 = !led->flash.to_2;
-		led->flash.last_change_time = get_cur_time_in_mlsec();
+		led->color_flash.to_2 = !led->color_flash.to_2;
+		led->color_flash.last_change_time = get_cur_time_in_mlsec();
 	}
 }
 
@@ -85,14 +85,20 @@ void* led_thread(void *vargp){
 	led2.flash.last_change_time = 0;
 	led1.flash.on = false;
 	led2.flash.on = false;
-	led1.cont.on = false;
-	led2.cont.on = false;
 	led1.flash.shift = 0;
 	led2.flash.shift = 0;
+	led1.color_flash.last_change_time = 0;
+	led2.color_flash.last_change_time = 0;
+	led1.color_flash.on = false;
+	led2.color_flash.on = false;
+	led1.color_flash.shift = 0;
+	led2.color_flash.shift = 0;
+	led1.cont.on = false;
+	led2.cont.on = false;
 		
 	while(true){
-		if(led1.flash.on){
-			flashing(&led1);
+		if(led1.color_flash.on){
+			color_flashing(&led1);
 		}
 		else if(led1.cont.on){
 			continuously_changing(&led1);
@@ -100,8 +106,8 @@ void* led_thread(void *vargp){
 		else{
 			static_lighting(&led1);
 		}
-		if(led2.flash.on){
-			flashing(&led2);
+		if(led2.color_flash.on){
+			color_flashing(&led2);
 		}
 		else if(led2.cont.on){
 			continuously_changing(&led2);

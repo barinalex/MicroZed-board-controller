@@ -34,7 +34,6 @@ typedef struct{
 }flash_time_;
 
 uint16_t frame[FRAME_H][FRAME_W];
-bool big_text;
 
 int main(int argc, char *argv[])
 {

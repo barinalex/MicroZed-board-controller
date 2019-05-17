@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "reg_manager.h"
 
-void change_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
+void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
 	rect_ rect_led;
 	HSV *led1hsv, *led2hsv;
 	RGB *led1rgb, *led2rgb;
@@ -44,6 +44,40 @@ void change_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
 		}
 		prev_knobs = knobs;
 		frameToLCD();
+	}
+}
+
+void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos){
+	knobs_ knobs;
+	knobs_ prev_knobs;
+	get_knobs_data(&prev_knobs);
+	LED saved_led1 = led1;
+	LED saved_led2 = led2;
+	while(true){
+		printf("%x\n", *knobs_mem_base);
+		get_knobs_data(&knobs);
+		if(knobs.r_button) {
+			led1 = saved_led1;
+			led2 = saved_led2;
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(knobs.b_button) {
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(led1.change){
+			*led1time = change_int(*led1time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			int_to_frame(*led1time, lcd_pos, 240, WHITE, BLACK, big_text);
+		}
+		if(led2.change){
+			*led2time = change_int(*led2time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			int_to_frame(*led2time, lcd_pos, 240, WHITE, BLACK, big_text);
+		}
+		frameToLCD();
+		prev_knobs = knobs;
 	}
 }
 

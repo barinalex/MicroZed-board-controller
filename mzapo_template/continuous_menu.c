@@ -37,7 +37,7 @@ void turn_on_off_continuous(menu_ *menu){
 	}
 }
 
-void change_continuous(menu_ *menu){
+void change_continuous_color(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
 			led1.change = true;
@@ -56,13 +56,11 @@ void change_continuous(menu_ *menu){
 			led2.cont.rgb2 = led1.cont.rgb2;
 			break;
 	}
-	change_colors(menu->pos, &(led1.cont), &(led2.cont));
+	choose_colors(menu->pos, &(led1.cont), &(led2.cont));
 }
 
-void choose_time_continuous(menu_ *menu){
-	knobs_ knobs;
-	knobs_ prev_knobs;
-	get_knobs_data(&prev_knobs);
+
+void change_continuous_time(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
 			led1.change = true;
@@ -78,34 +76,7 @@ void choose_time_continuous(menu_ *menu){
 			led2.cont.change_time = led1.cont.change_time;
 			break;
 	}
-	LED saved_led1 = led1;
-	LED saved_led2 = led2;
-	while(true){
-		printf("%x\n", *knobs_mem_base);
-		get_knobs_data(&knobs);
-		if(knobs.r_button) {
-			led1 = saved_led1;
-			led2 = saved_led2;
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		if(knobs.b_button) {
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		if(led1.change){
-			led1.cont.change_time = change_int(led1.cont.change_time, knobs.b_knob, prev_knobs.b_knob, 1000);
-			int_to_frame(led1.cont.change_time, 130, 240, WHITE, BLACK, big_text);
-		}
-		if(led2.change){
-			led2.cont.change_time = change_int(led2.cont.change_time, knobs.b_knob, prev_knobs.b_knob, 1000);
-			int_to_frame(led2.cont.change_time, 130, 240, WHITE, BLACK, big_text);
-		}
-		frameToLCD();
-		prev_knobs = knobs;
-	}
+	choose_time(&(led1.cont.change_time), &(led2.cont.change_time), 130);
 }
 
 void create_continuous_menu(menu_ *menu){
@@ -131,9 +102,9 @@ void create_continuous_color_menu(menu_ *menu){
 	menu->button3 = "on/off continuous";
 	menu->comment = "Exit: red. Choose: blue";
 	
-	menu->func0 = &change_continuous;
-	menu->func1 = &change_continuous;
-	menu->func2 = &choose_time_continuous;
+	menu->func0 = &change_continuous_color;
+	menu->func1 = &change_continuous_color;
+	menu->func2 = &change_continuous_time;
 	menu->func3 = &turn_on_off_continuous;
 	set_no_links(menu);
 }
