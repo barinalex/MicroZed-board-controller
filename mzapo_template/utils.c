@@ -8,6 +8,73 @@
 #include "utils.h"
 #include "reg_manager.h"
 
+void change_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
+	rect_ rect_led;
+	HSV *led1hsv, *led2hsv;
+	RGB *led1rgb, *led2rgb;
+	
+	set_ptr_to_hsv_rgb(&led1hsv, &led2hsv, &led1rgb, &led2rgb, mode1, mode2, &rect_led, menu_pos);
+	LED saved_led1 = led1;
+	LED saved_led2 = led2;
+	
+	knobs_ knobs;
+	knobs_ prev_knobs;
+	get_knobs_data(&prev_knobs);
+	while(true){
+		get_knobs_data(&knobs);
+		if(knobs.r_button) {
+			led1 = saved_led1;
+			led2 = saved_led2;
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(knobs.b_button) {
+			usleep(DELAY);
+			clear_screen();
+			break;
+		}
+		if(led1.change){
+			change_hsv_rgb(led1hsv, led1rgb, knobs, prev_knobs);
+			rectangle_to_lcd(*led1rgb, rect_led);
+		}
+		if(led2.change){
+			change_hsv_rgb(led2hsv, led2rgb, knobs, prev_knobs);
+			rectangle_to_lcd(*led2rgb, rect_led);
+		}
+		prev_knobs = knobs;
+		frameToLCD();
+	}
+}
+
+void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color){
+	switch(color){
+		case 1:
+			*rect_led = set_rect(1);
+			*hsv1 = &(mode1->hsv2);
+			*rgb1 = &(mode1->rgb2);
+			*hsv2 = &(mode2->hsv2);
+			*rgb2 = &(mode2->rgb2);
+			break;
+		default:
+			*rect_led = set_rect(0);
+			*hsv1 = &(mode1->hsv);
+			*rgb1 = &(mode1->rgb);
+			*hsv2 = &(mode2->hsv);
+			*rgb2 = &(mode2->rgb);
+			break;
+	}
+}
+
+void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs){
+	hsv->h = change(hsv->h, knobs.r_knob, prev_knobs.r_knob, 360); 
+	hsv->s = change(hsv->s, knobs.g_knob, prev_knobs.g_knob, 100); 
+	hsv->v = change(hsv->v, knobs.b_knob, prev_knobs.b_knob, 100);
+	*rgb = HsvToRgb(*hsv);
+	printf("%d %d %d\n", hsv->h, hsv->s, hsv->v);
+	printf("%d %d %d\n", rgb->r, rgb->g, rgb->b);	
+}
+
 void get_knobs_data(knobs_ *knobs){
 	knobs->rgb_value = get_knobs_value();
 	knobs->b_knob =  knobs->rgb_value      & 0xFF; // blue knob position

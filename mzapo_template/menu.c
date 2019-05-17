@@ -6,7 +6,8 @@
 #include <math.h>
 #include "menu.h"
 #include "static_menu.h"
-#include "flash_menu.h"
+#include "color_flash_menu.h"
+#include "continuous_menu.h"
 
 void create_main_menu(menu_ *menu);
 void create_desk_menu(menu_ *menu);
@@ -144,25 +145,20 @@ void change_text_size(menu_ *menu){
 void *create_menu(void *vargp){
 	menu_ main_menu;
 	create_main_menu(&main_menu);
-	
 	menu_ desk_menu;
 	create_desk_menu(&desk_menu);
-	
 	main_menu.next0 = &desk_menu;
 	desk_menu.prev = &main_menu;
 		
 	menu_ static_menu;
 	create_static_menu(&static_menu);
-	
 	desk_menu.next0 = &static_menu;
 	static_menu.prev = &desk_menu;
 	
 	menu_ continuous_menu;
 	create_continuous_menu(&continuous_menu);
-	
 	desk_menu.next1 = &continuous_menu;
 	continuous_menu.prev = &desk_menu;
-	
 	
 	menu_ continuous_color_menu_led1;
 	menu_ continuous_color_menu_led2;
@@ -174,7 +170,6 @@ void *create_menu(void *vargp){
 	continuous_menu.next0 = &continuous_color_menu_led1;
 	continuous_menu.next1 = &continuous_color_menu_led2;
 	continuous_menu.next2 = &continuous_color_menu_both;
-	
 	continuous_color_menu_led1.prev = &continuous_menu;
 	continuous_color_menu_led2.prev = &continuous_menu;
 	continuous_color_menu_both.prev = &continuous_menu;
@@ -195,7 +190,6 @@ void *create_menu(void *vargp){
 	flash_menu.next0 = &flash_color_menu_led1;
 	flash_menu.next1 = &flash_color_menu_led2;
 	flash_menu.next2 = &flash_color_menu_both;
-	
 	flash_color_menu_led1.prev = &flash_menu;
 	flash_color_menu_led2.prev = &flash_menu;
 	flash_color_menu_both.prev = &flash_menu;

@@ -20,90 +20,90 @@ void to_led_(LED led1, LED led2){
 
 void continuously_changing(LED *led){
 	unsigned long cur_time = get_cur_time_in_mlsec();
-	if( (cur_time - (led->continuous_time / fabs((double)(led->hsv_c1.h - led->hsv_c2.h)))) > led->last_continuous_time){
-		if(led->hsv_c1.h < led->hsv_c2.h){
-			if(led->c1_to_c2){
-				led->hsv_current.h ++;
-				if(led->hsv_current.h >= led->hsv_c2.h){
-					led->c1_to_c2 = !led->c1_to_c2;
-					led->hsv_current.h = led->hsv_c2.h;
+	if( (cur_time - (led->cont.change_time / fabs((double)(led->cont.hsv.h - led->cont.hsv2.h)))) > led->cont.last_change_time){
+		if(led->cont.hsv.h < led->cont.hsv2.h){
+			if(led->cont.to_2){
+				led->cont.hsv_cur.h ++;
+				if(led->cont.hsv_cur.h >= led->cont.hsv2.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv2.h;
 				}	
 			}
 			else{
-				led->hsv_current.h = (led->hsv_current.h == 0) ? 0: led->hsv_current.h - 1;	
-				if(led->hsv_current.h <= led->hsv_c1.h){
-					led->c1_to_c2 = !led->c1_to_c2;
-					led->hsv_current.h = led->hsv_c1.h;
+				led->cont.hsv_cur.h = (led->cont.hsv_cur.h == 0) ? 0: led->cont.hsv_cur.h - 1;	
+				if(led->cont.hsv_cur.h <= led->cont.hsv.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv.h;
 				}
 			}
 		}
 		else{
-			if(!led->c1_to_c2){
-				led->hsv_current.h ++;
-				if(led->hsv_current.h >= led->hsv_c2.h){
-					led->c1_to_c2 = !led->c1_to_c2;
-					led->hsv_current.h = led->hsv_c2.h;
+			if(!led->cont.to_2){
+				led->cont.hsv_cur.h ++;
+				if(led->cont.hsv_cur.h >= led->cont.hsv2.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv2.h;
 				}	
 			}
 			else{
-				led->hsv_current.h = (led->hsv_current.h == 0) ? 0: led->hsv_current.h - 1;	
-				if(led->hsv_current.h <= led->hsv_c1.h){
-					led->c1_to_c2 = !led->c1_to_c2;
-					led->hsv_current.h = led->hsv_c1.h;
+				led->cont.hsv_cur.h = (led->cont.hsv_cur.h == 0) ? 0: led->cont.hsv_cur.h - 1;	
+				if(led->cont.hsv_cur.h <= led->cont.hsv.h){
+					led->cont.to_2 = !led->cont.to_2;
+					led->cont.hsv_cur.h = led->cont.hsv.h;
 				}
 			}
 		}
-		led->last_continuous_time = get_cur_time_in_mlsec();
+		led->cont.last_change_time = get_cur_time_in_mlsec();
 	}
-	printf("%d %d %d\n", led->hsv_current.h, led->hsv_current.s, led->hsv_current.v);
-	led->rgb_current = HsvToRgb(led->hsv_current);	
-	*(led->mem_base) = led->rgb_current.b;
-	*(led->mem_base + 1) = led->rgb_current.g;
-	*(led->mem_base + 2) = led->rgb_current.r;
+	printf("%d %d %d\n", led->cont.hsv_cur.h, led->cont.hsv_cur.s, led->cont.hsv_cur.v);
+	led->cont.rgb_cur = HsvToRgb(led->cont.hsv_cur);	
+	*(led->mem_base) = led->cont.rgb_cur.b;
+	*(led->mem_base + 1) = led->cont.rgb_cur.g;
+	*(led->mem_base + 2) = led->cont.rgb_cur.r;
 }
 
 void flashing(LED *led){
-	if((get_cur_time_in_mlsec() - led->last_flash_time > led->flash_time) && 
-	(get_cur_time_in_mlsec() - led1.last_flash_time > led->shift)){
-		if(led->last_color_f1){
-			*(led->mem_base) = led->rgb_f2.b;
-			*(led->mem_base + 1) = led->rgb_f2.g;
-			*(led->mem_base + 2) = led->rgb_f2.r;
+	if((get_cur_time_in_mlsec() - led->flash.last_change_time > led->flash.change_time) && 
+	(get_cur_time_in_mlsec() - led1.flash.last_change_time > led->flash.shift)){
+		if(led->flash.to_2){
+			*(led->mem_base) = led->flash.rgb2.b;
+			*(led->mem_base + 1) = led->flash.rgb2.g;
+			*(led->mem_base + 2) = led->flash.rgb2.r;
 		}
 		else{
-			*(led->mem_base) = led->rgb_f1.b;
-			*(led->mem_base + 1) = led->rgb_f1.g;
-			*(led->mem_base + 2) = led->rgb_f1.r;
+			*(led->mem_base) = led->flash.rgb.b;
+			*(led->mem_base + 1) = led->flash.rgb.g;
+			*(led->mem_base + 2) = led->flash.rgb.r;
 		}
-		led->last_color_f1 = !led->last_color_f1;
-		led->last_flash_time = get_cur_time_in_mlsec();
+		led->flash.to_2 = !led->flash.to_2;
+		led->flash.last_change_time = get_cur_time_in_mlsec();
 	}
 }
 
 void* led_thread(void *vargp){
-	led1.last_flash_time = 0;
-	led2.last_flash_time = 0;
-	led1.last_color_f1 = false;
-	led2.last_color_f1 = false;
-	led1.c1_to_c2 = true;
-	led1.c1_to_c2 = true;
-	led1.shift = 0;
-	led2.shift = 0;
+	led1.flash.last_change_time = 0;
+	led2.flash.last_change_time = 0;
+	led1.flash.on = false;
+	led2.flash.on = false;
+	led1.cont.on = false;
+	led2.cont.on = false;
+	led1.flash.shift = 0;
+	led2.flash.shift = 0;
 		
 	while(true){
-		if(led1.flashing){
+		if(led1.flash.on){
 			flashing(&led1);
 		}
-		else if(led1.continuous){
+		else if(led1.cont.on){
 			continuously_changing(&led1);
 		}
 		else{
 			static_lighting(&led1);
 		}
-		if(led2.flashing){
+		if(led2.flash.on){
 			flashing(&led2);
 		}
-		else if(led2.continuous){
+		else if(led2.cont.on){
 			continuously_changing(&led2);
 		}
 		else{

@@ -8,11 +8,6 @@
 #include "reg_manager.h"
 #include "led_control.h"
 
-#define BLACK 0x0
-#define BLUE 0x001F
-#define WHITE 0xFFFF
-#define GREEN 0x07E0
-#define DELAY 200000
 
 typedef struct menu_{
 	int buttons_number;

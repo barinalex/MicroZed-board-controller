@@ -10,28 +10,28 @@
 void turn_on_off_continuous(menu_ *menu){
 	switch(menu->prev_menu_pos){
 		case 0:
-			led1.flashing = false;
-			led1.continuous = !led1.continuous;
-			if(led1.continuous){
-				led1.hsv_current = led1.hsv_c1;
+			led1.flash.on = false;
+			led1.cont.on = !led1.cont.on;
+			if(led1.cont.on){
+				led1.cont.hsv_cur = led1.cont.hsv;
 			}
 			break;
 		case 1:
-			led2.flashing = false;
-			led2.continuous = !led2.continuous;
-			if(led2.continuous){
-				led2.hsv_current = led2.hsv_c1;
+			led2.flash.on = false;
+			led2.cont.on = !led2.cont.on;
+			if(led2.cont.on){
+				led2.cont.hsv_cur = led2.cont.hsv;
 			}
 			break;
 		case 2:
-			led1.flashing = false;
-			led2.flashing = false;
-			led1.continuous = !led1.continuous;
-			led2.continuous = led1.continuous;
+			led1.flash.on = false;
+			led2.flash.on = false;
+			led1.cont.on = !led1.cont.on;
+			led2.cont.on = led1.cont.on;
 			
-			if(led1.continuous){
-				led1.hsv_current = led1.hsv_c1;
-				led2.hsv_current = led2.hsv_c1;
+			if(led1.cont.on){
+				led1.cont.hsv_cur = led1.cont.hsv;
+				led2.cont.hsv_cur = led2.cont.hsv;
 			}
 			break;
 	}
@@ -50,13 +50,13 @@ void change_continuous(menu_ *menu){
 		case 2:
 			led1.change = true;
 			led2.change = true;
-			led2.hsv_c1 = led1.hsv_c1;
-			led2.rgb_c1 = led1.rgb_c1;
-			led2.hsv_c2 = led1.hsv_c2;
-			led2.rgb_c2 = led1.rgb_c2;
+			led2.cont.hsv = led1.cont.hsv;
+			led2.cont.rgb = led1.cont.rgb;
+			led2.cont.hsv2 = led1.cont.hsv2;
+			led2.cont.rgb2 = led1.cont.rgb2;
 			break;
 	}
-	change_continuous_colors(menu->pos);
+	change_colors(menu->pos, &(led1.cont), &(led2.cont));
 }
 
 void choose_time_continuous(menu_ *menu){
@@ -75,10 +75,9 @@ void choose_time_continuous(menu_ *menu){
 		case 2:	
 			led1.change = true;
 			led2.change = true;
-			led2.continuous_time = led1.continuous_time;
+			led2.cont.change_time = led1.cont.change_time;
 			break;
 	}
-	
 	LED saved_led1 = led1;
 	LED saved_led2 = led2;
 	while(true){
@@ -97,12 +96,12 @@ void choose_time_continuous(menu_ *menu){
 			break;
 		}
 		if(led1.change){
-			led1.continuous_time = change_int(led1.continuous_time, knobs.b_knob, prev_knobs.b_knob, 1000);
-			int_to_frame(led1.continuous_time, 130, 240, WHITE, BLACK, big_text);
+			led1.cont.change_time = change_int(led1.cont.change_time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			int_to_frame(led1.cont.change_time, 130, 240, WHITE, BLACK, big_text);
 		}
 		if(led2.change){
-			led2.continuous_time = change_int(led2.continuous_time, knobs.b_knob, prev_knobs.b_knob, 1000);
-			int_to_frame(led2.continuous_time, 130, 240, WHITE, BLACK, big_text);
+			led2.cont.change_time = change_int(led2.cont.change_time, knobs.b_knob, prev_knobs.b_knob, 1000);
+			int_to_frame(led2.cont.change_time, 130, 240, WHITE, BLACK, big_text);
 		}
 		frameToLCD();
 		prev_knobs = knobs;
@@ -137,71 +136,5 @@ void create_continuous_color_menu(menu_ *menu){
 	menu->func2 = &choose_time_continuous;
 	menu->func3 = &turn_on_off_continuous;
 	set_no_links(menu);
-}
-
-void change_continuous_colors(int menu_pos){
-	rect_ rect_led;
-	HSV* led1hsv, *led2hsv;
-	RGB* led1rgb, *led2rgb;
-	
-	rect_led = set_rect(0);
-	led1hsv = &(led1.hsv_c1);
-	led1rgb = &(led1.rgb_c1);
-	led2hsv = &(led2.hsv_c1);
-	led2rgb = &(led2.rgb_c1);
-	switch(menu_pos){
-		case 0:
-			break;
-		case 1:
-			rect_led = set_rect(1);
-			led1hsv = &(led1.hsv_c2);
-			led1rgb = &(led1.rgb_c2);
-			led2hsv = &(led2.hsv_c2);
-			led2rgb = &(led2.rgb_c2);
-			break;
-	}
-	LED saved_led1 = led1;
-	LED saved_led2 = led2;
-	
-	knobs_ knobs;
-	knobs_ prev_knobs;
-	get_knobs_data(&prev_knobs);
-	while(true){
-		get_knobs_data(&knobs);
-		if(knobs.r_button) {
-			led1 = saved_led1;
-			led2 = saved_led2;
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		if(knobs.b_button) {
-			usleep(DELAY);
-			clear_screen();
-			break;
-		}
-		if(led1.change){
-			led1hsv->h = change(led1hsv->h, knobs.r_knob, prev_knobs.r_knob, 360); 
-			led1hsv->s = change(led1hsv->s, knobs.g_knob, prev_knobs.g_knob, 100); 
-			led1hsv->v = change(led1hsv->v, knobs.b_knob, prev_knobs.b_knob, 100);
-			*led1rgb = HsvToRgb(*led1hsv);
-			printf("%d %d %d\n", led1hsv->h, led1hsv->s, led1hsv->v);
-			printf("%d %d %d\n", led1rgb->r, led1rgb->g, led1rgb->b);
-			rectangle_to_lcd(*led1rgb, rect_led);
-		}
-		if(led2.change){
-			led2hsv->h = change(led2hsv->h, knobs.r_knob, prev_knobs.r_knob, 360); 
-			led2hsv->s = change(led2hsv->s, knobs.g_knob, prev_knobs.g_knob, 100); 
-			led2hsv->v = change(led2hsv->v, knobs.b_knob, prev_knobs.b_knob, 100);
-			*led2rgb = HsvToRgb(*led2hsv);
-			printf("%d %d %d\n", led2hsv->h, led2hsv->s, led2hsv->v);
-			printf("%d %d %d\n", led2rgb->r, led2rgb->g, led2rgb->b);
-			rectangle_to_lcd(*led2rgb, rect_led);
-		}
-		prev_knobs = knobs;
-		frameToLCD();
-	}
-	led1.change = false;
-	led2.change = false;
 }
 

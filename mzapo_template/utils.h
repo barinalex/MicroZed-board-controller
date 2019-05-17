@@ -5,6 +5,12 @@
 #include <stdbool.h>
 #include "lcdframe.h"
 
+#define BLACK 0x0
+#define BLUE 0x001F
+#define WHITE 0xFFFF
+#define GREEN 0x07E0
+#define DELAY 200000
+
 typedef struct{
 	uint32_t rgb_value;
 	uint8_t r_knob;
@@ -33,6 +39,28 @@ typedef struct{
 	uint8_t g;
 	uint8_t b;
 }RGB;
+
+
+typedef struct{
+	bool on;
+	bool to_2;
+	HSV hsv;
+	RGB rgb;
+	HSV hsv2;
+	RGB rgb2;
+	HSV hsv_cur;
+	RGB rgb_cur;
+
+	unsigned long change_time; //milisec
+	unsigned long last_change_time; //milisec
+	unsigned long shift; //milisec
+}mode_;
+
+void change_colors(int menu_pos, mode_ *mode1, mode_ *mode2);
+
+void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color);
+
+void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
 
 void get_knobs_data(knobs_ *knobs);
 
