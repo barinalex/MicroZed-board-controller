@@ -9,17 +9,17 @@
 #include "color_flash_menu.h"
 #include "flash_menu.h"
 #include "continuous_menu.h"
+#include "connection_menu.h"
+#include "connection.h"
 
 void create_main_menu(menu_ *menu);
 void create_desk_menu(menu_ *menu);
 void change_text_size(menu_ *menu);
 
-void choose_desk(menu_ *menu){
-}
-
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
 	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
+	bool jumped = false;
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
@@ -50,6 +50,13 @@ void menu(menu_ menu){
 					break;
 			}
 			get_knobs_data(&(menu.prev_knobs));
+		}
+		if(!jumped && (nw_state.receiving && nw_state.connected)){
+			jumped = true;
+			go_desk_menu(&menu);
+		}
+		else if(jumped && !nw_state.connected){
+			jumped = false;
 		}
 	}
 }
@@ -82,6 +89,13 @@ void draw_menu(menu_ menu){
 	frameToLCD();
 }
 
+
+void go_desk_menu(menu_ *menu){
+	clear_screen();
+	menu->pos = 0;
+	menu = menu->desk_menu;
+	menu->prev_menu_pos = 0;
+}
 
 void go_next_menu(menu_ *menu){
 	switch(menu->pos){
@@ -145,18 +159,93 @@ void change_text_size(menu_ *menu){
 	big_text = !big_text;
 }
 
+void set_no_links(menu_ *menu){
+	menu->prev = NULL;
+	menu->next0 = NULL;
+	menu->next1 = NULL;
+	menu->next2 = NULL;
+	menu->next3 = NULL;
+	menu->next4 = NULL;
+}
+
+void choose_connection(menu_ *menu){
+	if(!(nw_state.connected && nw_state.receiving)){
+		go_next_menu(menu);
+	}
+}
+
+void create_main_menu(menu_ *menu){
+	menu->buttons_number = 3;
+	menu->pos = 0;
+	menu->button0 = "This";
+	menu->button1 = "Choose another";
+	menu->button2 = "Change Text Size";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
+	
+	menu->func0 = &go_next_menu;
+	menu->func1 = &choose_connection;
+	menu->func2 = &change_text_size;
+	set_no_links(menu);
+}
+
+void create_desk_menu(menu_ *menu){
+	menu->buttons_number = 4;
+	menu->pos = 0;
+	menu->button0 = "Static";
+	menu->button1 = "Continuous";
+	menu->button2 = "Color flash";
+	menu->button3 = "Flash";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
+	
+	menu->func0 = &go_next_menu;
+	menu->func1 = &go_next_menu;
+	menu->func2 = &go_next_menu;
+	menu->func3 = &go_next_menu;
+	set_no_links(menu);
+}
+
+
+menu_ add_static(menu_ *menu){
+	menu_ static_menu;
+	create_static_menu(&static_menu);
+	menu->next0 = &static_menu;
+	static_menu.prev = menu;
+	return static_menu;
+}
+
+menu_ add_desk(menu_ *menu){
+	menu_ desk_menu;
+	create_desk_menu(&desk_menu);
+	menu->next0 = &desk_menu;
+	desk_menu.prev = menu;
+	return desk_menu;
+}
+/*
 void *create_menu(void *vargp){
 	menu_ main_menu;
 	create_main_menu(&main_menu);
+	
+	menu_ desk_menu = add_desk(&main_menu);
+	menu_ static_menu = add_static(&main_menu);
+}*/
+
+void *create_menu(void *vargp){
+	menu_ main_menu;
+	create_main_menu(&main_menu);
+	
 	menu_ desk_menu;
 	create_desk_menu(&desk_menu);
 	main_menu.next0 = &desk_menu;
+	main_menu.desk_menu = &desk_menu;
 	desk_menu.prev = &main_menu;
 		
 	menu_ static_menu;
 	create_static_menu(&static_menu);
 	desk_menu.next0 = &static_menu;
 	static_menu.prev = &desk_menu;
+	
 	
 	menu_ continuous_menu;
 	create_continuous_menu(&continuous_menu);
@@ -177,6 +266,7 @@ void *create_menu(void *vargp){
 	continuous_color_menu_led2.prev = &continuous_menu;
 	continuous_color_menu_both.prev = &continuous_menu;
 	
+	
 	menu_ color_flash_menu;
 	create_color_flash_menu(&color_flash_menu);
 	desk_menu.next2 = &color_flash_menu;
@@ -196,6 +286,7 @@ void *create_menu(void *vargp){
 	color_flash_menu_led2.prev = &color_flash_menu;
 	color_flash_menu_both.prev = &color_flash_menu;
 	
+	
 	menu_ flash_menu;
 	create_flash_menu(&flash_menu);
 	desk_menu.next3 = &flash_menu;
@@ -214,49 +305,30 @@ void *create_menu(void *vargp){
 	flash_menu_led1.prev = &flash_menu;
 	flash_menu_led2.prev = &flash_menu;
 	flash_menu_both.prev = &flash_menu;
-
+	
+	
+	menu_ connection_menu;
+	create_connection_menu(&connection_menu);
+	main_menu.next1 = &connection_menu;
+	connection_menu.prev = &main_menu;
+	
+	menu_ ip1_menu;
+	create_ip_menu(&ip1_menu);
+	connection_menu.next1 = &ip1_menu;
+	ip1_menu.prev = &connection_menu;
+	menu_ ip2_menu;
+	create_ip_menu(&ip2_menu);
+	connection_menu.next1 = &ip2_menu;
+	ip2_menu.prev = &connection_menu;
+	menu_ ip3_menu;
+	create_ip_menu(&ip3_menu);
+	connection_menu.next1 = &ip3_menu;
+	ip3_menu.prev = &connection_menu;
+	menu_ ip4_menu;
+	create_ip_menu(&ip4_menu);
+	connection_menu.next1 = &ip4_menu;
+	ip4_menu.prev = &connection_menu;
 	
 	menu(main_menu);
 	return NULL;
-}
-
-void set_no_links(menu_ *menu){
-	menu->prev = NULL;
-	menu->next0 = NULL;
-	menu->next1 = NULL;
-	menu->next2 = NULL;
-	menu->next3 = NULL;
-	menu->next4 = NULL;
-}
-
-void create_main_menu(menu_ *menu){
-	menu->buttons_number = 3;
-	menu->pos = 0;
-	menu->button0 = "This";
-	menu->button1 = "Choose another";
-	menu->button2 = "Change Text Size";
-	menu->comment = "exit";
-	menu->comment2 = "choose";
-	
-	menu->func0 = &go_next_menu;
-	menu->func1 = &choose_desk;
-	menu->func2 = &change_text_size;
-	set_no_links(menu);
-}
-
-void create_desk_menu(menu_ *menu){
-	menu->buttons_number = 4;
-	menu->pos = 0;
-	menu->button0 = "Static";
-	menu->button1 = "Continuous";
-	menu->button2 = "Color flash";
-	menu->button3 = "Flash";
-	menu->comment = "exit";
-	menu->comment2 = "choose";
-	
-	menu->func0 = &go_next_menu;
-	menu->func1 = &go_next_menu;
-	menu->func2 = &go_next_menu;
-	menu->func3 = &go_next_menu;
-	set_no_links(menu);
 }

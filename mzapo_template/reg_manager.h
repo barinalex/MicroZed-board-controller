@@ -11,6 +11,5 @@ unsigned char *mem_base;
 uint32_t *knobs_mem_base;
 
 int initialize_adresses();
-int get_knobs_value();
 
 #endif

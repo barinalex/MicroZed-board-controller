@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "menu.h"
 #include "led_control.h"
+#include "connection.h"
 
 typedef struct{
 	unsigned long start_time; // = get_cur_time()
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
 	if(initialize_adresses() != 0) exit(1);
    	pthread_t thread_id; 
     pthread_create(&thread_id, NULL, led_thread, (void *)&thread_id);
+    pthread_create(&thread_id, NULL, network_communication, (void *)&thread_id);
     pthread_create(&thread_id, NULL, create_menu, (void *)&thread_id);
     pthread_exit(NULL);
 	return 0;

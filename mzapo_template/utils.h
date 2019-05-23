@@ -76,6 +76,8 @@ typedef struct{
 
 bool big_text;
 
+int get_knobs_value();
+
 int get_difference(uint8_t cur_value, uint8_t *prev_value);
 
 void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2);

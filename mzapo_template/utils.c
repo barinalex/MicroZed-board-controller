@@ -8,6 +8,14 @@
 
 #include "utils.h"
 #include "reg_manager.h"
+#include "connection.h"
+
+int get_knobs_value(){
+	if(nw_state.connected && nw_state.receiving){
+		return received_knobs_value;
+	}
+	return *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
+}
 
 void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
 	rect_ rect_led;

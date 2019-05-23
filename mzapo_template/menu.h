@@ -31,6 +31,8 @@ typedef struct menu_{
 	void (*func3)();
 	void (*func4)();
 	
+	struct menu_ *desk_menu;
+	
 	struct menu_ *prev;
 	struct menu_ *next0;
 	struct menu_ *next1;
@@ -41,6 +43,7 @@ typedef struct menu_{
 
 bool big_text;
 
+void go_desk_menu(menu_ *menu);
 void *create_menu(void *vargp);
 void menu(menu_ menu);
 void draw_menu(menu_ menu);
