@@ -100,7 +100,7 @@ void change_continuous_time(menu_ *menu){
 			led2.cont.change_time = led1.cont.change_time;
 			break;
 	}
-	choose_time(&(led1.cont.change_time), &(led2.cont.change_time), 130, 0);
+	choose_time(&(led1.cont.change_time), &(led2.cont.change_time), 140, 0);
 }
 
 void create_continuous_menu(menu_ *menu){
@@ -109,6 +109,7 @@ void create_continuous_menu(menu_ *menu){
 	menu->button0 = "Led 1";
 	menu->button1 = "Led 2";
 	menu->button2 = "Both";
+	menu->name = "Continuous";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
@@ -126,6 +127,7 @@ void create_continuous_color_menu(menu_ *menu){
 	menu->button2 = "Period";
 	menu->button3 = "Anti-phase";
 	menu->button4 = "On/Off";
+	menu->name = "Led";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	

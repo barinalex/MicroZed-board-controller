@@ -130,7 +130,7 @@ void receive_knobs(){
 	}
 }
 
-void* network_communication(void *vargp){
+void initialize_state(){
 	nw_state.sending = false;
 	nw_state.receiving = true;
 	nw_state.connected = false;
@@ -140,7 +140,12 @@ void* network_communication(void *vargp){
 	memset(nw_state.ready, false, 20);
 	set_receiver_addr(INADDR_ANY);
 	received_knobs_value = get_knobs_value();
+}
+
+void* network_communication(void *vargp){
+	initialize_state();
 	last_connection_time = 0;
+	
 	while(true){
 		if(nw_state.sending){
 			if(nw_state.connected){

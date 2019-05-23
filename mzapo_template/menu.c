@@ -12,14 +12,32 @@
 #include "connection_menu.h"
 #include "connection.h"
 
+int special_text_color = 0x001F;
+rect_ top_comment;
+rect_ bottom_comment;
+
 void create_main_menu(menu_ *menu);
 void create_desk_menu(menu_ *menu);
 void change_text_size(menu_ *menu);
+
+void set_rects(rect_ *top, rect_ *bottom){
+	top->top = 0;
+	top->bottom = 50;
+	top->left = 0;
+	top->right = 480;
+	
+	bottom->top = 270;
+	bottom->bottom = 320;
+	bottom->left = 0;
+	bottom->right = 480;
+}
 
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
 	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
 	bool jumped = false;
+	set_rects(&top_comment, &bottom_comment);
+	
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
@@ -31,6 +49,8 @@ void menu(menu_ menu){
 			continue;
 		}
 		if(menu.cur_knobs.b_button){
+			special_text_color = 0x07E0;
+			draw_menu(menu);
 			usleep(DELAY);
 			switch(menu.pos){
 				case 0:
@@ -49,6 +69,7 @@ void menu(menu_ menu){
 					menu.func4(&menu);
 					break;
 			}
+			special_text_color = 0x001F;
 			get_knobs_data(&(menu.prev_knobs));
 		}
 		if(!jumped && (nw_state.receiving && nw_state.connected)){
@@ -62,6 +83,9 @@ void menu(menu_ menu){
 }
 
 void draw_menu(menu_ menu){
+	rect_to_lcd(SEA, top_comment);
+	rect_to_lcd(SEA, bottom_comment);
+	strToFrame(menu.name, 10, 50, BLACK, SEA, big_text);
 	if(menu.buttons_number > 0) strToFrame(menu.button0, 30, 50, WHITE, BLACK, big_text);
 	if(menu.buttons_number > 1) strToFrame(menu.button1, 80, 50, WHITE, BLACK, big_text);
 	if(menu.buttons_number > 2) strToFrame(menu.button2, 130, 50, WHITE, BLACK, big_text);
@@ -69,23 +93,23 @@ void draw_menu(menu_ menu){
 	if(menu.buttons_number > 4) strToFrame(menu.button4, 230, 50, WHITE, BLACK, big_text);
 	switch(menu.pos){
 		case 0:
-			strToFrame(menu.button0, 30, 50, BLUE, BLACK, big_text);
+			strToFrame(menu.button0, 60, 50, special_text_color, BLACK, big_text);
 			break;
 		case 1:
-			strToFrame(menu.button1, 80, 50, BLUE, BLACK, big_text);
+			strToFrame(menu.button1, 100, 50, special_text_color, BLACK, big_text);
 			break;
 		case 2:
-			strToFrame(menu.button2, 130, 50, BLUE, BLACK, big_text);
+			strToFrame(menu.button2, 140, 50, special_text_color, BLACK, big_text);
 			break;
 		case 3:
-			strToFrame(menu.button3, 180, 50, BLUE, BLACK, big_text);
+			strToFrame(menu.button3, 180, 50, special_text_color, BLACK, big_text);
 			break;
 		case 4:
-			strToFrame(menu.button4, 230, 50, BLUE, BLACK, big_text);
+			strToFrame(menu.button4, 220, 50, special_text_color, BLACK, big_text);
 			break;
 	}
-	strToFrame(menu.comment, 280, 50, RED, BLACK, big_text);
-	strToFrame(menu.comment2, 280, 350, BLUE, BLACK, big_text);
+	strToFrame(menu.comment, 280, 50, RED, SEA, big_text);
+	strToFrame(menu.comment2, 280, 350, BLUE, SEA, big_text);
 	frameToLCD();
 }
 
@@ -180,6 +204,7 @@ void create_main_menu(menu_ *menu){
 	menu->button0 = "This";
 	menu->button1 = "Choose another";
 	menu->button2 = "Change Text Size";
+	menu->name = "Main";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
@@ -196,6 +221,7 @@ void create_desk_menu(menu_ *menu){
 	menu->button1 = "Continuous";
 	menu->button2 = "Color flash";
 	menu->button3 = "Flash";
+	menu->name = "Desk";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	

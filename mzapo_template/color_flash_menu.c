@@ -71,7 +71,7 @@ void change_color_flash_time(menu_ *menu){
 			led2.color_flash.change_time = led1.color_flash.change_time;
 			break;
 	}
-	choose_time(&(led1.color_flash.change_time), &(led2.color_flash.change_time), 130, 0);
+	choose_time(&(led1.color_flash.change_time), &(led2.color_flash.change_time), 140, 0);
 }
 
 void choose_shift_color_flash(menu_ *menu){	
@@ -87,6 +87,7 @@ void create_color_flash_menu(menu_ *menu){
 	menu->button0 = "Led 1";
 	menu->button1 = "Led 2";
 	menu->button2 = "Both";
+	menu->name = "Color flash";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
@@ -103,6 +104,7 @@ void create_color_flash_led_menu(menu_ *menu){
 	menu->button1 = "Color 2";
 	menu->button2 = "Period";
 	menu->button3 = "on/off";
+	menu->name = "Led";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	

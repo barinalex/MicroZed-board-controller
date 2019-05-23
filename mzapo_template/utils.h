@@ -7,6 +7,7 @@
 
 #define BLACK 0x0
 #define RED 0xF800
+#define SEA 0x6715
 #define BLUE 0x001F
 #define WHITE 0xFFFF
 #define GREEN 0x07E0
@@ -93,6 +94,8 @@ void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
 void get_knobs_data(knobs_ *knobs);
 
 void rectangle_to_lcd(RGB rgb, rect_ rect);
+
+void rect_to_lcd(uint16_t color, rect_ rect);
 
 unsigned long get_cur_time();
 

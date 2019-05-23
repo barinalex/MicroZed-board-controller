@@ -17,6 +17,7 @@ typedef struct menu_{
 	knobs_ cur_knobs;
 	knobs_ prev_knobs;
 	
+	char *name;
 	char *button0;
 	char *button1;
 	char *button2;

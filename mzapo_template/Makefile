@@ -4,10 +4,10 @@ CXX = arm-linux-gnueabihf-g++
 CPPFLAGS = -I .
 CFLAGS =-g -std=gnu99 -O1 -Wall
 CXXFLAGS = -g -std=gnu++11 -O1 -Wall
-LDFLAGS = -lrt -lpthread
+LDFLAGS = -lrt -lpthread libcrc.a
 
 SOURCES = main.c mzapo_phys.c mzapo_parlcd.c lcdframe.c utils.c led_control.c reg_manager.c
-SOURCES += menu.c static_menu.c color_flash_menu.c flash_menu.c continuous_menu.c connection.c libcrc.a connection_menu.c
+SOURCES += menu.c static_menu.c color_flash_menu.c flash_menu.c continuous_menu.c connection.c connection_menu.c
 SOURCES += font_prop14x16.c font_rom8x16.c 
 TARGET_EXE = homeauto
 #TARGET_IP ?= 192.168.202.214

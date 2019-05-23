@@ -152,6 +152,10 @@ unsigned long get_cur_time_in_mlsec(){
 void rectangle_to_lcd(RGB rgb, rect_ rect){
 	uint16_t color = 0;
 	color = ((rgb.r >> 3) << 11) | ((rgb.g >> 2) << 5) | (rgb.b >> 3);
+	rect_to_lcd(color, rect);
+}
+
+void rect_to_lcd(uint16_t color, rect_ rect){
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
 			if(r >= rect.top && r < rect.bottom && c >= rect.left && c < rect.right){
@@ -159,7 +163,7 @@ void rectangle_to_lcd(RGB rgb, rect_ rect){
 			}
 		}
 	}
-	frameToLCD(parlcd_mem_base);
+	frameToLCD(parlcd_mem_base);	
 }
 
 uint16_t change(int data, uint8_t cur_value, uint8_t *prev_value, int max_data){
@@ -230,24 +234,24 @@ rect_ set_rect(int menu_pos){
 	rect.right = 400;
 	switch(menu_pos){
 		case 0:
-			rect.top = 30;
-			rect.bottom = 50;
+			rect.top = 60;
+			rect.bottom = 80;
 			break;
 		case 1:
-			rect.top = 80;
-			rect.bottom = 100;
+			rect.top = 100;
+			rect.bottom = 120;
 			break;
 		case 2:
-			rect.top = 130;
-			rect.bottom = 150;
+			rect.top = 140;
+			rect.bottom = 160;
 			break;
 		case 3:
 			rect.top = 180;
 			rect.bottom = 200;
 			break;
 		case 4:
-			rect.top = 230;
-			rect.bottom = 250;
+			rect.top = 220;
+			rect.bottom = 240;
 			break;
 	}
 	return rect;

@@ -79,6 +79,7 @@ void create_connection_menu(menu_ *menu){
 	menu->button2 = "";
 	menu->button3 = "";
 	menu->button4 = "";
+	menu->name = "Network";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
@@ -95,6 +96,7 @@ void create_ip_menu(menu_ *menu){
 	menu->pos = 0;
 	menu->button0 = "Connect";
 	menu->button1 = "Disconnect";
+	menu->name = "Connection";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
