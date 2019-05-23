@@ -88,16 +88,14 @@ void choose_color(int menu_pos){
 		}
 		if(led1.change){
 			change_rgb_hsv(&(led1.hsv), &(led1.rgb), knobs, prev_knobs);
-			if(menu_pos == 0 || menu_pos == 2) rectangle_to_lcd(led1.rgb, rect_led1);
+			rectangle_to_lcd(led1.rgb, rect_led1);
 		}
 		if(led2.change){
 			change_rgb_hsv(&(led2.hsv), &(led2.rgb), knobs, prev_knobs);
-			if(menu_pos == 1 || menu_pos == 2) rectangle_to_lcd(led2.rgb, rect_led2);
+			rectangle_to_lcd(led2.rgb, rect_led2);
 		}
 		prev_knobs = knobs;
 		frameToLCD();
 	}
-	led1.change = false;
-	led2.change = false;
 }
 
