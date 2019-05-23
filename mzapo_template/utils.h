@@ -76,11 +76,11 @@ typedef struct{
 
 bool big_text;
 
-int get_difference(uint8_t cur_value, uint8_t prev_value);
+int get_difference(uint8_t cur_value, uint8_t *prev_value);
 
 void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2);
 
-void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos);
+void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border);
 
 void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color);
 
@@ -108,9 +108,8 @@ bool is_increased(uint8_t cur_value, uint8_t prev_value);
 
 bool is_decreased(uint8_t cur_value, uint8_t prev_value);
 
-uint8_t change_rgb(int data, uint8_t cur_value, uint8_t prev_value, int max_data);
-uint16_t change(int data, uint8_t cur_value, uint8_t prev_value, int max_data);
+uint16_t change(int data, uint8_t cur_value, uint8_t *prev_value, int max_data);
 
-unsigned long change_long(long long data, uint8_t cur_value, uint8_t prev_value, int step);
+unsigned long change_long(long long data, uint8_t cur_value, uint8_t *prev_value, int step, int border);
 
 #endif

@@ -100,7 +100,7 @@ void change_continuous_time(menu_ *menu){
 			led2.cont.change_time = led1.cont.change_time;
 			break;
 	}
-	choose_time(&(led1.cont.change_time), &(led2.cont.change_time), 130);
+	choose_time(&(led1.cont.change_time), &(led2.cont.change_time), 130, 0);
 }
 
 void create_continuous_menu(menu_ *menu){

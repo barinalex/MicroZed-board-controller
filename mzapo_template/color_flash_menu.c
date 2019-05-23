@@ -71,14 +71,14 @@ void change_color_flash_time(menu_ *menu){
 			led2.color_flash.change_time = led1.color_flash.change_time;
 			break;
 	}
-	choose_time(&(led1.color_flash.change_time), &(led2.color_flash.change_time), 130);
+	choose_time(&(led1.color_flash.change_time), &(led2.color_flash.change_time), 130, 0);
 }
 
 void choose_shift_color_flash(menu_ *menu){	
 	led1.change = false;
 	led2.change = true;
 	
-	choose_time(&(led1.color_flash.shift), &(led2.color_flash.shift), 180);
+	choose_time(&(led1.color_flash.shift), &(led2.color_flash.shift), 180, led1.color_flash.change_time + 1);
 }
 
 void create_color_flash_menu(menu_ *menu){

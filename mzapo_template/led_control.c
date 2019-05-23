@@ -76,17 +76,19 @@ void continuously_changing(LED *led){
 	}
 }
 
+void check_time(LED *led, unsigned long time){
+	if(get_cur_time_in_mlsec() - led->flash.last_change_time > time + led->flash.shift){
+		led->flash.shift = 0;
+		led->illuminate = !(led->illuminate);
+		led->flash.last_change_time = get_cur_time_in_mlsec();
+	}
+}
+
 void flashing(LED *led){
 	if(led->illuminate){
-		if(get_cur_time_in_mlsec() - led->flash.last_change_time > led->flash.illumination_time){
-			led->illuminate = !(led->illuminate);
-			led->flash.last_change_time = get_cur_time_in_mlsec();
-		}
+		check_time(led, led->flash.illumination_time);
 	}else{
-		if(get_cur_time_in_mlsec() - led->flash.last_change_time > led->flash.extinction_time){
-			led->illuminate = !(led->illuminate);
-			led->flash.last_change_time = get_cur_time_in_mlsec();
-		}
+		check_time(led, led->flash.extinction_time);
 	}
 }
 

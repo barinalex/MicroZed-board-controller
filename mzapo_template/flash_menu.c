@@ -50,12 +50,20 @@ void change_flash_time(menu_ *menu){
 	}
 	switch(menu->pos){
 		case 0:
-			choose_time(&(led1.flash.illumination_time), &(led2.flash.illumination_time), 30);
+			choose_time(&(led1.flash.illumination_time), &(led2.flash.illumination_time), 30, 0);
 			break;
 		case 1:
-			choose_time(&(led1.flash.extinction_time), &(led2.flash.extinction_time), 80);
+			choose_time(&(led1.flash.extinction_time), &(led2.flash.extinction_time), 80, 0);
 			break;
 	}
+}
+
+void prepare_for_shift(unsigned long *shift){
+	*shift = 0;
+	led1.flash.last_change_time = get_cur_time_in_mlsec();
+	led2.flash.last_change_time = get_cur_time_in_mlsec();
+	led1.illuminate = true;
+	led2.illuminate = true;	
 }
 
 void choose_shift_flash(menu_ *menu){
@@ -63,12 +71,18 @@ void choose_shift_flash(menu_ *menu){
 		case 3:
 			led1.change = true;
 			led2.change = false;
-			choose_time(&(led1.flash.shift), &(led2.flash.shift), 180);
+			choose_time(&(led1.flash.shift), &(led2.flash.shift), 180, led2.flash.illumination_time + 1);
+			if(led1.flash.shift > 0) {
+				prepare_for_shift(&(led2.flash.shift));
+			}
 			break;
 		case 4:
 			led1.change = false;
 			led2.change = true;
-			choose_time(&(led1.flash.shift), &(led2.flash.shift), 230);
+			choose_time(&(led1.flash.shift), &(led2.flash.shift), 230, led1.flash.illumination_time + 1);
+			if(led2.flash.shift > 0) {
+				prepare_for_shift(&(led1.flash.shift));
+			}
 			break;
 	}
 }
