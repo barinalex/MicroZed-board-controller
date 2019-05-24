@@ -138,6 +138,7 @@ void initialize_state(){
 	nw_state.receiver_ip = NULL;
 	nw_state.sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	memset(nw_state.ready, false, 20);
+	init_sender_addr();
 	set_receiver_addr(INADDR_ANY);
 	received_knobs_value = get_knobs_value();
 }
