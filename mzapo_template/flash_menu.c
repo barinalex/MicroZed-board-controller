@@ -67,20 +67,23 @@ void prepare_for_shift(unsigned long *shift){
 }
 
 void choose_shift_flash(menu_ *menu){
+	unsigned long shift = 0;
 	switch(menu->pos){
 		case 3:
 			led1.change = true;
 			led2.change = false;
-			choose_time(&(led1.flash.shift), &(led2.flash.shift), 180, led2.flash.illumination_time + 1);
-			if(led1.flash.shift > 0) {
+			choose_time(&(shift), &(led2.flash.shift), 180, led2.flash.illumination_time + 1);
+			if(shift > 0) {
+				led1.flash.shift = shift;
 				prepare_for_shift(&(led2.flash.shift));
 			}
 			break;
 		case 4:
 			led1.change = false;
 			led2.change = true;
-			choose_time(&(led1.flash.shift), &(led2.flash.shift), 220, led1.flash.illumination_time + 1);
-			if(led2.flash.shift > 0) {
+			choose_time(&(led1.flash.shift), &(shift), 220, led1.flash.illumination_time + 1);
+			if(shift > 0) {
+				led2.flash.shift = shift;
 				prepare_for_shift(&(led1.flash.shift));
 			}
 			break;

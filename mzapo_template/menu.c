@@ -86,11 +86,11 @@ void draw_menu(menu_ menu){
 	rect_to_lcd(SEA, top_comment);
 	rect_to_lcd(SEA, bottom_comment);
 	strToFrame(menu.name, 10, 50, BLACK, SEA, big_text);
-	if(menu.buttons_number > 0) strToFrame(menu.button0, 30, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 1) strToFrame(menu.button1, 80, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 2) strToFrame(menu.button2, 130, 50, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 0) strToFrame(menu.button0, 60, 50, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 1) strToFrame(menu.button1, 100, 50, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 2) strToFrame(menu.button2, 140, 50, WHITE, BLACK, big_text);
 	if(menu.buttons_number > 3) strToFrame(menu.button3, 180, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 4) strToFrame(menu.button4, 230, 50, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 4) strToFrame(menu.button4, 220, 50, WHITE, BLACK, big_text);
 	switch(menu.pos){
 		case 0:
 			strToFrame(menu.button0, 60, 50, special_text_color, BLACK, big_text);

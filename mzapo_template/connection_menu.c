@@ -66,7 +66,7 @@ void connect(menu_ *menu){
 
 void disconnect(menu_ *menu){
 	nw_state.sending = false;
-	nw_state.receiving = false;
+	nw_state.receiving = true;
 	nw_state.connected = false;
 	nw_state.find_others = false;
 }
