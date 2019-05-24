@@ -94,8 +94,14 @@ void send_init_message(char message){
 	
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
 		printf("receive: %c\n", buffer[0]);
+		/*if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
+			nw_state.ready[index++] = true;
+		}*/
 	}
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		printf("receive: %c\n", buffer[0]);
 		if(buffer[0] == '1'){
 			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
 			printf("ip: %s\n", nw_state.ip_addr[index]);
@@ -103,6 +109,7 @@ void send_init_message(char message){
 		}
 	}
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		printf("receive: %c\n", buffer[0]);
 		if(buffer[0] == '1'){
 			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
 			printf("ip: %s\n", nw_state.ip_addr[index]);
@@ -110,6 +117,7 @@ void send_init_message(char message){
 		}
 	}
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		printf("receive: %c\n", buffer[0]);
 		if(buffer[0] == '1'){
 			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
 			printf("ip: %s\n", nw_state.ip_addr[index]);
@@ -117,6 +125,7 @@ void send_init_message(char message){
 		}
 	}
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		printf("receive: %c\n", buffer[0]);
 		if(buffer[0] == '1'){
 			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
 			printf("ip: %s\n", nw_state.ip_addr[index]);

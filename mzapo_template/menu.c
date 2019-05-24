@@ -117,11 +117,9 @@ void go_desk_menu(menu_ *menu){
 	clear_screen();
 	menu->pos = 0;
 	printf("here1\n");
-	if(menu->desk_menu != NULL){
-		*menu = *(menu->desk_menu);
-	}
+	*menu = *(menu->desk_menu);
 	printf("here2\n");
-	menu->prev_menu_pos = 0;
+	//menu->prev_menu_pos = 0;
 	printf("here3\n");
 }
 
