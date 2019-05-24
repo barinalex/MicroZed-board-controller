@@ -10,31 +10,34 @@
 void change_static_led1(menu_ *menu){
 	led1.change = true;
 	led2.change = false;
-	choose_color(menu->pos);
+	//choose_color(menu->pos);
+	choose_colors(0, &(led1.st), &(led2.st));
 }
 
 void change_static_led2(menu_ *menu){
 	led1.change = false;
 	led2.change = true;
-	choose_color(menu->pos);
+	//choose_color(menu->pos);
+	choose_colors(0, &(led1.st), &(led2.st));
 }
 
 void change_static_both(menu_ *menu){
 	led1.change = true;
 	led2.change = true;
-	led2.hsv = led1.hsv;
-	led2.rgb = led1.rgb;
-	choose_color(menu->pos);
+	led2.st.hsv = led1.st.hsv;
+	led2.st.rgb = led1.st.rgb;
+	//choose_color(menu->pos);
+	choose_colors(0, &(led1.st), &(led2.st));
 }
 
 void copy_led1_to_led2(menu_ *menu){
-	led2.hsv = led1.hsv;
-	led2.rgb = led1.rgb;
+	led2.st.hsv = led1.st.hsv;
+	led2.st.rgb = led1.st.rgb;
 }
 
 void copy_led2_to_led1(menu_ *menu){
-	led1.hsv = led2.hsv;
-	led1.rgb = led2.rgb;
+	led1.st.hsv = led2.st.hsv;
+	led1.st.rgb = led2.st.rgb;
 }
 
 void create_static_menu(menu_ *menu){
@@ -57,7 +60,7 @@ void create_static_menu(menu_ *menu){
 	menu->func4 = &copy_led2_to_led1;
 	set_no_links(menu);
 }
-
+/*
 void choose_color(int menu_pos){
 	rect_ rect_led1 = set_rect(0);
 	rect_ rect_led2 = set_rect(1);
@@ -99,5 +102,5 @@ void choose_color(int menu_pos){
 		prev_knobs = knobs;
 		frameToLCD();
 	}
-}
+}*/
 

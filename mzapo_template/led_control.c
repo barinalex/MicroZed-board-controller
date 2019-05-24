@@ -11,16 +11,6 @@ void change_hsv_(uint16_t *cur_color_param, uint16_t color1_param, uint16_t colo
 
 void light_off(LED *led);
 
-void to_led_(LED led1, LED led2){
-	*led1.mem_base = led1.rgb.b;
-	*(led1.mem_base + 1) = led1.rgb.g;
-	*(led1.mem_base + 2) = led1.rgb.r;
-	
-	*led2.mem_base = led2.rgb.b;
-	*(led2.mem_base + 1) = led2.rgb.g;
-	*(led2.mem_base + 2) = led2.rgb.r;
-}
-
 void change_hsv(uint16_t *cur_color_param, uint16_t color1_param, uint16_t color2_param, int *decrement, bool *to_2){
 	if(*to_2){
 		if((*cur_color_param) == color2_param){
@@ -152,9 +142,9 @@ void light_off(LED *led){
 
 void static_lighting(LED *led){
 	if(led->illuminate){
-		*(led->mem_base) = led->rgb.b;
-		*(led->mem_base + 1) = led->rgb.g;
-		*(led->mem_base + 2) = led->rgb.r;
+		*(led->mem_base) = led->st.rgb.b;
+		*(led->mem_base + 1) = led->st.rgb.g;
+		*(led->mem_base + 2) = led->st.rgb.r;
 	}else{
 		light_off(led);
 	}

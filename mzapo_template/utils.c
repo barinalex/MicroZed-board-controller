@@ -10,6 +10,8 @@
 #include "reg_manager.h"
 #include "connection.h"
 
+#define KNOBSTEP 3
+
 int get_knobs_value(){
 	if(nw_state.connected && nw_state.receiving){
 		return received_knobs_value;
@@ -17,12 +19,12 @@ int get_knobs_value(){
 	return *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
 }
 
-void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2){
+void choose_colors(int color_num, mode_ *mode1, mode_ *mode2){
 	rect_ rect_led;
 	HSV *led1hsv, *led2hsv;
 	RGB *led1rgb, *led2rgb;
 	
-	set_ptr_to_hsv_rgb(&led1hsv, &led2hsv, &led1rgb, &led2rgb, mode1, mode2, &rect_led, menu_pos);
+	set_ptr_to_hsv_rgb(&led1hsv, &led2hsv, &led1rgb, &led2rgb, mode1, mode2, &rect_led, color_num);
 	LED saved_led1 = led1;
 	LED saved_led2 = led2;
 	
@@ -92,8 +94,8 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, 
 	}
 }
 
-void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color){
-	switch(color){
+void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color_num){
+	switch(color_num){
 		case 1:
 			*rect_led = set_rect(1);
 			*hsv1 = &(mode1->hsv2);
@@ -167,63 +169,64 @@ void rect_to_lcd(uint16_t color, rect_ rect){
 }
 
 uint16_t change(int data, uint8_t cur_value, uint8_t *prev_value, int max_data){
-		data += get_difference(cur_value, prev_value);
-		data %= (max_data + 1);
-		data = (data > max_data) ? max_data: data;
-		data = (data < 0) ? max_data: data;
-		printf("data: %d\n", data);
-		return data;
+	data += get_difference(cur_value, prev_value);
+	data %= (max_data + 1);
+	data = (data > max_data) ? max_data: data;
+	data = (data < 0) ? max_data: data;
+	printf("data: %d\n", data);
+	return data;
 }
 
 unsigned long change_long(long long data, uint8_t cur_value, uint8_t *prev_value, int step, int border){
-		data += get_difference(cur_value, prev_value) * step;
-		if(border > 0){
-			data %= border;
-		}
-		data = (data < 0) ? 0: data;
-		printf("data: %lld\n", data);
-		return data;
+	data += get_difference(cur_value, prev_value) * step;
+	if(border > 0){
+		data %= border;
+	}
+	data = (data < 0) ? 0: data;
+	printf("data: %lld\n", data);
+	return data;
 }
 
 int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t *prev_value, int menu_pos){
-		if(is_increased(cur_value, *prev_value)){
-			menu_pos++;
-			menu_pos = (menu_pos > buttons_number - 1) ? buttons_number - 1: menu_pos;
-			*prev_value = cur_value;
-		}
-		else if(is_decreased(cur_value, *prev_value)){
-			menu_pos--;
-			menu_pos = (menu_pos < 0) ? 0: menu_pos;
-			*prev_value = cur_value;
-		}
-		return menu_pos;
+	if(is_increased(cur_value, *prev_value)){
+		menu_pos++;
+		menu_pos = (menu_pos > buttons_number - 1) ? buttons_number - 1: menu_pos;
+		*prev_value = cur_value;
+	}
+	else if(is_decreased(cur_value, *prev_value)){
+		menu_pos--;
+		menu_pos = (menu_pos < 0) ? 0: menu_pos;
+		*prev_value = cur_value;
+	}
+	return menu_pos;
 }
 
 int get_difference(uint8_t cur_value, uint8_t *prev_value){
-	int difference = 0;
-	if(cur_value < 50 && *prev_value > 200){
-		difference = cur_value + (255 - *prev_value);
+	int difference = 0, koef;
+	if(cur_value < 50 && *prev_value > 200 && (cur_value + (255 - *prev_value)) > KNOBSTEP){
+		difference = cur_value + (255 - (*prev_value + KNOBSTEP));
 		*prev_value = cur_value;
 	}
-	else if(cur_value > 200 && *prev_value < 50){
-		difference = - *prev_value - (255 - cur_value);
+	else if(cur_value > 200 && *prev_value < 50 && ((255 - cur_value) + *prev_value) > KNOBSTEP){
+		difference = - ((int)*prev_value - KNOBSTEP) - (255 - cur_value);
 		*prev_value = cur_value;
 	}
-	else if(abs(cur_value - *prev_value) > 3){
-		difference = (int)cur_value - ((int)*prev_value - 3);
+	else if(abs((int)cur_value - (int)*prev_value) > KNOBSTEP){
+		koef = ((int)cur_value - (int)*prev_value > 0) ? KNOBSTEP: -KNOBSTEP;
+		difference = (int)cur_value - ((int)*prev_value + koef);
 		*prev_value = cur_value;
 	}
 	return difference;
 }
 
 bool is_increased(uint8_t cur_value, uint8_t prev_value){
-	return ((cur_value > prev_value + 3) &&
+	return ((cur_value > prev_value + KNOBSTEP) &&
 			!(cur_value > 250 && prev_value < 5)) ||
 			(cur_value < 5 && prev_value > 250);
 }
 
 bool is_decreased(uint8_t cur_value, uint8_t prev_value){
-	return ((cur_value < prev_value - 3) &&
+	return ((cur_value < prev_value - KNOBSTEP) &&
 			!(cur_value < 5 && prev_value > 250))|| 
 			(cur_value > 250 && prev_value < 5);
 }
@@ -231,7 +234,7 @@ bool is_decreased(uint8_t cur_value, uint8_t prev_value){
 rect_ set_rect(int menu_pos){
 	rect_ rect;
 	rect.left = 240;
-	rect.right = 400;
+	rect.right = 430;
 	switch(menu_pos){
 		case 0:
 			rect.top = 60;

@@ -81,11 +81,11 @@ int get_knobs_value();
 
 int get_difference(uint8_t cur_value, uint8_t *prev_value);
 
-void choose_colors(int menu_pos, mode_ *mode1, mode_ *mode2);
+void choose_colors(int color_num, mode_ *mode1, mode_ *mode2);
 
 void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border);
 
-void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color);
+void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color_num);
 
 void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
 
