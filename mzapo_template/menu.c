@@ -12,7 +12,7 @@
 #include "connection_menu.h"
 #include "connection.h"
 
-int special_text_color = 0x001F;
+int special_text_color = BLUE;
 rect_ top_comment;
 rect_ bottom_comment;
 
@@ -49,7 +49,7 @@ void menu(menu_ menu){
 			continue;
 		}
 		if(menu.cur_knobs.b_button){
-			special_text_color = 0x07E0;
+			special_text_color = WHITE;//0x07E0;
 			draw_menu(menu);
 			usleep(DELAY);
 			switch(menu.pos){
@@ -69,7 +69,7 @@ void menu(menu_ menu){
 					menu.func4(&menu);
 					break;
 			}
-			special_text_color = 0x001F;
+			special_text_color = BLUE;
 			get_knobs_data(&(menu.prev_knobs));
 		}
 		if(!jumped && (nw_state.receiving && nw_state.connected)){
