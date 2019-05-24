@@ -64,8 +64,10 @@ void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
 	LED saved_led2 = led2;
 	
 	knobs_ knobs;
-	knobs_ prev_knobs;
-	get_knobs_data(&prev_knobs);
+	knobs_ prev_knobs1;
+	knobs_ prev_knobs2;
+	get_knobs_data(&prev_knobs1);
+	get_knobs_data(&prev_knobs2);
 	while(true){
 		get_knobs_data(&knobs);
 		if(knobs.r_button) {
@@ -81,22 +83,25 @@ void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
 			break;
 		}
 		if(led1.change){
-			change_rgb_hsv(led1hsv, led1rgb, knobs, prev_knobs);
+			change_rgb_hsv(led1hsv, led1rgb, knobs, prev_knobs1);
 			rectangle_to_lcd(*led1rgb, rect_led1);
 		}
 		if(led2.change){
-			change_rgb_hsv(led2hsv, led2rgb, knobs, prev_knobs);
+			change_rgb_hsv(led2hsv, led2rgb, knobs, prev_knobs2);
 			rectangle_to_lcd(*led2rgb, rect_led2);
 		}
-		prev_knobs = knobs;
+		prev_knobs1 = knobs;
+		prev_knobs2 = knobs;
 		frameToLCD();
 	}
 }
 
 void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border){
 	knobs_ knobs;
-	knobs_ prev_knobs;
-	get_knobs_data(&prev_knobs);
+	knobs_ prev_knobs1;
+	knobs_ prev_knobs2;
+	get_knobs_data(&prev_knobs1);
+	get_knobs_data(&prev_knobs2);
 	LED saved_led1 = led1;
 	LED saved_led2 = led2;
 	
@@ -115,17 +120,20 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, 
 			break;
 		}
 		if(led1.change){
-			*led1time = change_long(*led1time, knobs.b_knob, &(prev_knobs.b_knob), 100, border);
+			*led1time = change_long(*led1time, knobs.b_knob, &(prev_knobs1.b_knob), 100, border);
 			int_to_frame(*led1time, lcd_pos, 240, WHITE, BLACK, big_text);
 			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		if(led2.change){
-			*led2time = change_long(*led2time, knobs.b_knob, &(prev_knobs.b_knob), 100, border);
+			*led2time = change_long(*led2time, knobs.b_knob, &(prev_knobs2.b_knob), 100, border);
+			printf("led2time: %lu\n", *led2time);
 			int_to_frame(*led2time, lcd_pos, 240, WHITE, BLACK, big_text);
 			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		frameToLCD();
-		prev_knobs = knobs;
+		prev_knobs1 = knobs;
+		prev_knobs2 = knobs;
+		
 	}
 }
 
@@ -197,7 +205,7 @@ uint16_t change(int data, uint8_t cur_value, uint8_t *prev_value, int max_data){
 unsigned long change_long(long long data, uint8_t cur_value, uint8_t *prev_value, int step, int border){
 	data += get_difference(cur_value, prev_value) * step;
 	if(border > 0){
-		data %= border;
+		data = (data > border)? border: data;
 	}
 	data = (data < 0) ? 0: data;
 	printf("data: %lld\n", data);
@@ -219,21 +227,21 @@ int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t *prev_value, 
 }
 
 int get_difference(uint8_t cur_value, uint8_t *prev_value){
-	int difference = 0, koef;
-	if(cur_value < 50 && *prev_value > 200 && (cur_value + (255 - *prev_value)) > KNOBSTEP){
-		difference = cur_value + (255 - (*prev_value + KNOBSTEP));
-		*prev_value = cur_value;
+	int difference = 0;// koef;
+	if(cur_value < 30 && *prev_value > 225 && (cur_value + (255 - *prev_value)) > KNOBSTEP){
+		difference = cur_value + (255 - (*prev_value));
+		//*prev_value = cur_value;
 	}
-	else if(cur_value > 200 && *prev_value < 50 && ((255 - cur_value) + *prev_value) > KNOBSTEP){
-		difference = - ((int)*prev_value - KNOBSTEP) - (255 - cur_value);
-		*prev_value = cur_value;
+	else if(cur_value > 225 && *prev_value < 30 && ((255 - cur_value) + *prev_value) > KNOBSTEP){
+		difference = - ((int)*prev_value) - (255 - cur_value);
+		//*prev_value = cur_value;
 	}
 	else if(abs((int)cur_value - (int)*prev_value) > KNOBSTEP){
-		koef = ((int)cur_value - (int)*prev_value > 0) ? KNOBSTEP: -KNOBSTEP;
-		difference = (int)cur_value - ((int)*prev_value + koef);
-		*prev_value = cur_value;
+		//koef = ((int)cur_value - (int)*prev_value > 0) ? KNOBSTEP: -KNOBSTEP;
+		difference = (int)cur_value - ((int)*prev_value);
+		//*prev_value = cur_value;
 	}
-	return difference;
+	return (difference == 0) ? 0 : difference / 4;
 }
 
 bool is_increased(uint8_t cur_value, uint8_t prev_value){

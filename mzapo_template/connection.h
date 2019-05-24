@@ -11,7 +11,7 @@ typedef struct{
 	bool find_others;
 	int sockfd;
 	
-	char *ip_addr[20];
+	char ip_addr[20][20];
 	char *receiver_ip;
 	bool ready[20];
 }network_state_;

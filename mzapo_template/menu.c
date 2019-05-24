@@ -37,7 +37,8 @@ void menu(menu_ menu){
 	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
 	bool jumped = false;
 	set_rects(&top_comment, &bottom_comment);
-	
+	rect_to_lcd(SEA, top_comment);
+	rect_to_lcd(SEA, bottom_comment);
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
@@ -49,7 +50,7 @@ void menu(menu_ menu){
 			continue;
 		}
 		if(menu.cur_knobs.b_button){
-			special_text_color = WHITE;//0x07E0;
+			special_text_color = 0x07E0;
 			draw_menu(menu);
 			usleep(DELAY);
 			switch(menu.pos){
@@ -72,7 +73,7 @@ void menu(menu_ menu){
 			special_text_color = BLUE;
 			get_knobs_data(&(menu.prev_knobs));
 		}
-		if(!jumped && (nw_state.receiving && nw_state.connected)){
+		if(!jumped && ((nw_state.receiving && nw_state.connected) || (nw_state.sending && nw_state.connected))){
 			jumped = true;
 			go_desk_menu(&menu);
 		}
@@ -83,8 +84,6 @@ void menu(menu_ menu){
 }
 
 void draw_menu(menu_ menu){
-	rect_to_lcd(SEA, top_comment);
-	rect_to_lcd(SEA, bottom_comment);
 	strToFrame(menu.name, 10, 50, BLACK, SEA, big_text);
 	if(menu.buttons_number > 0) strToFrame(menu.button0, 60, 50, WHITE, BLACK, big_text);
 	if(menu.buttons_number > 1) strToFrame(menu.button1, 100, 50, WHITE, BLACK, big_text);
@@ -117,8 +116,13 @@ void draw_menu(menu_ menu){
 void go_desk_menu(menu_ *menu){
 	clear_screen();
 	menu->pos = 0;
-	menu = menu->desk_menu;
+	printf("here1\n");
+	if(menu->desk_menu != NULL){
+		*menu = *(menu->desk_menu);
+	}
+	printf("here2\n");
 	menu->prev_menu_pos = 0;
+	printf("here3\n");
 }
 
 void go_next_menu(menu_ *menu){
@@ -232,31 +236,6 @@ void create_desk_menu(menu_ *menu){
 	set_no_links(menu);
 }
 
-
-menu_ add_static(menu_ *menu){
-	menu_ static_menu;
-	create_static_menu(&static_menu);
-	menu->next0 = &static_menu;
-	static_menu.prev = menu;
-	return static_menu;
-}
-
-menu_ add_desk(menu_ *menu){
-	menu_ desk_menu;
-	create_desk_menu(&desk_menu);
-	menu->next0 = &desk_menu;
-	desk_menu.prev = menu;
-	return desk_menu;
-}
-/*
-void *create_menu(void *vargp){
-	menu_ main_menu;
-	create_main_menu(&main_menu);
-	
-	menu_ desk_menu = add_desk(&main_menu);
-	menu_ static_menu = add_static(&main_menu);
-}*/
-
 void *create_menu(void *vargp){
 	menu_ main_menu;
 	create_main_menu(&main_menu);
@@ -342,18 +321,22 @@ void *create_menu(void *vargp){
 	create_ip_menu(&ip1_menu);
 	connection_menu.next1 = &ip1_menu;
 	ip1_menu.prev = &connection_menu;
+	ip1_menu.desk_menu = &desk_menu;
 	menu_ ip2_menu;
 	create_ip_menu(&ip2_menu);
-	connection_menu.next1 = &ip2_menu;
+	connection_menu.next2 = &ip2_menu;
 	ip2_menu.prev = &connection_menu;
+	ip2_menu.desk_menu = &desk_menu;
 	menu_ ip3_menu;
 	create_ip_menu(&ip3_menu);
-	connection_menu.next1 = &ip3_menu;
+	connection_menu.next3 = &ip3_menu;
 	ip3_menu.prev = &connection_menu;
+	ip3_menu.desk_menu = &desk_menu;
 	menu_ ip4_menu;
 	create_ip_menu(&ip4_menu);
-	connection_menu.next1 = &ip4_menu;
+	connection_menu.next4 = &ip4_menu;
 	ip4_menu.prev = &connection_menu;
+	ip4_menu.desk_menu = &desk_menu;
 	
 	menu(main_menu);
 	return NULL;

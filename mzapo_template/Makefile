@@ -4,7 +4,7 @@ CXX = arm-linux-gnueabihf-g++
 CPPFLAGS = -I .
 CFLAGS =-g -std=gnu99 -O1 -Wall
 CXXFLAGS = -g -std=gnu++11 -O1 -Wall
-LDFLAGS = -lrt -lpthread libcrc.a
+LDFLAGS = -lrt -lpthread
 
 SOURCES = main.c mzapo_phys.c mzapo_parlcd.c lcdframe.c utils.c led_control.c reg_manager.c
 SOURCES += menu.c static_menu.c color_flash_menu.c flash_menu.c continuous_menu.c connection.c connection_menu.c

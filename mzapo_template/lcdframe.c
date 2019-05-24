@@ -12,6 +12,7 @@
 #include "font_types.h"
 
 #define BLACK 0x0
+#define SEA 0x6715
 
 void frameToLCD()
 {
@@ -82,10 +83,10 @@ int strToFrame(char *str, int yRow, int xColumn, uint16_t forecolor, uint16_t ba
 	return w; // pixelova sirka napsaneho textu, abychom vedeli, kde muzeme psat dalsi znak
 }
 
-int int_to_frame(int number, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big){
+int int_to_frame(unsigned long number, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big){
 		char str[12];
+		sprintf(str, "%lu", number);
 		str[11] = '\0';
-		sprintf(str, "%d", number);
 		for(int i = 0; i < 12; ++i){
 			if(str[i] == '\0'){
 				for(int j = i; j < 11; ++j){
@@ -100,7 +101,10 @@ int int_to_frame(int number, int yRow, int xColumn, uint16_t forecolor, uint16_t
 void clear_screen(){
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
-			frame[r][c] = BLACK;
+			if(r < 50 || r >= 270)
+				frame[r][c] = SEA;
+			else
+				frame[r][c] = BLACK;
 		}
 	}
 	frameToLCD();

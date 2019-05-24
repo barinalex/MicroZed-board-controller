@@ -37,10 +37,6 @@ void find_all(menu_ *menu){
 }
 
 void connect(menu_ *menu){
-	nw_state.sending = true;
-	nw_state.receiving = false;
-	nw_state.connected = false;
-	nw_state.find_others = false;
 	switch(menu->prev_menu_pos){
 		case 1:
 			nw_state.receiver_ip = menu->prev->button1;
@@ -55,13 +51,11 @@ void connect(menu_ *menu){
 			nw_state.receiver_ip = menu->prev->button4;
 			break;
 	}
+	nw_state.sending = true;
+	nw_state.receiving = false;
+	nw_state.connected = false;
+	nw_state.find_others = false;
 	unsigned long start_connection = get_cur_time_in_mlsec();
-	while(get_cur_time_in_mlsec() - start_connection < 200){
-		if(nw_state.connected){
-			go_desk_menu(menu);
-			break;
-		}
-	}
 }
 
 void disconnect(menu_ *menu){

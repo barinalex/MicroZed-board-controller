@@ -19,7 +19,4 @@ int initialize_adresses(){
 	return 0;
 }
 
-int get_knobs_value(){
-	return *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
-}
 

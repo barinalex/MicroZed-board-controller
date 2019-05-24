@@ -16,7 +16,6 @@
 #define TIMEOUT 10000
 #define DISCONNECT 30000
 
-#include "checksum.h"
 #include "connection.h"
 #include "led_control.h"
 #include "utils.h"
@@ -26,9 +25,21 @@ struct sockaddr_in sender_addr, receiver_addr;
 unsigned long last_connection_time;
 
 int init_sender_addr(){
+
     sender_addr.sin_family    = AF_INET; // IPv4
     sender_addr.sin_addr.s_addr = INADDR_ANY;
     sender_addr.sin_port = htons(SENDER_PORT);
+    
+   	if ((nw_state.sockfd = socket (AF_INET, SOCK_DGRAM, 0)) == -1) {
+        fprintf(stderr, "Socket error!\n");
+        return 1;
+    }
+    int yes=1;
+	if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
+		        sizeof(yes)) == -1) {
+	 	fprintf(stderr, "Setsockopt error!\n");
+        return 1;
+	}
     if (bind(nw_state.sockfd, (const struct sockaddr*)&sender_addr, sizeof(sender_addr)) < 0){
         fprintf(stderr, "Binding error!\n");
         return 1;
@@ -37,6 +48,12 @@ int init_sender_addr(){
     tv.tv_sec = 0;
     tv.tv_usec = TIMEOUT;
     if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        fprintf(stderr, "Timeout error!\n");
+        return 1;
+    }
+    
+    int so_broadcast = 1;
+    if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof so_broadcast) < 0){
         fprintf(stderr, "Timeout error!\n");
         return 1;
     }
@@ -50,54 +67,99 @@ void set_receiver_addr(unsigned long IP){
 }
 
 void send_connection_message(char message){
-	unsigned int msg_len, receiver_addr_len;
-	do{
-		sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
-	}while((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) < 0);
+	sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
+	printf("trying connect\n");
 	nw_state.connected = true;
 }
 
+void receive_ip(int index){
+	int msg_len;
+	unsigned int receiver_addr_len;
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+	printf("receive: %c\n", buffer[0]);
+	if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
+			nw_state.ready[index] = true;
+		}
+	}
+}
+
 void send_init_message(char message){
-	set_receiver_addr(INADDR_ANY);
-	unsigned int msg_len, receiver_addr_len, index = 0;
+	printf("%c\n",message);
+	unsigned int receiver_addr_len, index = 0;
+	int msg_len;
 	unsigned long start_connect = get_cur_time_in_mlsec();
 	sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
-	while(get_cur_time_in_mlsec() - start_connect < 200){
-		if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-			nw_state.ip_addr[index] = inet_ntoa(receiver_addr.sin_addr);
+	
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		printf("receive: %c\n", buffer[0]);
+	}
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
 			nw_state.ready[index++] = true;
 		}
 	}
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
+			nw_state.ready[index++] = true;
+		}
+	}
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
+			nw_state.ready[index++] = true;
+		}
+	}
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
+			nw_state.ready[index++] = true;
+		}
+	}
+	receive_ip(index++);
 	nw_state.find_others = false;
 }
 
 void receive_init_message(){
-	unsigned int msg_len, sender_addr_len;
-	char* message = "Ready";
+	unsigned int sender_addr_len;
+	int msg_len;
+	char message = '1';
 	srand(time(NULL));
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &sender_addr, &sender_addr_len)) > 0){
+	if(msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &sender_addr, &sender_addr_len) > 0){
+		printf("receive: %c\n", buffer[0]);
 		switch(buffer[0]){
-			case 1:
-				usleep((rand() % 180) * 1000);
+			case '1':
+				//usleep((rand() % 180) * 1000);
+				printf("send to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
+				sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 				break;
-			case 2:
+			case '2':
 				nw_state.connected = true;
+				//printf("send to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
+				//sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 				break;
 		}
-		sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 	}
 }
 
 void send_package(char *package, int size){
-	unsigned int msg_len, receiver_addr_len;
-	uint32_t crc, received_crc = 0;
-	crc = crc_32((const unsigned char*)(package + sizeof(uint32_t)), size);
+	unsigned int receiver_addr_len;
+	int msg_len;
+	uint32_t crc = 0, received_crc = 0;
 	memcpy(package, (char*)&crc, sizeof(crc));
 	unsigned long start_sending = get_cur_time_in_mlsec();
 	do{
 		sendto(nw_state.sockfd, (const char *) package, sizeof(uint32_t) + size, 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 		if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) >= sizeof(uint32_t)){
 			memcpy((char*)&received_crc, buffer, sizeof(uint32_t));
+			printf("crc: %d / received crc: %d\n", crc, received_crc);
 		}
 	}while((get_cur_time_in_mlsec() - start_sending) < 1000 && crc != received_crc);
 }
@@ -110,11 +172,11 @@ void send_knobs(){
 }
 
 unsigned int receive_package(){
-	unsigned int msg_len, sender_addr_len;
-	uint32_t crc, received_crc = 0;
+	unsigned int sender_addr_len;
+	int msg_len;
+	uint32_t crc = 0, received_crc = 0;
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &sender_addr, &sender_addr_len)) >= 4){
 		memcpy((char*)&received_crc, buffer, sizeof(uint32_t));
-		crc = crc_32((const unsigned char*)(buffer + sizeof(uint32_t)), msg_len - sizeof(uint32_t));
 		if(received_crc == crc){
 			sendto(nw_state.sockfd, (const char *) &crc , sizeof(crc), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 			return msg_len;
@@ -124,7 +186,7 @@ unsigned int receive_package(){
 }
 
 void receive_knobs(){
-	unsigned int msg_len = receive_package();
+	int msg_len = receive_package();
 	if(msg_len >= 8){
 		memcpy((char*)&received_knobs_value, buffer + sizeof(uint32_t), sizeof(received_knobs_value));
 		last_connection_time = get_cur_time_in_mlsec();
@@ -140,27 +202,28 @@ void initialize_state(){
 	nw_state.sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	memset(nw_state.ready, false, 20);
 	init_sender_addr();
-	set_receiver_addr(INADDR_ANY);
 	received_knobs_value = get_knobs_value();
 }
 
 void* network_communication(void *vargp){
 	initialize_state();
 	last_connection_time = 0;
-	
 	while(true){
+		
 		if(nw_state.sending){
 			if(nw_state.connected){
 				send_knobs();
 			}
 			else if(nw_state.find_others){
-				send_init_message(1);		//broadcast			
+				set_receiver_addr(INADDR_BROADCAST);
+				send_init_message('1');		//broadcast			
 			}else if(nw_state.receiver_ip != NULL){
 				set_receiver_addr(inet_addr(nw_state.receiver_ip));
-				send_connection_message(2); //set connection with one of the desks
+				send_connection_message('2'); //set connection with one of the desks
 			}
 		}else if(nw_state.receiving){
 			if(nw_state.connected){
+				//printf("hi\n");
 				receive_knobs();
 			}
 			else{
@@ -168,7 +231,7 @@ void* network_communication(void *vargp){
 			}
 		}
 		if(get_cur_time_in_mlsec() - last_connection_time > DISCONNECT){
-			nw_state.connected = false;
+			//nw_state.connected = false;
 		}
 	}
     close(nw_state.sockfd);
