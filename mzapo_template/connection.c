@@ -38,6 +38,7 @@ int init_sender_addr(){
     tv.tv_usec = TIMEOUT;
     if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
         fprintf(stderr, "Timeout error!\n");
+        return 1;
     }
     return 0;
 }

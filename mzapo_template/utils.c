@@ -19,12 +19,47 @@ int get_knobs_value(){
 	return *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
 }
 
-void choose_colors(int color_num, mode_ *mode1, mode_ *mode2){
-	rect_ rect_led;
+void set_rects_pos(rect_ *rect_led1, rect_ *rect_led2, int rect_pos){
+	switch(rect_pos){
+		case 0:
+			*rect_led1 = set_rect(0);
+			*rect_led2 = set_rect(0);
+			break;
+		case 1:
+			*rect_led1 = set_rect(1);
+			*rect_led2 = set_rect(1);
+			break;
+		case 2:
+			*rect_led1 = set_rect(0);
+			*rect_led2 = set_rect(1);
+			break;
+	}
+}
+
+void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, int color_num){
+	switch(color_num){
+		case 1:
+			*hsv1 = &(mode1->hsv2);
+			*rgb1 = &(mode1->rgb2);
+			*hsv2 = &(mode2->hsv2);
+			*rgb2 = &(mode2->rgb2);
+			break;
+		default:
+			*hsv1 = &(mode1->hsv);
+			*rgb1 = &(mode1->rgb);
+			*hsv2 = &(mode2->hsv);
+			*rgb2 = &(mode2->rgb);
+			break;
+	}
+}
+
+void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
+	rect_ rect_led1, rect_led2;
 	HSV *led1hsv, *led2hsv;
 	RGB *led1rgb, *led2rgb;
 	
-	set_ptr_to_hsv_rgb(&led1hsv, &led2hsv, &led1rgb, &led2rgb, mode1, mode2, &rect_led, color_num);
+	set_rects_pos(&rect_led1, &rect_led2, rect_pos);
+	set_ptr_to_hsv_rgb(&led1hsv, &led2hsv, &led1rgb, &led2rgb, mode1, mode2, color_num);
 	LED saved_led1 = led1;
 	LED saved_led2 = led2;
 	
@@ -47,11 +82,11 @@ void choose_colors(int color_num, mode_ *mode1, mode_ *mode2){
 		}
 		if(led1.change){
 			change_rgb_hsv(led1hsv, led1rgb, knobs, prev_knobs);
-			rectangle_to_lcd(*led1rgb, rect_led);
+			rectangle_to_lcd(*led1rgb, rect_led1);
 		}
 		if(led2.change){
 			change_rgb_hsv(led2hsv, led2rgb, knobs, prev_knobs);
-			rectangle_to_lcd(*led2rgb, rect_led);
+			rectangle_to_lcd(*led2rgb, rect_led2);
 		}
 		prev_knobs = knobs;
 		frameToLCD();
@@ -94,24 +129,6 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, 
 	}
 }
 
-void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, rect_ *rect_led, int color_num){
-	switch(color_num){
-		case 1:
-			*rect_led = set_rect(1);
-			*hsv1 = &(mode1->hsv2);
-			*rgb1 = &(mode1->rgb2);
-			*hsv2 = &(mode2->hsv2);
-			*rgb2 = &(mode2->rgb2);
-			break;
-		default:
-			*rect_led = set_rect(0);
-			*hsv1 = &(mode1->hsv);
-			*rgb1 = &(mode1->rgb);
-			*hsv2 = &(mode2->hsv);
-			*rgb2 = &(mode2->rgb);
-			break;
-	}
-}
 void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs){
 	rgb->r = change(rgb->r, knobs.r_knob, &(prev_knobs.r_knob), 255); 
 	rgb->g = change(rgb->g, knobs.g_knob, &(prev_knobs.g_knob), 255); 

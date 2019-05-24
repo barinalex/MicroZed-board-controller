@@ -80,7 +80,7 @@ void change_continuous_color(menu_ *menu){
 			led2.cont.rgb2 = led1.cont.rgb2;
 			break;
 	}
-	choose_colors(menu->pos, &(led1.cont), &(led2.cont));
+	choose_colors(menu->pos, menu->pos, &(led1.cont), &(led2.cont));
 }
 
 

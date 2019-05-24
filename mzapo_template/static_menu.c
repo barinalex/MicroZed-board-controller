@@ -11,14 +11,14 @@ void change_static_led1(menu_ *menu){
 	led1.change = true;
 	led2.change = false;
 	//choose_color(menu->pos);
-	choose_colors(0, &(led1.st), &(led2.st));
+	choose_colors(0, 0, &(led1.st), &(led2.st));
 }
 
 void change_static_led2(menu_ *menu){
 	led1.change = false;
 	led2.change = true;
 	//choose_color(menu->pos);
-	choose_colors(0, &(led1.st), &(led2.st));
+	choose_colors(0, 1, &(led1.st), &(led2.st));
 }
 
 void change_static_both(menu_ *menu){
@@ -27,7 +27,7 @@ void change_static_both(menu_ *menu){
 	led2.st.hsv = led1.st.hsv;
 	led2.st.rgb = led1.st.rgb;
 	//choose_color(menu->pos);
-	choose_colors(0, &(led1.st), &(led2.st));
+	choose_colors(0, 2, &(led1.st), &(led2.st));
 }
 
 void copy_led1_to_led2(menu_ *menu){

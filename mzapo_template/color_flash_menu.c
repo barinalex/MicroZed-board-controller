@@ -51,7 +51,7 @@ void change_color_flash_color(menu_ *menu){
 			led2.color_flash.rgb2 = led1.color_flash.rgb2;
 			break;
 	}
-	choose_colors(menu->pos, &(led1.color_flash), &(led2.color_flash));
+	choose_colors(menu->pos, menu->pos, &(led1.color_flash), &(led2.color_flash));
 }
 
 
