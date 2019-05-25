@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
@@ -28,15 +29,17 @@ void add_ip_buttons(menu_ *menu){
 }
 
 void find_all(menu_ *menu){
-	nw_state.sending = true;
-	nw_state.receiving = false;
+	printf("find_all\n");
 	nw_state.connected = false;
+	nw_state.receiving = false;
 	nw_state.find_others = true;
+	nw_state.sending = true;
 	usleep(200000);
 	add_ip_buttons(menu);
 }
 
 void connect(menu_ *menu){
+	printf("connect\n");
 	switch(menu->prev_menu_pos){
 		case 1:
 			nw_state.receiver_ip = menu->prev->button1;
@@ -55,7 +58,29 @@ void connect(menu_ *menu){
 	nw_state.receiving = false;
 	nw_state.connected = false;
 	nw_state.find_others = false;
-	//unsigned long start_connection = get_cur_time_in_mlsec();
+}
+
+void copy(menu_ *menu){
+	printf("copy\n");
+	nw_state.receiving = false;
+	nw_state.connected = false;
+	nw_state.find_others = false;
+	switch(menu->prev_menu_pos){
+		case 1:
+			nw_state.receiver_ip = menu->prev->button1;
+			break;
+		case 2:
+			nw_state.receiver_ip = menu->prev->button2;
+			break;
+		case 3:
+			nw_state.receiver_ip = menu->prev->button3;
+			break;
+		case 4:
+			nw_state.receiver_ip = menu->prev->button4;
+			break;
+	}
+	nw_state.copy = true;
+	nw_state.sending = true;
 }
 
 void disconnect(menu_ *menu){
@@ -86,16 +111,18 @@ void create_connection_menu(menu_ *menu){
 }
 
 void create_ip_menu(menu_ *menu){
-	menu->buttons_number = 2;
+	menu->buttons_number = 3;
 	menu->pos = 0;
 	menu->button0 = "Connect";
 	menu->button1 = "Disconnect";
+	menu->button2 = "Copy leds";
 	menu->name = "Connection";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
 	menu->func0 = &connect;
 	menu->func1 = &disconnect;
+	menu->func2 = &copy;
 	set_no_links(menu);
 }
 

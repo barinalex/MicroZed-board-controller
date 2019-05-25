@@ -6,6 +6,7 @@
 
 typedef struct{
 	bool sending;
+	bool copy;
 	bool receiving;
 	bool connected;
 	bool find_others;

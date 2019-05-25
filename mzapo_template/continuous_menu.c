@@ -72,21 +72,32 @@ void change_continuous_color(menu_ *menu){
 		case 0:
 			led1.change = true;
 			led2.change = false;
+			choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.cont), &(led2.cont));
 			break;
 		case 1:
 			led1.change = false;
 			led2.change = true;
+			choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.cont), &(led2.cont));
 			break;
 		case 2:
 			led1.change = true;
 			led2.change = true;
+			HSV hsv = led2.cont.hsv;
+			RGB rgb = led2.cont.rgb;
+			HSV hsv2 = led2.cont.hsv2;
+			RGB rgb2 = led2.cont.rgb2;
 			led2.cont.hsv = led1.cont.hsv;
 			led2.cont.rgb = led1.cont.rgb;
 			led2.cont.hsv2 = led1.cont.hsv2;
 			led2.cont.rgb2 = led1.cont.rgb2;
+			if (!choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.cont), &(led2.cont))){
+				led2.cont.hsv = hsv;
+				led2.cont.rgb = rgb;
+				led2.cont.hsv2 = hsv2;
+				led2.cont.rgb2 = rgb2;
+			}
 			break;
 	}
-	choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.cont), &(led2.cont));
 }
 
 

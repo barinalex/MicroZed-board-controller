@@ -19,6 +19,7 @@
 #include "connection.h"
 #include "led_control.h"
 #include "utils.h"
+#include "reg_manager.h"
 
 char buffer[BUFSIZE];
 struct sockaddr_in sender_addr, receiver_addr;
@@ -154,6 +155,10 @@ void receive_init_message(){
 				//printf("send to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
 				//sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 				break;
+			case '3':
+				nw_state.connected = true;
+				nw_state.copy = true;
+				break;
 		}
 	}
 }
@@ -162,13 +167,13 @@ void send_package(char *package, int size){
 	unsigned int receiver_addr_len;
 	int msg_len;
 	uint32_t crc = 0, received_crc = 0;
-	memcpy(package, (char*)&crc, sizeof(crc));
+	//memcpy(package, (char*)&crc, sizeof(crc));
 	unsigned long start_sending = get_cur_time_in_mlsec();
 	do{
 		sendto(nw_state.sockfd, (const char *) package, sizeof(uint32_t) + size, 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 		if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) >= sizeof(uint32_t)){
 			memcpy((char*)&received_crc, buffer, sizeof(uint32_t));
-			printf("crc: %d / received crc: %d\n", crc, received_crc);
+			//printf("crc: %d / received crc: %d\n", crc, received_crc);
 		}
 	}while((get_cur_time_in_mlsec() - start_sending) < 1000 && crc != received_crc);
 }
@@ -176,8 +181,19 @@ void send_package(char *package, int size){
 void send_knobs(){
 	char package[16];
 	int knobs = get_knobs_value();
+	uint32_t crc = 0;
+	memcpy(package, (char*)&crc, sizeof(crc));
 	memcpy(package + sizeof(uint32_t), (char*)&knobs, sizeof(knobs));
 	send_package(package, sizeof(knobs));
+}
+
+void send_leds(){
+	char package[1024];
+	uint32_t crc = 1;
+	memcpy(package, (char*)&crc, sizeof(crc));
+	memcpy(package + sizeof(uint32_t), (char*)&led1, sizeof(led1));
+	memcpy(package + sizeof(uint32_t) + sizeof(led1), (char*)&led2, sizeof(led2));
+	send_package(package, sizeof(led1) + sizeof(led2));
 }
 
 unsigned int receive_package(){
@@ -186,7 +202,7 @@ unsigned int receive_package(){
 	uint32_t crc = 0, received_crc = 0;
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &sender_addr, &sender_addr_len)) >= 4){
 		memcpy((char*)&received_crc, buffer, sizeof(uint32_t));
-		if(received_crc == crc){
+		if(received_crc < 2){
 			sendto(nw_state.sockfd, (const char *) &crc , sizeof(crc), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 			return msg_len;
 		}
@@ -194,19 +210,36 @@ unsigned int receive_package(){
 	return 0;
 }
 
-void receive_knobs(){
+void receive(){
 	int msg_len = receive_package();
+	uint32_t received_crc;
 	if(msg_len >= 8){
-		memcpy((char*)&received_knobs_value, buffer + sizeof(uint32_t), sizeof(received_knobs_value));
-		last_connection_time = get_cur_time_in_mlsec();
+		memcpy((char*)&received_crc, buffer, sizeof(uint32_t));
+		switch(received_crc){
+			case 0:
+				memcpy((char*)&received_knobs_value, buffer + sizeof(uint32_t), sizeof(received_knobs_value));
+				last_connection_time = get_cur_time_in_mlsec();
+				break;
+			case 1:
+				printf("sizeof(led1) %d\n", sizeof(led1));
+				printf("sizeof(led2) %d\n", sizeof(led2));
+				memcpy((char*)&led1, buffer + sizeof(uint32_t), sizeof(led1));
+				memcpy((char*)&led2, buffer + sizeof(uint32_t) + sizeof(led1), sizeof(led1));
+				led1.mem_base = mem_base + SPILED_REG_LED_RGB1_o;
+				led2.mem_base = mem_base + SPILED_REG_LED_RGB2_o;
+				nw_state.copy = false;
+				nw_state.connected = false;
+				break;
+		}
 	}
-	if(get_cur_time_in_mlsec() - last_connection_time > 1000){
+	if(get_cur_time_in_mlsec() - last_connection_time > 200){
 		nw_state.connected = false;
 	}
 }
 
 void initialize_state(){
 	nw_state.sending = false;
+	nw_state.copy = false;
 	nw_state.receiving = true;
 	nw_state.connected = false;
 	nw_state.find_others = false;
@@ -221,22 +254,32 @@ void* network_communication(void *vargp){
 	initialize_state();
 	last_connection_time = 0;
 	while(true){
-		
 		if(nw_state.sending){
 			if(nw_state.connected){
-				send_knobs();
+				if(!nw_state.copy){
+					send_knobs();
+				}
+				else{
+					send_leds();
+					nw_state.connected = false;
+					nw_state.copy = false;
+					nw_state.sending = false;
+				}
 			}
 			else if(nw_state.find_others){
 				set_receiver_addr(INADDR_BROADCAST);
 				send_init_message('1');		//broadcast			
 			}else if(nw_state.receiver_ip != NULL){
 				set_receiver_addr(inet_addr(nw_state.receiver_ip));
-				send_connection_message('2'); //set connection with one of the desks
+				if(nw_state.copy){
+					send_connection_message('3'); //set connection with one of the desks
+				}else{
+					send_connection_message('2'); //set connection with one of the desks
+				}
 			}
 		}else if(nw_state.receiving){
 			if(nw_state.connected){
-				//printf("hi\n");
-				receive_knobs();
+				receive();
 			}
 			else{
 				receive_init_message();

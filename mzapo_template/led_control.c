@@ -54,7 +54,7 @@ void continuously_changing(LED *led){
 		change_hsv_8(&(led->cont.hsv_cur.v), led->cont.hsv.v, led->cont.hsv2.v, &(led->cont.v_decrement), &(led->cont.v_to_2));
 		led->cont.v_last_change_time = get_cur_time_in_mlsec();
 	}
-	printf("%d %d %d\n", led->cont.hsv_cur.h, led->cont.hsv_cur.s, led->cont.hsv_cur.v);
+	//printf("%d %d %d\n", led->cont.hsv_cur.h, led->cont.hsv_cur.s, led->cont.hsv_cur.v);
 	led->cont.rgb_cur = hsv_to_rgb(led->cont.hsv_cur);	
 	
 	if(led->illuminate){

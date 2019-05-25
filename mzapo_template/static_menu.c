@@ -45,9 +45,14 @@ void change_static_led2(menu_ *menu){
 void change_static_both(menu_ *menu){
 	led1.change = true;
 	led2.change = true;
+	HSV hsv = led2.st.hsv;
+	RGB rgb = led2.st.rgb;
 	led2.st.hsv = led1.st.hsv;
 	led2.st.rgb = led1.st.rgb;
-	choose_colors(&(menu->cur_knobs), 0, 0, &(led1.st), &(led2.st));
+	if (!choose_colors(&(menu->cur_knobs), 0, 0, &(led1.st), &(led2.st))){
+		led2.st.hsv = hsv;
+		led2.st.rgb = rgb;
+	}
 }
 
 void copy_led1_to_led2(menu_ *menu){

@@ -37,21 +37,32 @@ void change_color_flash_color(menu_ *menu){
 		case 0:
 			led1.change = true;
 			led2.change = false;
+			choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.color_flash), &(led2.color_flash));
 			break;
 		case 1:
 			led1.change = false;
 			led2.change = true;
+			choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.color_flash), &(led2.color_flash));
 			break;
 		case 2:
 			led1.change = true;
-			led2.change = true;
+			led2.change = true;			
+			HSV hsv = led2.color_flash.hsv;
+			RGB rgb = led2.color_flash.rgb;
+			HSV hsv2 = led2.color_flash.hsv2;
+			RGB rgb2 = led2.color_flash.rgb2;
 			led2.color_flash.hsv = led1.color_flash.hsv;
 			led2.color_flash.rgb = led1.color_flash.rgb;
 			led2.color_flash.hsv2 = led1.color_flash.hsv2;
 			led2.color_flash.rgb2 = led1.color_flash.rgb2;
+			if (!choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.color_flash), &(led2.color_flash))){
+				led2.color_flash.hsv = hsv;
+				led2.color_flash.rgb = rgb;
+				led2.color_flash.hsv2 = hsv2;
+				led2.color_flash.rgb2 = rgb2;
+			}
 			break;
 	}
-	choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.color_flash), &(led2.color_flash));
 }
 
 

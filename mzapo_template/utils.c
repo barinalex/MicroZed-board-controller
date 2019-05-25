@@ -59,7 +59,7 @@ void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *m
 	}
 }
 
-void choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
+bool choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
 	rect_ rect_led1, rect_led2;
 	HSV *led1hsv, *led2hsv;
 	RGB *led1rgb, *led2rgb;
@@ -86,7 +86,7 @@ void choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mod
 		if(knobs->b_button && !knobs->b_pressed) {
 			knobs->b_pressed = true;
 			clear_screen();
-			break;
+			return true;
 		}
 		if(led1.change){
 			change_rgb_hsv(led1hsv, led1rgb, *knobs, &prev_knobs1);
@@ -98,6 +98,7 @@ void choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mod
 		}
 		frameToLCD();
 	}
+	return false;
 }
 
 void choose_time(knobs_ *knobs, unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border){

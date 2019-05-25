@@ -77,7 +77,7 @@ void menu(menu_ menu){
 			get_knobs_data(&(menu.prev_knobs));
 			prev_b_knob = menu.prev_knobs.b_knob;
 		}
-		if(!jumped && ((nw_state.receiving && nw_state.connected) || (nw_state.sending && nw_state.connected))){
+		if(!jumped && ((nw_state.receiving && nw_state.connected && !nw_state.copy) || (nw_state.sending && nw_state.connected && !nw_state.copy))){
 			jumped = true;
 			go_desk_menu(&menu);
 			get_knobs_data(&(menu.prev_knobs));
@@ -121,12 +121,10 @@ void draw_menu(menu_ menu){
 
 void go_desk_menu(menu_ *menu){
 	clear_screen();
-	printf("go_desk_menu1\n");
 	if(menu->desk_menu != NULL){
 		*menu = *(menu->desk_menu);
 	}
 	menu->pos = 0;
-	printf("go_desk_menu2\n");
 }
 
 void go_next_menu(menu_ *menu){
