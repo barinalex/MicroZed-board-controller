@@ -81,7 +81,7 @@ void choose_shift_flash(menu_ *menu){
 		case 4:
 			led1.change = false;
 			led2.change = true;
-			choose_time(&(led1.flash.shift), &(shift), 220, led1.flash.illumination_time + 1);
+			choose_time(&(led1.flash.shift), &(shift), 220, led1.flash.illumination_time);
 			if(shift > 0) {
 				led2.flash.shift = shift;
 				prepare_for_shift(&(led1.flash.shift));

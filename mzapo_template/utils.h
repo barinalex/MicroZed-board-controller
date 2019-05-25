@@ -89,9 +89,9 @@ void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *m
 
 void set_rects_pos(rect_ *rect_led1, rect_ *rect_led2, int rect_pos);
 
-void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
+void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs);
 
-void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs);
+void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs);
 
 void get_knobs_data(knobs_ *knobs);
 

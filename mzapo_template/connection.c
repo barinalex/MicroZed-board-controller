@@ -200,6 +200,9 @@ void receive_knobs(){
 		memcpy((char*)&received_knobs_value, buffer + sizeof(uint32_t), sizeof(received_knobs_value));
 		last_connection_time = get_cur_time_in_mlsec();
 	}
+	if(get_cur_time_in_mlsec() - last_connection_time > 1000){
+		nw_state.connected = false;
+	}
 }
 
 void initialize_state(){

@@ -83,15 +83,13 @@ void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
 			break;
 		}
 		if(led1.change){
-			change_rgb_hsv(led1hsv, led1rgb, knobs, prev_knobs1);
+			change_rgb_hsv(led1hsv, led1rgb, knobs, &prev_knobs1);
 			rectangle_to_lcd(*led1rgb, rect_led1);
 		}
 		if(led2.change){
-			change_rgb_hsv(led2hsv, led2rgb, knobs, prev_knobs2);
+			change_rgb_hsv(led2hsv, led2rgb, knobs, &prev_knobs2);
 			rectangle_to_lcd(*led2rgb, rect_led2);
 		}
-		prev_knobs1 = knobs;
-		prev_knobs2 = knobs;
 		frameToLCD();
 	}
 }
@@ -131,25 +129,22 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, 
 			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		frameToLCD();
-		prev_knobs1 = knobs;
-		prev_knobs2 = knobs;
-		
 	}
 }
 
-void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs){
-	rgb->r = change(rgb->r, knobs.r_knob, &(prev_knobs.r_knob), 255); 
-	rgb->g = change(rgb->g, knobs.g_knob, &(prev_knobs.g_knob), 255); 
-	rgb->b = change(rgb->b, knobs.b_knob, &(prev_knobs.b_knob), 255);
+void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs){
+	rgb->r = change(rgb->r, knobs.r_knob, &(prev_knobs->r_knob), 255); 
+	rgb->g = change(rgb->g, knobs.g_knob, &(prev_knobs->g_knob), 255); 
+	rgb->b = change(rgb->b, knobs.b_knob, &(prev_knobs->b_knob), 255);
 	printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);
 	*hsv = rgb_to_hsv(*rgb);
 	printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
 }
 
-void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ prev_knobs){
-	hsv->h = change(hsv->h, knobs.r_knob, &(prev_knobs.r_knob), 360); 
-	hsv->s = change(hsv->s, knobs.g_knob, &(prev_knobs.g_knob), 100); 
-	hsv->v = change(hsv->v, knobs.b_knob, &(prev_knobs.b_knob), 100);
+void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs){
+	hsv->h = change(hsv->h, knobs.r_knob, &(prev_knobs->r_knob), 360); 
+	hsv->s = change(hsv->s, knobs.g_knob, &(prev_knobs->g_knob), 100); 
+	hsv->v = change(hsv->v, knobs.b_knob, &(prev_knobs->b_knob), 100);
 	*rgb = hsv_to_rgb(*hsv);
 	printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
 	printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);	
@@ -195,8 +190,7 @@ void rect_to_lcd(uint16_t color, rect_ rect){
 
 uint16_t change(int data, uint8_t cur_value, uint8_t *prev_value, int max_data){
 	data += get_difference(cur_value, prev_value);
-	data %= (max_data + 1);
-	data = (data > max_data) ? max_data: data;
+	data = (data > max_data) ? 0: data;
 	data = (data < 0) ? max_data: data;
 	printf("data: %d\n", data);
 	return data;
@@ -216,44 +210,52 @@ int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t *prev_value, 
 	if(is_increased(cur_value, *prev_value)){
 		menu_pos++;
 		menu_pos = (menu_pos > buttons_number - 1) ? buttons_number - 1: menu_pos;
+		printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
 	else if(is_decreased(cur_value, *prev_value)){
 		menu_pos--;
 		menu_pos = (menu_pos < 0) ? 0: menu_pos;
+		printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
 	return menu_pos;
 }
 
 int get_difference(uint8_t cur_value, uint8_t *prev_value){
-	int difference = 0;// koef;
-	if(cur_value < 30 && *prev_value > 225 && (cur_value + (255 - *prev_value)) > KNOBSTEP){
-		difference = cur_value + (255 - (*prev_value));
-		//*prev_value = cur_value;
+	int difference = 0;
+	if(is_increased(cur_value, *prev_value)){
+		if(cur_value < 50 && *prev_value > 200){
+			difference = cur_value + (255 - (int)(*prev_value));
+		}else{
+			difference = (int)cur_value - ((int)*prev_value);
+		}
+		printf("cur: %d prev: %d\n", cur_value, *prev_value);
+		*prev_value = cur_value;
 	}
-	else if(cur_value > 225 && *prev_value < 30 && ((255 - cur_value) + *prev_value) > KNOBSTEP){
-		difference = - ((int)*prev_value) - (255 - cur_value);
-		//*prev_value = cur_value;
+	else if(is_decreased(cur_value, *prev_value)){
+		if((cur_value > 200 && *prev_value < 50)){
+			difference = - ((int)*prev_value) - (255 - (int)cur_value);
+		}
+		else{
+			difference = (int)cur_value - ((int)*prev_value);
+		}
+		printf("cur: %d prev: %d\n", cur_value, *prev_value);
+		*prev_value = cur_value;
 	}
-	else if(abs((int)cur_value - (int)*prev_value) > KNOBSTEP){
-		//koef = ((int)cur_value - (int)*prev_value > 0) ? KNOBSTEP: -KNOBSTEP;
-		difference = (int)cur_value - ((int)*prev_value);
-		//*prev_value = cur_value;
-	}
-	return (difference == 0) ? 0 : difference / 4;
+	return difference/4;
 }
 
 bool is_increased(uint8_t cur_value, uint8_t prev_value){
 	return ((cur_value > prev_value + KNOBSTEP) &&
-			!(cur_value > 250 && prev_value < 5)) ||
-			(cur_value < 5 && prev_value > 250);
+			!(cur_value > 200 && prev_value < 50)) ||
+			(cur_value < 50 && prev_value > 200);
 }
 
 bool is_decreased(uint8_t cur_value, uint8_t prev_value){
 	return ((cur_value < prev_value - KNOBSTEP) &&
-			!(cur_value < 5 && prev_value > 250))|| 
-			(cur_value > 250 && prev_value < 5);
+			!(cur_value < 50 && prev_value > 200))|| 
+			(cur_value > 200 && prev_value < 50);
 }
 
 rect_ set_rect(int menu_pos){

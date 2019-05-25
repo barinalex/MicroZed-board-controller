@@ -260,7 +260,7 @@ void *create_menu(void *vargp){
 	menu_ continuous_color_menu_both;
 	create_continuous_color_menu(&continuous_color_menu_led1);
 	create_continuous_color_menu(&continuous_color_menu_led2);
-	create_continuous_color_menu(&continuous_color_menu_both);
+	create_continuous_both_color_menu(&continuous_color_menu_both);
 	
 	continuous_menu.next0 = &continuous_color_menu_led1;
 	continuous_menu.next1 = &continuous_color_menu_led2;

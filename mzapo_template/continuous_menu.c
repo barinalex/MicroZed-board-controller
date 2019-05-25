@@ -26,7 +26,13 @@ void cont_on(LED *led, bool to_2){
 
 void set_anti_phase(menu_ *menu){
 	cont_on(&led1, true);
-	cont_on(&led2, false);
+	HSV hsv = led2.cont.hsv;
+	RGB rgb = led2.cont.rgb;
+	led2.cont.hsv = led2.cont.hsv2;
+	led2.cont.rgb = led2.cont.rgb2;
+	led2.cont.hsv2 = hsv;
+	led2.cont.rgb2 = rgb;
+	cont_on(&led2, true);
 }
 
 void turn_on_off_continuous(menu_ *menu){
@@ -120,6 +126,24 @@ void create_continuous_menu(menu_ *menu){
 }
 
 void create_continuous_color_menu(menu_ *menu){
+	menu->buttons_number = 4;
+	menu->pos = 0;
+	menu->button0 = "Color 1";
+	menu->button1 = "Color 2";
+	menu->button2 = "Period";
+	menu->button3 = "On/Off";
+	menu->name = "Led";
+	menu->comment = "exit";
+	menu->comment2 = "choose";
+	
+	menu->func0 = &change_continuous_color;
+	menu->func1 = &change_continuous_color;
+	menu->func2 = &change_continuous_time;
+	menu->func3 = &turn_on_off_continuous;
+	set_no_links(menu);
+}
+
+void create_continuous_both_color_menu(menu_ *menu){
 	menu->buttons_number = 5;
 	menu->pos = 0;
 	menu->button0 = "Color 1";
