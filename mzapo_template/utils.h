@@ -11,7 +11,7 @@
 #define BLUE 0x001F
 #define WHITE 0xFFFF
 #define GREEN 0x07E0
-#define DELAY 200000
+#define DELAY 180000
 
 typedef struct{
 	uint32_t rgb_value;
@@ -20,7 +20,11 @@ typedef struct{
 	uint8_t b_knob;
 	uint8_t r_button;
 	uint8_t g_button;
-	uint8_t b_button;	
+	uint8_t b_button;
+	
+	bool r_pressed;
+	bool g_pressed;
+	bool b_pressed;	
 } knobs_;
 
 typedef struct{
@@ -77,13 +81,15 @@ typedef struct{
 
 bool big_text;
 
+void actualize_buttons_state(knobs_ *knobs);
+
 int get_knobs_value();
 
 int get_difference(uint8_t cur_value, uint8_t *prev_value);
 
-void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2);
+void choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mode_ *mode2);
 
-void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border);
+void choose_time(knobs_ *knobs, unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border);
 
 void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *mode1, mode_ *mode2, int color_num);
 

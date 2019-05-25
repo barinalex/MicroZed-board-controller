@@ -3,6 +3,9 @@
 
 
 void create_static_menu(menu_ *menu);
+void create_static_led1_menu(menu_ *menu);
+void create_static_led2_menu(menu_ *menu);
+void create_static_both_menu(menu_ *menu);
 
 void change_static_led1(menu_ *menu);
 void change_static_led2(menu_ *menu);

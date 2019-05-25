@@ -22,11 +22,11 @@ void change_text_size(menu_ *menu);
 
 void set_rects(rect_ *top, rect_ *bottom){
 	top->top = 0;
-	top->bottom = 50;
+	top->bottom = 45;
 	top->left = 0;
 	top->right = 480;
 	
-	bottom->top = 270;
+	bottom->top = 275;
 	bottom->bottom = 320;
 	bottom->left = 0;
 	bottom->right = 480;
@@ -34,25 +34,28 @@ void set_rects(rect_ *top, rect_ *bottom){
 
 void menu(menu_ menu){
 	get_knobs_data(&(menu.prev_knobs));
-	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
 	bool jumped = false;
+	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
 	set_rects(&top_comment, &bottom_comment);
-	rect_to_lcd(SEA, top_comment);
-	rect_to_lcd(SEA, bottom_comment);
+	rect_to_lcd(WHITE, top_comment);
+	rect_to_lcd(WHITE, bottom_comment);
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
-		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, &prev_b_knob, menu.pos);
+		actualize_buttons_state(&(menu.cur_knobs));
+		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, &(prev_b_knob), menu.pos);
 		menu.prev_knobs = menu.cur_knobs;
 		draw_menu(menu);
-		if(menu.cur_knobs.r_button && menu.prev != NULL){
+		if((menu.cur_knobs.r_button && !menu.cur_knobs.r_pressed) && menu.prev != NULL){
+			menu.cur_knobs.r_pressed = true;
+			prev_b_knob = menu.prev_knobs.b_knob;
 			go_prev_menu(&menu);
 			continue;
 		}
-		if(menu.cur_knobs.b_button){
-			special_text_color = 0x07E0;
+		if(menu.cur_knobs.b_button && !menu.cur_knobs.b_pressed){
+			menu.cur_knobs.b_pressed = true;
+			special_text_color = GREEN;
 			draw_menu(menu);
-			usleep(DELAY);
 			switch(menu.pos){
 				case 0:
 					menu.func0(&menu);
@@ -72,10 +75,13 @@ void menu(menu_ menu){
 			}
 			special_text_color = BLUE;
 			get_knobs_data(&(menu.prev_knobs));
+			prev_b_knob = menu.prev_knobs.b_knob;
 		}
 		if(!jumped && ((nw_state.receiving && nw_state.connected) || (nw_state.sending && nw_state.connected))){
 			jumped = true;
 			go_desk_menu(&menu);
+			get_knobs_data(&(menu.prev_knobs));
+			prev_b_knob = menu.prev_knobs.b_knob;
 		}
 		else if(jumped && !nw_state.connected){
 			jumped = false;
@@ -84,84 +90,85 @@ void menu(menu_ menu){
 }
 
 void draw_menu(menu_ menu){
-	strToFrame(menu.name, 10, 50, BLACK, SEA, big_text);
-	if(menu.buttons_number > 0) strToFrame(menu.button0, 60, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 1) strToFrame(menu.button1, 100, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 2) strToFrame(menu.button2, 140, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 3) strToFrame(menu.button3, 180, 50, WHITE, BLACK, big_text);
-	if(menu.buttons_number > 4) strToFrame(menu.button4, 220, 50, WHITE, BLACK, big_text);
+	strToFrame(menu.name, 10, 30, BLACK, WHITE, big_text);
+	if(menu.buttons_number > 0) strToFrame(menu.button0, 60, 30, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 1) strToFrame(menu.button1, 100, 30, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 2) strToFrame(menu.button2, 140, 30, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 3) strToFrame(menu.button3, 180, 30, WHITE, BLACK, big_text);
+	if(menu.buttons_number > 4) strToFrame(menu.button4, 220, 30, WHITE, BLACK, big_text);
 	switch(menu.pos){
 		case 0:
-			strToFrame(menu.button0, 60, 50, special_text_color, BLACK, big_text);
+			strToFrame(menu.button0, 60, 30, special_text_color, BLACK, big_text);
 			break;
 		case 1:
-			strToFrame(menu.button1, 100, 50, special_text_color, BLACK, big_text);
+			strToFrame(menu.button1, 100, 30, special_text_color, BLACK, big_text);
 			break;
 		case 2:
-			strToFrame(menu.button2, 140, 50, special_text_color, BLACK, big_text);
+			strToFrame(menu.button2, 140, 30, special_text_color, BLACK, big_text);
 			break;
 		case 3:
-			strToFrame(menu.button3, 180, 50, special_text_color, BLACK, big_text);
+			strToFrame(menu.button3, 180, 30, special_text_color, BLACK, big_text);
 			break;
 		case 4:
-			strToFrame(menu.button4, 220, 50, special_text_color, BLACK, big_text);
+			strToFrame(menu.button4, 220, 30, special_text_color, BLACK, big_text);
 			break;
 	}
-	strToFrame(menu.comment, 280, 50, RED, SEA, big_text);
-	strToFrame(menu.comment2, 280, 350, BLUE, SEA, big_text);
+	strToFrame(menu.comment, 280, 30, RED, WHITE, big_text);
+	strToFrame(menu.comment2, 280, 350, BLUE, WHITE, big_text);
 	frameToLCD();
 }
 
 
 void go_desk_menu(menu_ *menu){
 	clear_screen();
+	printf("go_desk_menu1\n");
+	if(menu->desk_menu != NULL){
+		*menu = *(menu->desk_menu);
+	}
 	menu->pos = 0;
-	printf("here1\n");
-	*menu = *(menu->desk_menu);
-	printf("here2\n");
-	//menu->prev_menu_pos = 0;
-	printf("here3\n");
+	printf("go_desk_menu2\n");
 }
 
 void go_next_menu(menu_ *menu){
+	knobs_ cur_knobs = menu->cur_knobs;
 	switch(menu->pos){
 		case 0:
 			if(menu->next0 != NULL){
 				clear_screen();
-				menu->pos = 0;
 				*menu = *(menu->next0);
+				menu->cur_knobs = cur_knobs;
 				menu->prev_menu_pos = 0;
 			}
 			break;
 		case 1:
 			if(menu->next1 != NULL){
 				clear_screen();
-				menu->pos = 0;
 				*menu = *(menu->next1);
+				menu->cur_knobs = cur_knobs;
 				menu->prev_menu_pos = 1;
 			}
 			break;
 		case 2:
 			if(menu->next2 != NULL){
 				clear_screen();
-				menu->pos = 0;
 				*menu = *(menu->next2);
+				menu->cur_knobs = cur_knobs;
 				menu->prev_menu_pos = 2;
 			}
 			break;
 		case 3:
 			if(menu->next3 != NULL){
 				clear_screen();
-				menu->pos = 0;
 				*menu = *(menu->next3);
+				menu->cur_knobs = cur_knobs;
 				menu->prev_menu_pos = 3;
 			}
 			break;
 		case 4:
 			if(menu->next4 != NULL){
 				clear_screen();
-				menu->pos = 0;
 				*menu = *(menu->next4);
+				menu->cur_knobs = cur_knobs;
 				menu->prev_menu_pos = 4;
 			}
 			break;				
@@ -171,9 +178,13 @@ void go_next_menu(menu_ *menu){
 
 void go_prev_menu(menu_ *menu){
 	if(menu->prev != NULL){
+		knobs_ cur_knobs = menu->cur_knobs;
+		int pos = menu->prev_menu_pos;
 		usleep(DELAY);
 		menu->pos = 0;
 		*(menu) = *(menu->prev);
+		menu->pos = pos;
+		menu->cur_knobs = cur_knobs;
 		get_knobs_data(&(menu->prev_knobs));
 		clear_screen();
 		draw_menu(*menu);
@@ -192,6 +203,7 @@ void set_no_links(menu_ *menu){
 	menu->next2 = NULL;
 	menu->next3 = NULL;
 	menu->next4 = NULL;
+	menu->desk_menu = NULL;
 }
 
 void choose_connection(menu_ *menu){
@@ -248,12 +260,26 @@ void *create_menu(void *vargp){
 	create_static_menu(&static_menu);
 	desk_menu.next0 = &static_menu;
 	static_menu.prev = &desk_menu;
+	static_menu.desk_menu = &desk_menu;
 	
+	menu_ static_menu_led1;
+	menu_ static_menu_led2;
+	menu_ static_menu_both;
+	create_static_led1_menu(&static_menu_led1);
+	create_static_led2_menu(&static_menu_led2);
+	create_static_both_menu(&static_menu_both);
+	static_menu.next0 = &static_menu_led1;
+	static_menu.next1 = &static_menu_led2;
+	static_menu.next2 = &static_menu_both;
+	static_menu_led1.prev = &static_menu;
+	static_menu_led2.prev = &static_menu;
+	static_menu_both.prev = &static_menu;
 	
 	menu_ continuous_menu;
 	create_continuous_menu(&continuous_menu);
 	desk_menu.next1 = &continuous_menu;
 	continuous_menu.prev = &desk_menu;
+	continuous_menu.desk_menu = &desk_menu;
 	
 	menu_ continuous_color_menu_led1;
 	menu_ continuous_color_menu_led2;
@@ -274,6 +300,7 @@ void *create_menu(void *vargp){
 	create_color_flash_menu(&color_flash_menu);
 	desk_menu.next2 = &color_flash_menu;
 	color_flash_menu.prev = &desk_menu;
+	color_flash_menu.desk_menu = &desk_menu;
 	
 	menu_ color_flash_menu_led1;
 	menu_ color_flash_menu_led2;
@@ -294,6 +321,7 @@ void *create_menu(void *vargp){
 	create_flash_menu(&flash_menu);
 	desk_menu.next3 = &flash_menu;
 	flash_menu.prev = &desk_menu;
+	flash_menu.desk_menu = &desk_menu;
 	
 	menu_ flash_menu_led1;
 	menu_ flash_menu_led2;
@@ -314,6 +342,7 @@ void *create_menu(void *vargp){
 	create_connection_menu(&connection_menu);
 	main_menu.next1 = &connection_menu;
 	connection_menu.prev = &main_menu;
+	connection_menu.desk_menu = &desk_menu;
 	
 	menu_ ip1_menu;
 	create_ip_menu(&ip1_menu);

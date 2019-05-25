@@ -13,6 +13,7 @@
 
 #define BLACK 0x0
 #define SEA 0x6715
+#define WHITE 0xFFFF
 
 void frameToLCD()
 {
@@ -84,12 +85,15 @@ int strToFrame(char *str, int yRow, int xColumn, uint16_t forecolor, uint16_t ba
 }
 
 int int_to_frame(unsigned long number, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor, bool big){
-		char str[12];
+		char str[14];
 		sprintf(str, "%lu", number);
-		str[11] = '\0';
-		for(int i = 0; i < 12; ++i){
+		str[13] = '\0';
+		for(int i = 0; i < 14; ++i){
 			if(str[i] == '\0'){
-				for(int j = i; j < 11; ++j){
+				str[i] = ' ';
+				str[i + 1] = 'm';
+				str[i + 2] = 's';
+				for(int j = i + 3; j < 13; ++j){
 					str[j] = ' ';
 				}
 				break;
@@ -101,8 +105,8 @@ int int_to_frame(unsigned long number, int yRow, int xColumn, uint16_t forecolor
 void clear_screen(){
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
-			if(r < 50 || r >= 270)
-				frame[r][c] = SEA;
+			if(r < 45 || r >= 275)
+				frame[r][c] = WHITE;
 			else
 				frame[r][c] = BLACK;
 		}

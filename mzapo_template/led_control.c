@@ -119,7 +119,8 @@ void* led_thread(void *vargp){
 	led2.color_flash.shift = 0;
 	led1.cont.on = false;
 	led2.cont.on = false;
-		
+	light_off(&led1);
+	light_off(&led2);
 	while(true){
 		if(led1.flash.on){
 			flashing(&led1);
@@ -133,8 +134,11 @@ void* led_thread(void *vargp){
 		else if(led1.cont.on){
 			continuously_changing(&led1);
 		}
-		else{
+		else if(led1.st.on){
 			static_lighting(&led1);
+		}
+		else{
+			light_off(&led1);
 		}
 		if(led2.color_flash.on){
 			color_flashing(&led2);
@@ -142,8 +146,10 @@ void* led_thread(void *vargp){
 		else if(led2.cont.on){
 			continuously_changing(&led2);
 		}
-		else{
+		else if(led2.st.on){
 			static_lighting(&led2);
+		}else{
+			light_off(&led2);
 		}
 	}
 	return NULL;

@@ -50,10 +50,10 @@ void change_flash_time(menu_ *menu){
 	}
 	switch(menu->pos){
 		case 0:
-			choose_time(&(led1.flash.illumination_time), &(led2.flash.illumination_time), 60, 0);
+			choose_time(&(menu->cur_knobs), &(led1.flash.illumination_time), &(led2.flash.illumination_time), 60, 0);
 			break;
 		case 1:
-			choose_time(&(led1.flash.extinction_time), &(led2.flash.extinction_time), 100, 0);
+			choose_time(&(menu->cur_knobs), &(led1.flash.extinction_time), &(led2.flash.extinction_time), 100, 0);
 			break;
 	}
 }
@@ -72,7 +72,7 @@ void choose_shift_flash(menu_ *menu){
 		case 3:
 			led1.change = true;
 			led2.change = false;
-			choose_time(&(shift), &(led2.flash.shift), 180, led2.flash.illumination_time + 1);
+			choose_time(&(menu->cur_knobs), &(shift), &(led2.flash.shift), 180, led2.flash.illumination_time + 1);
 			if(shift > 0) {
 				led1.flash.shift = shift;
 				prepare_for_shift(&(led2.flash.shift));
@@ -81,7 +81,7 @@ void choose_shift_flash(menu_ *menu){
 		case 4:
 			led1.change = false;
 			led2.change = true;
-			choose_time(&(led1.flash.shift), &(shift), 220, led1.flash.illumination_time);
+			choose_time(&(menu->cur_knobs), &(led1.flash.shift), &(shift), 220, led1.flash.illumination_time);
 			if(shift > 0) {
 				led2.flash.shift = shift;
 				prepare_for_shift(&(led1.flash.shift));

@@ -55,7 +55,7 @@ void connect(menu_ *menu){
 	nw_state.receiving = false;
 	nw_state.connected = false;
 	nw_state.find_others = false;
-	unsigned long start_connection = get_cur_time_in_mlsec();
+	//unsigned long start_connection = get_cur_time_in_mlsec();
 }
 
 void disconnect(menu_ *menu){

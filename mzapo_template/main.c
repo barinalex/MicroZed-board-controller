@@ -4,11 +4,6 @@
  *******************************************************************/
 
 #define _POSIX_C_SOURCE 200112L
-#define BLACK 0x0
-#define BLUE 0x001F
-#define WHITE 0xFFFF
-#define GREEN 0x07E0
-#define DELAY 200000
 
 #include <stdlib.h>
 #include <stdio.h>

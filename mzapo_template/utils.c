@@ -12,6 +12,12 @@
 
 #define KNOBSTEP 3
 
+void actualize_buttons_state(knobs_ *knobs){
+	knobs->r_pressed = (knobs->r_pressed) ? !(knobs->r_button == 0) : knobs->r_pressed;
+	knobs->g_pressed = (knobs->g_pressed) ? !(knobs->g_button == 0) : knobs->g_pressed;
+	knobs->b_pressed = (knobs->b_pressed) ? !(knobs->b_button == 0) : knobs->b_pressed;
+}
+
 int get_knobs_value(){
 	if(nw_state.connected && nw_state.receiving){
 		return received_knobs_value;
@@ -53,7 +59,7 @@ void set_ptr_to_hsv_rgb(HSV** hsv1, HSV** hsv2, RGB** rgb1, RGB** rgb2, mode_ *m
 	}
 }
 
-void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
+void choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
 	rect_ rect_led1, rect_led2;
 	HSV *led1hsv, *led2hsv;
 	RGB *led1rgb, *led2rgb;
@@ -63,39 +69,38 @@ void choose_colors(int color_num, int rect_pos, mode_ *mode1, mode_ *mode2){
 	LED saved_led1 = led1;
 	LED saved_led2 = led2;
 	
-	knobs_ knobs;
 	knobs_ prev_knobs1;
 	knobs_ prev_knobs2;
 	get_knobs_data(&prev_knobs1);
 	get_knobs_data(&prev_knobs2);
 	while(true){
-		get_knobs_data(&knobs);
-		if(knobs.r_button) {
+		get_knobs_data(knobs);
+		actualize_buttons_state(knobs);
+		if(knobs->r_button && !knobs->r_pressed) {
 			led1 = saved_led1;
 			led2 = saved_led2;
-			usleep(DELAY);
+			knobs->r_pressed = true;
 			clear_screen();
 			break;
 		}
-		if(knobs.b_button) {
-			usleep(DELAY);
+		if(knobs->b_button && !knobs->b_pressed) {
+			knobs->b_pressed = true;
 			clear_screen();
 			break;
 		}
 		if(led1.change){
-			change_rgb_hsv(led1hsv, led1rgb, knobs, &prev_knobs1);
+			change_rgb_hsv(led1hsv, led1rgb, *knobs, &prev_knobs1);
 			rectangle_to_lcd(*led1rgb, rect_led1);
 		}
 		if(led2.change){
-			change_rgb_hsv(led2hsv, led2rgb, knobs, &prev_knobs2);
+			change_rgb_hsv(led2hsv, led2rgb, *knobs, &prev_knobs2);
 			rectangle_to_lcd(*led2rgb, rect_led2);
 		}
 		frameToLCD();
 	}
 }
 
-void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border){
-	knobs_ knobs;
+void choose_time(knobs_ *knobs, unsigned long *led1time, unsigned long *led2time, int lcd_pos, int border){
 	knobs_ prev_knobs1;
 	knobs_ prev_knobs2;
 	get_knobs_data(&prev_knobs1);
@@ -104,29 +109,28 @@ void choose_time(unsigned long *led1time, unsigned long *led2time, int lcd_pos, 
 	LED saved_led2 = led2;
 	
 	while(true){
-		get_knobs_data(&knobs);
-		if(knobs.r_button) {
+		get_knobs_data(knobs);
+		actualize_buttons_state(knobs);
+		if(knobs->r_button && !knobs->r_pressed) {
 			led1 = saved_led1;
 			led2 = saved_led2;
-			usleep(DELAY);
+			knobs->r_pressed = true;
 			clear_screen();
 			break;
 		}
-		if(knobs.b_button) {
-			usleep(DELAY);
+		if(knobs->b_button && !knobs->b_pressed) {
+			knobs->b_pressed = true;
 			clear_screen();
 			break;
 		}
 		if(led1.change){
-			*led1time = change_long(*led1time, knobs.b_knob, &(prev_knobs1.b_knob), 100, border);
+			*led1time = change_long(*led1time, knobs->b_knob, &(prev_knobs1.b_knob), 100, border);
 			int_to_frame(*led1time, lcd_pos, 240, WHITE, BLACK, big_text);
-			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		if(led2.change){
-			*led2time = change_long(*led2time, knobs.b_knob, &(prev_knobs2.b_knob), 100, border);
+			*led2time = change_long(*led2time, knobs->b_knob, &(prev_knobs2.b_knob), 100, border);
 			printf("led2time: %lu\n", *led2time);
 			int_to_frame(*led2time, lcd_pos, 240, WHITE, BLACK, big_text);
-			strToFrame(" ms", lcd_pos, 240 + 100, WHITE, BLACK, big_text);
 		}
 		frameToLCD();
 	}
@@ -243,7 +247,7 @@ int get_difference(uint8_t cur_value, uint8_t *prev_value){
 		printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
-	return difference/4;
+	return difference / 4;
 }
 
 bool is_increased(uint8_t cur_value, uint8_t prev_value){

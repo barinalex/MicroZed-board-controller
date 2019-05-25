@@ -89,7 +89,7 @@ void send_init_message(char message){
 	printf("%c\n",message);
 	unsigned int receiver_addr_len, index = 0;
 	int msg_len;
-	unsigned long start_connect = get_cur_time_in_mlsec();
+	//unsigned long start_connect = get_cur_time_in_mlsec();
 	sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 	
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
@@ -141,7 +141,7 @@ void receive_init_message(){
 	int msg_len;
 	char message = '1';
 	srand(time(NULL));
-	if(msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &sender_addr, &sender_addr_len) > 0){
+	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &sender_addr, &sender_addr_len)) > 0){
 		printf("receive: %c\n", buffer[0]);
 		switch(buffer[0]){
 			case '1':

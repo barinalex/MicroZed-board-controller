@@ -86,7 +86,7 @@ void change_continuous_color(menu_ *menu){
 			led2.cont.rgb2 = led1.cont.rgb2;
 			break;
 	}
-	choose_colors(menu->pos, menu->pos, &(led1.cont), &(led2.cont));
+	choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.cont), &(led2.cont));
 }
 
 
@@ -106,7 +106,7 @@ void change_continuous_time(menu_ *menu){
 			led2.cont.change_time = led1.cont.change_time;
 			break;
 	}
-	choose_time(&(led1.cont.change_time), &(led2.cont.change_time), 140, 0);
+	choose_time(&(menu->cur_knobs), &(led1.cont.change_time), &(led2.cont.change_time), 140, 0);
 }
 
 void create_continuous_menu(menu_ *menu){
