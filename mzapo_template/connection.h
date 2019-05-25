@@ -15,6 +15,7 @@ typedef struct{
 	
 	char ip_addr[20][20];
 	char *receiver_ip;
+	char rec_ip[20];
 	bool ready[20];
 }network_state_;
 

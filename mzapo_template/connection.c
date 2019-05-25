@@ -25,12 +25,13 @@ char buffer[BUFSIZE];
 struct sockaddr_in sender_addr, receiver_addr;
 unsigned long last_connection_time;
 
-int init_sender_addr(){
-
+void init_sender_addr(){
     sender_addr.sin_family    = AF_INET; // IPv4
     sender_addr.sin_addr.s_addr = INADDR_ANY;
     sender_addr.sin_port = htons(SENDER_PORT);
-    
+}
+
+int init_socket(){
    	if ((nw_state.sockfd = socket (AF_INET, SOCK_DGRAM, 0)) == -1) {
         fprintf(stderr, "Socket error!\n");
         return 1;
@@ -51,8 +52,28 @@ int init_sender_addr(){
         fprintf(stderr, "Timeout error!\n");
         return 1;
     }
+    return 0;
+}
+
+int init_broad_socket(){
+   	if ((nw_state.broad_socket = socket (AF_INET, SOCK_DGRAM, 0)) == -1) {
+        fprintf(stderr, "Socket error!\n");
+        return 1;
+    }
+	int yes=1;
+	if (setsockopt(nw_state.broad_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+	 	fprintf(stderr, "Setsockopt error!\n");
+        return 1;
+	}
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = TIMEOUT;
+    if (setsockopt(nw_state.broad_socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        fprintf(stderr, "Timeout error!\n");
+        return 1;
+    }
     int so_broadcast = 1;
-    if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof so_broadcast) < 0){
+    if (setsockopt(nw_state.broad_socket, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof so_broadcast) < 0){
         fprintf(stderr, "Timeout error!\n");
         return 1;
     }
@@ -78,8 +99,9 @@ void send_connection_message(char message){
 void receive_ip(int index){
 	int msg_len;
 	unsigned int receiver_addr_len;
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-	printf("receive: %c\n", buffer[0]);
+	if((msg_len = recvfrom(nw_state.broad_socket, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+	printf("receive ip: %c\n", buffer[0]);
+	printf("ip: %s\n", inet_ntoa(receiver_addr.sin_addr));
 	if(buffer[0] == '1'){
 			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
 			printf("ip: %s\n", nw_state.ip_addr[index]);
@@ -90,13 +112,21 @@ void receive_ip(int index){
 
 void send_init_message(char message){
 	printf("%c\n",message);
-	unsigned int receiver_addr_len, index = 0;
+	unsigned int index = 0;
+	unsigned int receiver_addr_len;
 	int msg_len;
-	sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
+	sendto(nw_state.broad_socket, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 	
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+	if((msg_len = recvfrom(nw_state.broad_socket, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
 		printf("receive: %c\n", buffer[0]);
+		printf("ip: %s\n", inet_ntoa(receiver_addr.sin_addr));
+		if(buffer[0] == '1'){
+			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
+			printf("ip: %s\n", nw_state.ip_addr[index]);
+			nw_state.ready[index++] = true;
+		}
 	}
+	receive_ip(index++);
 	receive_ip(index++);
 	receive_ip(index++);
 	receive_ip(index++);
@@ -217,7 +247,13 @@ void initialize_state(){
 	nw_state.sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	memset(nw_state.ready, false, 20);
 	init_sender_addr();
+	init_socket();
+	init_broad_socket();
 	received_knobs_value = get_knobs_value();
+}
+
+void sending(){
+	
 }
 
 void* network_communication(void *vargp){
@@ -237,7 +273,8 @@ void* network_communication(void *vargp){
 				set_receiver_addr(INADDR_BROADCAST);
 				send_init_message('1');		//broadcast			
 			}else if(nw_state.receiver_ip != NULL){
-				set_receiver_addr(inet_addr(nw_state.receiver_ip));
+				printf("send to ip: %s\n", nw_state.rec_ip);
+				set_receiver_addr(inet_addr(nw_state.rec_ip));
 				if(nw_state.copy){
 					send_connection_message('3'); //set copy connection with one of the desks
 				}else{

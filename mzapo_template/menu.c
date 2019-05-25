@@ -207,6 +207,7 @@ void set_no_links(menu_ *menu){
 void choose_connection(menu_ *menu){
 	if(!(nw_state.connected && nw_state.receiving)){
 		go_next_menu(menu);
+		find_all(menu);
 	}
 }
 
