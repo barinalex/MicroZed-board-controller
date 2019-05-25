@@ -87,13 +87,28 @@ void set_receiver_addr(unsigned long IP){
 }
 
 void send_connection_message(char message){
-	char package[20];
-	package[0] = message;
-	memcpy(package + sizeof(message), inet_ntoa(receiver_addr.sin_addr), 16);
-	
-	sendto(nw_state.sockfd, (const char *) package, 20, 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
+	int msg_len;
+	unsigned int receiver_addr_len;
 	printf("Try to connect\n");
-	nw_state.connected = true;
+	
+	sendto(nw_state.sockfd, (const char *) &message, sizeof(char), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
+	//if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
+		printf("ack received\n");
+		nw_state.connected = true;
+	//}
+	
+	/*
+	unsigned long start_sending = get_cur_time_in_mlsec();
+	do{
+		sendto(nw_state.sockfd, (const char *) &message, sizeof(char), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
+		if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len))){
+			printf("sender received_form_ip: %s\n", inet_ntoa(receiver_addr.sin_addr));
+			if(buffer[0] == '1'){
+				nw_state.connected = true;
+			}
+		}
+	}while((get_cur_time_in_mlsec() - start_sending) < 1000);
+	*/
 }
 
 void receive_ip(int index){
@@ -130,7 +145,6 @@ void send_init_message(char message){
 	receive_ip(index++);
 	receive_ip(index++);
 	receive_ip(index++);
-	receive_ip(index++);
 	nw_state.find_others = false;
 }
 
@@ -144,13 +158,13 @@ void receive_init_message(){
 		switch(buffer[0]){
 			case '1':
 				//usleep((rand() % 180) * 1000);
-				printf("send to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
+				printf("send ack to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
 				sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 				break;
 			case '2':
 				nw_state.connected = true;
-				//printf("send to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
-				//sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
+				printf("send ack to ip: %s\n", inet_ntoa(sender_addr.sin_addr));
+				sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &sender_addr, sizeof(sender_addr));
 				break;
 			case '3':
 				nw_state.connected = true;
@@ -170,6 +184,7 @@ void send_package(char *package, int size){
 		sendto(nw_state.sockfd, (const char *) package, sizeof(uint32_t) + size, 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 		if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) >= sizeof(uint32_t)){
 			memcpy((char*)&received_crc, buffer, sizeof(uint32_t));
+			//printf("received_form_ip: %s\n", inet_ntoa(receiver_addr.sin_addr));
 			//printf("crc: %d / received crc: %d\n", crc, received_crc);
 		}
 	}while((get_cur_time_in_mlsec() - start_sending) < 1000 && crc != received_crc);
