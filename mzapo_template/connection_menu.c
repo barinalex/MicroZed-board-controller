@@ -100,9 +100,9 @@ void disconnect(menu_ *menu){
 void create_connection_menu(menu_ *menu){
 	menu->buttons_number = 0;
 	menu->pos = 0;
-	menu->button0 = "";
-	menu->button1 = "";
-	menu->button2 = "";
+	menu->button0 = ""; //napsat disconnect tady
+	menu->button1 = ""; //tady find
+	menu->button2 = ""; //dal adresy desek
 	menu->button3 = "";
 	menu->button4 = "";
 	menu->name = "Network";

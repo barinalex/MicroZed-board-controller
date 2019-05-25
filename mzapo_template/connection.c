@@ -13,7 +13,7 @@
 #define RECEIVER_PORT 8888
 #define SENDER_PORT 8888
 #define BUFSIZE 1024
-#define TIMEOUT 10000
+#define TIMEOUT 10000 //min timeout min chyb??
 #define DISCONNECT 30000
 
 #include "connection.h"
