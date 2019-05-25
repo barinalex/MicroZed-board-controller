@@ -36,8 +36,7 @@ int init_sender_addr(){
         return 1;
     }
     int yes=1;
-	if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
-		        sizeof(yes)) == -1) {
+	if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
 	 	fprintf(stderr, "Setsockopt error!\n");
         return 1;
 	}
@@ -52,7 +51,6 @@ int init_sender_addr(){
         fprintf(stderr, "Timeout error!\n");
         return 1;
     }
-    
     int so_broadcast = 1;
     if (setsockopt(nw_state.sockfd, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof so_broadcast) < 0){
         fprintf(stderr, "Timeout error!\n");
@@ -68,8 +66,12 @@ void set_receiver_addr(unsigned long IP){
 }
 
 void send_connection_message(char message){
-	sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
-	printf("trying connect\n");
+	char package[20];
+	package[0] = message;
+	memcpy(package + sizeof(message), inet_ntoa(receiver_addr.sin_addr), 16);
+	
+	sendto(nw_state.sockfd, (const char *) package, 20, 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
+	printf("Try to connect\n");
 	nw_state.connected = true;
 }
 
@@ -90,49 +92,14 @@ void send_init_message(char message){
 	printf("%c\n",message);
 	unsigned int receiver_addr_len, index = 0;
 	int msg_len;
-	//unsigned long start_connect = get_cur_time_in_mlsec();
 	sendto(nw_state.sockfd, (const char *) &message, sizeof(message), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 	
 	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
 		printf("receive: %c\n", buffer[0]);
-		/*if(buffer[0] == '1'){
-			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
-			printf("ip: %s\n", nw_state.ip_addr[index]);
-			nw_state.ready[index++] = true;
-		}*/
 	}
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-		printf("receive: %c\n", buffer[0]);
-		if(buffer[0] == '1'){
-			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
-			printf("ip: %s\n", nw_state.ip_addr[index]);
-			nw_state.ready[index++] = true;
-		}
-	}
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-		printf("receive: %c\n", buffer[0]);
-		if(buffer[0] == '1'){
-			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
-			printf("ip: %s\n", nw_state.ip_addr[index]);
-			nw_state.ready[index++] = true;
-		}
-	}
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-		printf("receive: %c\n", buffer[0]);
-		if(buffer[0] == '1'){
-			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
-			printf("ip: %s\n", nw_state.ip_addr[index]);
-			nw_state.ready[index++] = true;
-		}
-	}
-	if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-		printf("receive: %c\n", buffer[0]);
-		if(buffer[0] == '1'){
-			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
-			printf("ip: %s\n", nw_state.ip_addr[index]);
-			nw_state.ready[index++] = true;
-		}
-	}
+	receive_ip(index++);
+	receive_ip(index++);
+	receive_ip(index++);
 	receive_ip(index++);
 	nw_state.find_others = false;
 }
@@ -194,6 +161,10 @@ void send_leds(){
 	memcpy(package + sizeof(uint32_t), (char*)&led1, sizeof(led1));
 	memcpy(package + sizeof(uint32_t) + sizeof(led1), (char*)&led2, sizeof(led2));
 	send_package(package, sizeof(led1) + sizeof(led2));
+	nw_state.connected = false;
+	nw_state.copy = false;
+	nw_state.sending = false;
+	nw_state.receiving = true;
 }
 
 unsigned int receive_package(){
@@ -221,12 +192,11 @@ void receive(){
 				last_connection_time = get_cur_time_in_mlsec();
 				break;
 			case 1:
-				printf("sizeof(led1) %d\n", sizeof(led1));
-				printf("sizeof(led2) %d\n", sizeof(led2));
 				memcpy((char*)&led1, buffer + sizeof(uint32_t), sizeof(led1));
-				memcpy((char*)&led2, buffer + sizeof(uint32_t) + sizeof(led1), sizeof(led1));
+				memcpy((char*)&led2, buffer + sizeof(uint32_t) + sizeof(led1), sizeof(led2));
 				led1.mem_base = mem_base + SPILED_REG_LED_RGB1_o;
 				led2.mem_base = mem_base + SPILED_REG_LED_RGB2_o;
+				set_last_time();
 				nw_state.copy = false;
 				nw_state.connected = false;
 				break;
@@ -261,9 +231,6 @@ void* network_communication(void *vargp){
 				}
 				else{
 					send_leds();
-					nw_state.connected = false;
-					nw_state.copy = false;
-					nw_state.sending = false;
 				}
 			}
 			else if(nw_state.find_others){
@@ -272,9 +239,9 @@ void* network_communication(void *vargp){
 			}else if(nw_state.receiver_ip != NULL){
 				set_receiver_addr(inet_addr(nw_state.receiver_ip));
 				if(nw_state.copy){
-					send_connection_message('3'); //set connection with one of the desks
+					send_connection_message('3'); //set copy connection with one of the desks
 				}else{
-					send_connection_message('2'); //set connection with one of the desks
+					send_connection_message('2'); //set control connection with one of the desks
 				}
 			}
 		}else if(nw_state.receiving){

@@ -11,6 +11,25 @@ void change_hsv_(uint16_t *cur_color_param, uint16_t color1_param, uint16_t colo
 
 void light_off(LED *led);
 
+void set_last_time(){
+	unsigned long cur_time = get_cur_time_in_mlsec();
+	led1.color_flash.last_change_time = cur_time;
+	led1.flash.last_change_time = cur_time;
+	led1.st.last_change_time = cur_time;
+	led1.cont.last_change_time = cur_time;
+	led1.cont.h_last_change_time = cur_time;
+	led1.cont.s_last_change_time = cur_time;
+	led1.cont.v_last_change_time = cur_time;
+	
+	led2.color_flash.last_change_time = cur_time;
+	led2.flash.last_change_time = cur_time;
+	led2.st.last_change_time = cur_time;
+	led2.cont.last_change_time = cur_time;
+	led2.cont.h_last_change_time = cur_time;
+	led2.cont.s_last_change_time = cur_time;
+	led2.cont.v_last_change_time = cur_time;
+}
+
 void change_hsv(uint16_t *cur_color_param, uint16_t color1_param, uint16_t color2_param, int *decrement, bool *to_2){
 	if(*to_2){
 		if((*cur_color_param) == color2_param){

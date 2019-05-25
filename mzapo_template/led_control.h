@@ -21,4 +21,6 @@ void static_lighting(LED *led);
 
 void* led_thread(void *vargp);
 
+void set_last_time();
+
 #endif

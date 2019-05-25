@@ -215,13 +215,13 @@ int change_menu_pos(int buttons_number, uint8_t cur_value, uint8_t *prev_value, 
 	if(is_increased(cur_value, *prev_value)){
 		menu_pos++;
 		menu_pos = (menu_pos > buttons_number - 1) ? buttons_number - 1: menu_pos;
-		printf("cur: %d prev: %d\n", cur_value, *prev_value);
+		//printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
 	else if(is_decreased(cur_value, *prev_value)){
 		menu_pos--;
 		menu_pos = (menu_pos < 0) ? 0: menu_pos;
-		printf("cur: %d prev: %d\n", cur_value, *prev_value);
+		//printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
 	return menu_pos;
@@ -235,7 +235,7 @@ int get_difference(uint8_t cur_value, uint8_t *prev_value){
 		}else{
 			difference = (int)cur_value - ((int)*prev_value);
 		}
-		printf("cur: %d prev: %d\n", cur_value, *prev_value);
+		//printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
 	else if(is_decreased(cur_value, *prev_value)){
@@ -245,7 +245,7 @@ int get_difference(uint8_t cur_value, uint8_t *prev_value){
 		else{
 			difference = (int)cur_value - ((int)*prev_value);
 		}
-		printf("cur: %d prev: %d\n", cur_value, *prev_value);
+		//printf("cur: %d prev: %d\n", cur_value, *prev_value);
 		*prev_value = cur_value;
 	}
 	return difference / 4;

@@ -3,5 +3,7 @@
 
 void create_connection_menu(menu_ *menu);
 void create_ip_menu(menu_ *menu);
+void go_connection_menu(menu_ *menu);
+void find_all(menu_ *menu);
 
 #endif

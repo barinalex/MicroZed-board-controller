@@ -11,6 +11,7 @@ typedef struct{
 	bool connected;
 	bool find_others;
 	int sockfd;
+	int broad_socket;
 	
 	char ip_addr[20][20];
 	char *receiver_ip;
@@ -19,6 +20,10 @@ typedef struct{
 
 network_state_ nw_state;
 int received_knobs_value;
+
+void set_receiver_addr(unsigned long IP);
+
+void send_init_message(char message);
 
 void* network_communication(void *vargp);
 

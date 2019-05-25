@@ -214,8 +214,8 @@ void create_main_menu(menu_ *menu){
 	menu->buttons_number = 3;
 	menu->pos = 0;
 	menu->button0 = "This";
-	menu->button1 = "Choose another";
-	menu->button2 = "Change Text Size";
+	menu->button1 = "Network";
+	menu->button2 = "TEXT";
 	menu->name = "Main";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
@@ -342,6 +342,11 @@ void *create_menu(void *vargp){
 	connection_menu.prev = &main_menu;
 	connection_menu.desk_menu = &desk_menu;
 	
+	menu_ ip0_menu;
+	create_ip_menu(&ip0_menu);
+	connection_menu.next0 = &ip0_menu;
+	ip0_menu.prev = &connection_menu;
+	ip0_menu.desk_menu = &desk_menu;
 	menu_ ip1_menu;
 	create_ip_menu(&ip1_menu);
 	connection_menu.next1 = &ip1_menu;

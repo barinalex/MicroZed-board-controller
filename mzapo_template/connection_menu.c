@@ -30,6 +30,7 @@ void add_ip_buttons(menu_ *menu){
 
 void find_all(menu_ *menu){
 	printf("find_all\n");
+	nw_state.sending = false;
 	nw_state.connected = false;
 	nw_state.receiving = false;
 	nw_state.find_others = true;
@@ -62,25 +63,26 @@ void connect(menu_ *menu){
 
 void copy(menu_ *menu){
 	printf("copy\n");
-	nw_state.receiving = false;
-	nw_state.connected = false;
-	nw_state.find_others = false;
-	switch(menu->prev_menu_pos){
-		case 1:
-			nw_state.receiver_ip = menu->prev->button1;
-			break;
-		case 2:
-			nw_state.receiver_ip = menu->prev->button2;
-			break;
-		case 3:
-			nw_state.receiver_ip = menu->prev->button3;
-			break;
-		case 4:
-			nw_state.receiver_ip = menu->prev->button4;
-			break;
+	if(!nw_state.connected){
+		nw_state.receiving = false;
+		nw_state.find_others = false;
+		switch(menu->prev_menu_pos){
+			case 1:
+				nw_state.receiver_ip = menu->prev->button1;
+				break;
+			case 2:
+				nw_state.receiver_ip = menu->prev->button2;
+				break;
+			case 3:
+				nw_state.receiver_ip = menu->prev->button3;
+				break;
+			case 4:
+				nw_state.receiver_ip = menu->prev->button4;
+				break;
+		}
+		nw_state.copy = true;
+		nw_state.sending = true;
 	}
-	nw_state.copy = true;
-	nw_state.sending = true;
 }
 
 void disconnect(menu_ *menu){
@@ -88,6 +90,7 @@ void disconnect(menu_ *menu){
 	nw_state.receiving = true;
 	nw_state.connected = false;
 	nw_state.find_others = false;
+	nw_state.receiver_ip = NULL;
 }
 
 void create_connection_menu(menu_ *menu){
