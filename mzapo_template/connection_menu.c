@@ -100,9 +100,9 @@ void create_connection_menu(menu_ *menu){
 	for(int i = 0; i < 5; ++i){
 		strcpy(nw_state.ip_addr[i], "");
 	}
-	menu->button0 = nw_state.ip_addr[0]; //napsat disconnect tady
-	menu->button1 = nw_state.ip_addr[1]; //tady find
-	menu->button2 = nw_state.ip_addr[2]; //dal adresy desek
+	menu->button0 = nw_state.ip_addr[0]; 
+	menu->button1 = nw_state.ip_addr[1]; 
+	menu->button2 = nw_state.ip_addr[2]; 
 	menu->button3 = nw_state.ip_addr[3];
 	menu->button4 = nw_state.ip_addr[4];
 	menu->name = "Network";
@@ -122,14 +122,12 @@ void create_ip_menu(menu_ *menu){
 	menu->pos = 0;
 	menu->button0 = "Connect";
 	menu->button1 = "Copy leds";
-	//menu->button2 = "Disconnect";
 	menu->name = "Connection";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
 	menu->func0 = &connect;
 	menu->func1 = &copy;
-	//menu->func2 = &disconnect;
 	set_no_links(menu);
 }
 

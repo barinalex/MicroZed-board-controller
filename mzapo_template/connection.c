@@ -87,8 +87,6 @@ void set_receiver_addr(unsigned long IP){
 }
 
 void send_connection_message(char message){
-	int msg_len;
-	unsigned int receiver_addr_len;
 	printf("Try to connect\n");
 	sendto(nw_state.sockfd, (const char *) &message, sizeof(char), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
 	nw_state.connected = true;

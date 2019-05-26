@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
@@ -129,47 +130,49 @@ void go_desk_menu(menu_ *menu){
 
 void go_next_menu(menu_ *menu){
 	knobs_ cur_knobs = menu->cur_knobs;
-	switch(menu->pos){
-		case 0:
-			if(menu->next0 != NULL){
-				clear_screen();
-				*menu = *(menu->next0);
-				menu->cur_knobs = cur_knobs;
-				menu->prev_menu_pos = 0;
-			}
-			break;
-		case 1:
-			if(menu->next1 != NULL){
-				clear_screen();
-				*menu = *(menu->next1);
-				menu->cur_knobs = cur_knobs;
-				menu->prev_menu_pos = 1;
-			}
-			break;
-		case 2:
-			if(menu->next2 != NULL){
-				clear_screen();
-				*menu = *(menu->next2);
-				menu->cur_knobs = cur_knobs;
-				menu->prev_menu_pos = 2;
-			}
-			break;
-		case 3:
-			if(menu->next3 != NULL){
-				clear_screen();
-				*menu = *(menu->next3);
-				menu->cur_knobs = cur_knobs;
-				menu->prev_menu_pos = 3;
-			}
-			break;
-		case 4:
-			if(menu->next4 != NULL){
-				clear_screen();
-				*menu = *(menu->next4);
-				menu->cur_knobs = cur_knobs;
-				menu->prev_menu_pos = 4;
-			}
-			break;				
+	if(menu->buttons_number != 0){
+		switch(menu->pos){
+			case 0:
+				if(menu->next0 != NULL){
+					clear_screen();
+					*menu = *(menu->next0);
+					menu->cur_knobs = cur_knobs;
+					menu->prev_menu_pos = 0;
+				}
+				break;
+			case 1:
+				if(menu->next1 != NULL){
+					clear_screen();
+					*menu = *(menu->next1);
+					menu->cur_knobs = cur_knobs;
+					menu->prev_menu_pos = 1;
+				}
+				break;
+			case 2:
+				if(menu->next2 != NULL){
+					clear_screen();
+					*menu = *(menu->next2);
+					menu->cur_knobs = cur_knobs;
+					menu->prev_menu_pos = 2;
+				}
+				break;
+			case 3:
+				if(menu->next3 != NULL){
+					clear_screen();
+					*menu = *(menu->next3);
+					menu->cur_knobs = cur_knobs;
+					menu->prev_menu_pos = 3;
+				}
+				break;
+			case 4:
+				if(menu->next4 != NULL){
+					clear_screen();
+					*menu = *(menu->next4);
+					menu->cur_knobs = cur_knobs;
+					menu->prev_menu_pos = 4;
+				}
+				break;				
+		}
 	}
 	draw_menu(*menu);
 }
@@ -214,7 +217,7 @@ void choose_connection(menu_ *menu){
 void create_main_menu(menu_ *menu){
 	menu->buttons_number = 3;
 	menu->pos = 0;
-	menu->button0 = "This";
+	menu->button0 = "Effects";
 	menu->button1 = "Network";
 	menu->button2 = "TEXT";
 	menu->name = "Main";
