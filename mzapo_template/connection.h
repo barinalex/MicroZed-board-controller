@@ -10,6 +10,8 @@ typedef struct{
 	bool receiving;
 	bool connected;
 	bool find_others;
+	
+	bool first_find;
 	int sockfd;
 	int broad_socket;
 	

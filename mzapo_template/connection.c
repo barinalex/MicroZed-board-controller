@@ -90,25 +90,8 @@ void send_connection_message(char message){
 	int msg_len;
 	unsigned int receiver_addr_len;
 	printf("Try to connect\n");
-	
 	sendto(nw_state.sockfd, (const char *) &message, sizeof(char), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
-	//if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
-		printf("ack received\n");
-		nw_state.connected = true;
-	//}
-	
-	/*
-	unsigned long start_sending = get_cur_time_in_mlsec();
-	do{
-		sendto(nw_state.sockfd, (const char *) &message, sizeof(char), 0, (const struct sockaddr *) &receiver_addr, sizeof(receiver_addr));
-		if((msg_len = recvfrom(nw_state.sockfd, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len))){
-			printf("sender received_form_ip: %s\n", inet_ntoa(receiver_addr.sin_addr));
-			if(buffer[0] == '1'){
-				nw_state.connected = true;
-			}
-		}
-	}while((get_cur_time_in_mlsec() - start_sending) < 1000);
-	*/
+	nw_state.connected = true;
 }
 
 void receive_ip(int index){
@@ -135,7 +118,7 @@ void send_init_message(char message){
 	if((msg_len = recvfrom(nw_state.broad_socket, buffer, BUFSIZE, 0, (struct sockaddr *) &receiver_addr, &receiver_addr_len)) > 0){
 		printf("receive: %c\n", buffer[0]);
 		printf("ip: %s\n", inet_ntoa(receiver_addr.sin_addr));
-		if(buffer[0] == '1'){
+		if(buffer[0] == '1' && !nw_state.first_find){
 			strcpy(nw_state.ip_addr[index], inet_ntoa(receiver_addr.sin_addr));
 			printf("ip: %s\n", nw_state.ip_addr[index]);
 			nw_state.ready[index++] = true;
@@ -258,6 +241,7 @@ void initialize_state(){
 	nw_state.receiving = true;
 	nw_state.connected = false;
 	nw_state.find_others = false;
+	nw_state.first_find = false;
 	nw_state.receiver_ip = NULL;
 	nw_state.sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	memset(nw_state.ready, false, 20);

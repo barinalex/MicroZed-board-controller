@@ -25,7 +25,7 @@ typedef struct menu_{
 	char *button4;
 	char *comment;
 	char *comment2;
-		
+			
 	void (*func0)();
 	void (*func1)();
 	void (*func2)();

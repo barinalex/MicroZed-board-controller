@@ -12,23 +12,18 @@
 void add_ip_buttons(menu_ *menu){
 	if(nw_state.ready[0]){
 		menu->buttons_number = 1;
-		//menu->button0 = nw_state.ip_addr[0];
 	}
 	if(nw_state.ready[1]){
 		menu->buttons_number = 2;
-		//menu->button1 = nw_state.ip_addr[1];
 	}
 	if(nw_state.ready[2]){
 		menu->buttons_number = 3;
-		//menu->button2 = nw_state.ip_addr[2];
 	}
 	if(nw_state.ready[3]){
 		menu->buttons_number = 4;
-		//menu->button3 = nw_state.ip_addr[3];
 	}
 	if(nw_state.ready[4]){
 		menu->buttons_number = 5;
-		//menu->button4 = nw_state.ip_addr[4];
 	}
 }
 
@@ -43,6 +38,7 @@ void find_all(menu_ *menu){
 	add_ip_buttons(menu);
 	nw_state.sending = false;
 	nw_state.receiving = true;
+	nw_state.first_find = true;
 }
 
 void set_ip(menu_ *menu){
