@@ -23,4 +23,6 @@ void* led_thread(void *vargp);
 
 void set_last_time();
 
+void cont_on(LED *led, bool to_2);
+
 #endif

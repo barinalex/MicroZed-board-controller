@@ -11,6 +11,22 @@ void change_hsv_(uint16_t *cur_color_param, uint16_t color1_param, uint16_t colo
 
 void light_off(LED *led);
 
+void cont_on(LED *led, bool to_2){
+	led->cont.hsv_cur = (to_2) ? led->cont.hsv: led->cont.hsv2;
+	
+	led->cont.h_to_2 = to_2;
+	led->cont.s_to_2 = to_2;
+	led->cont.v_to_2 = to_2;
+	
+	led->cont.h_decrement = (to_2 && led->cont.hsv.h < led->cont.hsv2.h) ? 1: -1;
+	led->cont.s_decrement = (to_2 && led->cont.hsv.s < led->cont.hsv2.s) ? 1: -1;
+	led->cont.v_decrement = (to_2 && led->cont.hsv.v < led->cont.hsv2.v) ? 1: -1;
+	
+	led->cont.h_last_change_time = get_cur_time_in_mlsec();
+	led->cont.s_last_change_time = get_cur_time_in_mlsec();
+	led->cont.v_last_change_time = get_cur_time_in_mlsec();
+}
+
 void set_last_time(){
 	unsigned long cur_time = get_cur_time_in_mlsec();
 	led1.color_flash.last_change_time = cur_time;
@@ -30,7 +46,7 @@ void set_last_time(){
 	led2.cont.v_last_change_time = cur_time;
 }
 
-void change_hsv(uint16_t *cur_color_param, uint16_t color1_param, uint16_t color2_param, int *decrement, bool *to_2){
+void change_hsv(LED *led, uint16_t *cur_color_param, uint16_t color1_param, uint16_t color2_param, int *decrement, bool *to_2){
 	if(*to_2){
 		if((*cur_color_param) == color2_param){
 			(*to_2) = !(*to_2);
@@ -43,9 +59,13 @@ void change_hsv(uint16_t *cur_color_param, uint16_t color1_param, uint16_t color
 		}
 	}
 	(*cur_color_param) += (*decrement);
+	if((*cur_color_param) > 360){
+		printf("error!: %d\n",(*cur_color_param));
+		cont_on(led, true);
+	}
 }
 
-void change_hsv_8(uint8_t *cur_color_param, uint8_t color1_param, uint8_t color2_param, int *decrement, bool *to_2){
+void change_hsv_8(LED *led, uint8_t *cur_color_param, uint8_t color1_param, uint8_t color2_param, int *decrement, bool *to_2){
 	if(*to_2){
 		if((*cur_color_param) == color2_param){
 			(*to_2) = !(*to_2);
@@ -58,19 +78,23 @@ void change_hsv_8(uint8_t *cur_color_param, uint8_t color1_param, uint8_t color2
 		}
 	}
 	(*cur_color_param) += (*decrement);
+	if((*cur_color_param) > 100){
+		printf("error!: %d\n",(*cur_color_param));
+		cont_on(led, true);
+	}
 }
 
 void continuously_changing(LED *led){
 	if( (get_cur_time_in_mlsec() - (led->cont.change_time / fabs((double)(led->cont.hsv.h - led->cont.hsv2.h)))) > led->cont.h_last_change_time){
-		change_hsv(&(led->cont.hsv_cur.h), led->cont.hsv.h, led->cont.hsv2.h, &(led->cont.h_decrement), &(led->cont.h_to_2));
+		change_hsv(led, &(led->cont.hsv_cur.h), led->cont.hsv.h, led->cont.hsv2.h, &(led->cont.h_decrement), &(led->cont.h_to_2));
 		led->cont.h_last_change_time = get_cur_time_in_mlsec();
 	}
 	if( (get_cur_time_in_mlsec() - (led->cont.change_time / fabs((double)(led->cont.hsv.s - led->cont.hsv2.s)))) > led->cont.s_last_change_time){
-		change_hsv_8(&(led->cont.hsv_cur.s), led->cont.hsv.s, led->cont.hsv2.s, &(led->cont.s_decrement), &(led->cont.s_to_2));
+		change_hsv_8(led, &(led->cont.hsv_cur.s), led->cont.hsv.s, led->cont.hsv2.s, &(led->cont.s_decrement), &(led->cont.s_to_2));
 		led->cont.s_last_change_time = get_cur_time_in_mlsec();
 	}
 	if( (get_cur_time_in_mlsec() - (led->cont.change_time / fabs((double)(led->cont.hsv.v - led->cont.hsv2.v)))) > led->cont.v_last_change_time){
-		change_hsv_8(&(led->cont.hsv_cur.v), led->cont.hsv.v, led->cont.hsv2.v, &(led->cont.v_decrement), &(led->cont.v_to_2));
+		change_hsv_8(led, &(led->cont.hsv_cur.v), led->cont.hsv.v, led->cont.hsv2.v, &(led->cont.v_decrement), &(led->cont.v_to_2));
 		led->cont.v_last_change_time = get_cur_time_in_mlsec();
 	}
 	//printf("%d %d %d\n", led->cont.hsv_cur.h, led->cont.hsv_cur.s, led->cont.hsv_cur.v);

@@ -7,22 +7,7 @@
 #include "menu.h"
 #include "continuous_menu.h"
 
-void cont_on(LED *led, bool to_2){
-		
-		led->cont.hsv_cur = (to_2) ? led->cont.hsv: led->cont.hsv2;
-		
-		led->cont.h_to_2 = to_2;
-		led->cont.s_to_2 = to_2;
-		led->cont.v_to_2 = to_2;
-		
-		led->cont.h_decrement = (to_2 && led->cont.hsv.h < led->cont.hsv2.h) ? 1: -1;
-		led->cont.s_decrement = (to_2 && led->cont.hsv.s < led->cont.hsv2.s) ? 1: -1;
-		led->cont.v_decrement = (to_2 && led->cont.hsv.v < led->cont.hsv2.v) ? 1: -1;
-		
-		led->cont.h_last_change_time = get_cur_time_in_mlsec();
-		led->cont.s_last_change_time = get_cur_time_in_mlsec();
-		led->cont.v_last_change_time = get_cur_time_in_mlsec();
-}
+#include "led_control.h"
 
 void set_anti_phase(menu_ *menu){
 	cont_on(&led1, true);
@@ -90,12 +75,19 @@ void change_continuous_color(menu_ *menu){
 			led2.cont.rgb = led1.cont.rgb;
 			led2.cont.hsv2 = led1.cont.hsv2;
 			led2.cont.rgb2 = led1.cont.rgb2;
+			//mode_ cont1 = led1.cont;
+			//mode_ cont2 = led2.cont;
 			if (!choose_colors(&(menu->cur_knobs), menu->pos, menu->pos, &(led1.cont), &(led2.cont))){
 				led2.cont.hsv = hsv;
 				led2.cont.rgb = rgb;
 				led2.cont.hsv2 = hsv2;
 				led2.cont.rgb2 = rgb2;
-			}
+			}/*else{
+				led1.cont = cont1;
+				led2.cont = cont2;
+				cont_on(&led1, true);
+				cont_on(&led2, true);
+			}*/
 			break;
 	}
 }

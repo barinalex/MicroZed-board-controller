@@ -141,9 +141,9 @@ void change_rgb_hsv(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs){
 	rgb->r = change(rgb->r, knobs.r_knob, &(prev_knobs->r_knob), 255); 
 	rgb->g = change(rgb->g, knobs.g_knob, &(prev_knobs->g_knob), 255); 
 	rgb->b = change(rgb->b, knobs.b_knob, &(prev_knobs->b_knob), 255);
-	printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);
+	//printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);
 	*hsv = rgb_to_hsv(*rgb);
-	printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
+	//printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
 }
 
 void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs){
@@ -151,8 +151,8 @@ void change_hsv_rgb(HSV* hsv, RGB* rgb, knobs_ knobs, knobs_ *prev_knobs){
 	hsv->s = change(hsv->s, knobs.g_knob, &(prev_knobs->g_knob), 100); 
 	hsv->v = change(hsv->v, knobs.b_knob, &(prev_knobs->b_knob), 100);
 	*rgb = hsv_to_rgb(*hsv);
-	printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
-	printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);	
+	//printf("hsv %d %d %d\n", hsv->h, hsv->s, hsv->v);
+	//printf("rgb %d %d %d\n", rgb->r, rgb->g, rgb->b);	
 }
 
 void get_knobs_data(knobs_ *knobs){
