@@ -86,11 +86,6 @@ bool choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mod
 		if(knobs->b_button && !knobs->b_pressed) {
 			knobs->b_pressed = true;
 			clear_screen();
-			if(nw_state.connected && nw_state.sending){
-				led1 = saved_led1;
-				led2 = saved_led2;
-				return false;
-			}
 			return true;
 		}
 		if(led1.change){
@@ -127,10 +122,6 @@ void choose_time(knobs_ *knobs, unsigned long *led1time, unsigned long *led2time
 		if(knobs->b_button && !knobs->b_pressed) {
 			knobs->b_pressed = true;
 			clear_screen();
-			if(nw_state.connected && nw_state.sending){
-				led1 = saved_led1;
-				led2 = saved_led2;
-			}
 			break;
 		}
 		if(led1.change){

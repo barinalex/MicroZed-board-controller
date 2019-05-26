@@ -14,6 +14,7 @@
 #define BLACK 0x0
 #define SEA 0x6715
 #define WHITE 0xFFFF
+#define GREEN 0x07E0
 
 void frameToLCD()
 {
@@ -30,19 +31,19 @@ void frameToLCD()
 	}
 }
 
-// fonts: opt/apo/lcd/fonts/
-
 int charToFrame(char c, int yRow, int xColumn, uint16_t forecolor, uint16_t backcolor) 
 {
 	// mezera je prvni znak ve fontu
 	int cIdx = c - ' ';
 	int w = font_winFreeSystem14x16.width[cIdx] + 4; // aby za tim fontem byla mezera na 4 pozice
 	// vim ze velikost znaku je 16
+	bool flip = true;
 	for (int y = 0; y < 16; y++) {
 		uint16_t mask = font_winFreeSystem14x16.bits[16*cIdx+y];
 		// w je sirka znaku 
 		for (int x = 0; x < w; x++) {
 			frame[yRow+y][xColumn + x] = (mask & 0x8000) ? forecolor : backcolor;
+			flip = !flip;
 			mask <<= 1; // mask = mask << 1; rotuju o 1
 		}
 	}
@@ -105,10 +106,9 @@ int int_to_frame(unsigned long number, int yRow, int xColumn, uint16_t forecolor
 void clear_screen(){
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
-			if(r < 45 || r >= 275){
+			if(r < 40 || r > 280){
 				frame[r][c] = WHITE;
-			}
-			else{
+			}else{
 				frame[r][c] = BLACK;
 			}
 		}

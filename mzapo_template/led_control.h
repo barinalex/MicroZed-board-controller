@@ -16,6 +16,10 @@ typedef struct{
 
 LED led1;
 LED led2;
+LED led1_saved;
+LED led2_saved;
+LED led1_empty;
+LED led2_empty;
 
 void static_lighting(LED *led);
 

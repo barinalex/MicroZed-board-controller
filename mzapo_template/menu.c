@@ -34,12 +34,13 @@ void set_rects(rect_ *top, rect_ *bottom){
 }
 
 void menu(menu_ menu){
+	clear_screen();
 	get_knobs_data(&(menu.prev_knobs));
 	bool jumped = false;
 	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
 	set_rects(&top_comment, &bottom_comment);
-	rect_to_lcd(WHITE, top_comment);
-	rect_to_lcd(WHITE, bottom_comment);
+	//rect_to_lcd(GREEN, top_comment);
+	//rect_to_lcd(GREEN, bottom_comment);
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
@@ -91,7 +92,7 @@ void menu(menu_ menu){
 }
 
 void draw_menu(menu_ menu){
-	strToFrame(menu.name, 10, 30, BLACK, WHITE, big_text);
+	strToFrame(menu.name, 5, 180, BLACK, WHITE, big_text);
 	if(menu.buttons_number > 0) strToFrame(menu.button0, 60, 30, WHITE, BLACK, big_text);
 	if(menu.buttons_number > 1) strToFrame(menu.button1, 100, 30, WHITE, BLACK, big_text);
 	if(menu.buttons_number > 2) strToFrame(menu.button2, 140, 30, WHITE, BLACK, big_text);
@@ -114,8 +115,8 @@ void draw_menu(menu_ menu){
 			strToFrame(menu.button4, 220, 30, special_text_color, BLACK, big_text);
 			break;
 	}
-	strToFrame(menu.comment, 280, 30, RED, WHITE, big_text);
-	strToFrame(menu.comment2, 280, 350, BLUE, WHITE, big_text);
+	strToFrame(menu.comment, 285, 30, RED, WHITE, big_text);
+	strToFrame(menu.comment2, 285, 350, BLUE, WHITE, big_text);
 	frameToLCD();
 }
 

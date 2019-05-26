@@ -59,6 +59,10 @@ void connect(menu_ *menu){
 	nw_state.receiving = false;
 	nw_state.connected = false;
 	nw_state.find_others = false;
+	led1_saved = led1;
+	led2_saved = led2;
+	led1 = led1_empty;
+	led2 = led2_empty;
 }
 
 void copy(menu_ *menu){
@@ -73,11 +77,21 @@ void copy(menu_ *menu){
 }
 
 void disconnect(menu_ *menu){
+	if(nw_state.sending && nw_state.connected){
+		led1 = led1_saved;
+		led2 = led2_saved;
+	}
 	nw_state.sending = false;
 	nw_state.receiving = true;
 	nw_state.connected = false;
 	nw_state.find_others = false;
 	nw_state.receiver_ip = NULL;
+}
+
+void go_ip_menu(menu_ *menu){
+	int but_num = menu->buttons_number;
+	go_next_menu(menu);
+	menu->prev->buttons_number = but_num;
 }
 
 void create_connection_menu(menu_ *menu){
@@ -97,9 +111,9 @@ void create_connection_menu(menu_ *menu){
 	
 	menu->func0 = &disconnect;
 	menu->func1 = &find_all;
-	menu->func2 = &go_next_menu;
-	menu->func3 = &go_next_menu;
-	menu->func4 = &go_next_menu;
+	menu->func2 = &go_ip_menu;
+	menu->func3 = &go_ip_menu;
+	menu->func4 = &go_ip_menu;
 	set_no_links(menu);
 }
 
@@ -107,7 +121,7 @@ void create_ip_menu(menu_ *menu){
 	menu->buttons_number = 2;
 	menu->pos = 0;
 	menu->button0 = "Connect";
-	menu->button1 = "Copy leds";
+	menu->button1 = "Copy to";
 	menu->name = "Connection";
 	menu->comment = "exit";
 	menu->comment2 = "choose";

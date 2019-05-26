@@ -145,7 +145,9 @@ void color_flashing(LED *led){
 	}
 }
 
-void* led_thread(void *vargp){
+void init_leds(){
+	led1.st.on = false;
+	led2.st.on = false;
 	led1.illuminate = true;
 	led2.illuminate = true;
 	led1.flash.last_change_time = 0;
@@ -164,6 +166,12 @@ void* led_thread(void *vargp){
 	led2.cont.on = false;
 	light_off(&led1);
 	light_off(&led2);
+	led1_empty = led1;
+	led2_empty = led2;
+}
+
+void* led_thread(void *vargp){
+	init_leds();
 	while(true){
 		if(led1.flash.on){
 			flashing(&led1);

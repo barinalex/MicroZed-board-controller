@@ -249,10 +249,6 @@ void initialize_state(){
 	received_knobs_value = get_knobs_value();
 }
 
-void sending(){
-	
-}
-
 void* network_communication(void *vargp){
 	initialize_state();
 	last_connection_time = 0;
