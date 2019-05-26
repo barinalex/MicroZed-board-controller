@@ -74,6 +74,7 @@ bool choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mod
 	get_knobs_data(&prev_knobs1);
 	get_knobs_data(&prev_knobs2);
 	while(true){
+		printf("%x\n", *knobs_mem_base);
 		get_knobs_data(knobs);
 		actualize_buttons_state(knobs);
 		if(knobs->r_button && !knobs->r_pressed) {
@@ -206,7 +207,7 @@ uint16_t change(int data, uint8_t cur_value, uint8_t *prev_value, int max_data){
 	data += get_difference(cur_value, prev_value);
 	data = (data > max_data) ? 0: data;
 	data = (data < 0) ? max_data: data;
-	printf("data: %d\n", data);
+	//printf("data: %d\n", data);
 	return data;
 }
 
@@ -216,7 +217,7 @@ unsigned long change_long(long long data, uint8_t cur_value, uint8_t *prev_value
 		data = (data > border)? border: data;
 	}
 	data = (data < 0) ? 0: data;
-	printf("data: %lld\n", data);
+	//printf("data: %lld\n", data);
 	return data;
 }
 

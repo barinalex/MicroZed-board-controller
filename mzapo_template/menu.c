@@ -41,7 +41,7 @@ void menu(menu_ menu){
 	rect_to_lcd(WHITE, top_comment);
 	rect_to_lcd(WHITE, bottom_comment);
 	while(true){
-		//printf("%x\n", *knobs_mem_base);
+		printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
 		actualize_buttons_state(&(menu.cur_knobs));
 		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, &(prev_b_knob), menu.pos);
@@ -128,6 +128,14 @@ void go_desk_menu(menu_ *menu){
 	menu->pos = 0;
 }
 
+void g0_next_menu(menu_ *menu, menu_ *next_menu){
+	knobs_ cur_knobs = menu->cur_knobs;
+	clear_screen();
+	*menu = *(menu->next0);
+	menu->cur_knobs = cur_knobs;
+	menu->prev_menu_pos = 0;
+}
+
 void go_next_menu(menu_ *menu){
 	knobs_ cur_knobs = menu->cur_knobs;
 	if(menu->buttons_number != 0){
@@ -181,7 +189,6 @@ void go_prev_menu(menu_ *menu){
 	if(menu->prev != NULL){
 		knobs_ cur_knobs = menu->cur_knobs;
 		int pos = menu->prev_menu_pos;
-		usleep(DELAY);
 		menu->pos = 0;
 		*(menu) = *(menu->prev);
 		menu->pos = pos;
@@ -209,7 +216,12 @@ void set_no_links(menu_ *menu){
 
 void choose_connection(menu_ *menu){
 	if(!(nw_state.connected && nw_state.receiving)){
+		for(int i = 0; i < 5; ++i){
+			strcpy(nw_state.ip_addr[i], "");
+			nw_state.ready[i] = false;
+		}
 		go_next_menu(menu);
+		menu->buttons_number = 0;
 		find_all(menu);
 	}
 }

@@ -24,15 +24,10 @@
 #include "led_control.h"
 #include "connection.h"
 
-typedef struct{
-	unsigned long start_time; // = get_cur_time()
-	unsigned long cur_time;
-}flash_time_;
-
 uint16_t frame[FRAME_H][FRAME_W];
 
 int main(int argc, char *argv[])
-{
+{	
 	if(initialize_adresses() != 0) exit(1);
    	pthread_t thread_id; 
     pthread_create(&thread_id, NULL, led_thread, (void *)&thread_id);

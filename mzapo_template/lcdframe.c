@@ -114,4 +114,3 @@ void clear_screen(){
 	frameToLCD();
 }
 
-
