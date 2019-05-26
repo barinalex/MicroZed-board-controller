@@ -12,23 +12,23 @@
 void add_ip_buttons(menu_ *menu){
 	if(nw_state.ready[0]){
 		menu->buttons_number = 1;
-		menu->button0 = nw_state.ip_addr[0];
+		//menu->button0 = nw_state.ip_addr[0];
 	}
 	if(nw_state.ready[1]){
 		menu->buttons_number = 2;
-		menu->button1 = nw_state.ip_addr[1];
+		//menu->button1 = nw_state.ip_addr[1];
 	}
 	if(nw_state.ready[2]){
 		menu->buttons_number = 3;
-		menu->button2 = nw_state.ip_addr[2];
+		//menu->button2 = nw_state.ip_addr[2];
 	}
 	if(nw_state.ready[3]){
 		menu->buttons_number = 4;
-		menu->button3 = nw_state.ip_addr[3];
+		//menu->button3 = nw_state.ip_addr[3];
 	}
 	if(nw_state.ready[4]){
 		menu->buttons_number = 5;
-		menu->button4 = nw_state.ip_addr[4];
+		//menu->button4 = nw_state.ip_addr[4];
 	}
 }
 
@@ -36,12 +36,13 @@ void find_all(menu_ *menu){
 	printf("find_all\n");
 	nw_state.sending = false;
 	nw_state.connected = false;
-	nw_state.receiving = false;
 	nw_state.find_others = true;
 	nw_state.sending = true;
 	nw_state.receiver_ip = NULL;
 	usleep(200000);
 	add_ip_buttons(menu);
+	nw_state.sending = false;
+	nw_state.receiving = true;
 }
 
 void set_ip(menu_ *menu){
@@ -100,11 +101,14 @@ void disconnect(menu_ *menu){
 void create_connection_menu(menu_ *menu){
 	menu->buttons_number = 0;
 	menu->pos = 0;
-	menu->button0 = ""; //napsat disconnect tady
-	menu->button1 = ""; //tady find
-	menu->button2 = ""; //dal adresy desek
-	menu->button3 = "";
-	menu->button4 = "";
+	for(int i = 0; i < 5; ++i){
+		strcpy(nw_state.ip_addr[i], "");
+	}
+	menu->button0 = nw_state.ip_addr[0]; //napsat disconnect tady
+	menu->button1 = nw_state.ip_addr[1]; //tady find
+	menu->button2 = nw_state.ip_addr[2]; //dal adresy desek
+	menu->button3 = nw_state.ip_addr[3];
+	menu->button4 = nw_state.ip_addr[4];
 	menu->name = "Network";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
