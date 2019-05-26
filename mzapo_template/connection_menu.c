@@ -8,6 +8,7 @@
 #include "menu.h"
 #include "connection_menu.h"
 #include "connection.h"
+#include "lcdframe.h"
 
 void add_ip_buttons(menu_ *menu){
 	if(nw_state.ready[0]){
@@ -86,6 +87,7 @@ void disconnect(menu_ *menu){
 	nw_state.connected = false;
 	nw_state.find_others = false;
 	nw_state.receiver_ip = NULL;
+	clear_screen();
 }
 
 void go_ip_menu(menu_ *menu){

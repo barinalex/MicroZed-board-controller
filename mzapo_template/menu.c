@@ -64,7 +64,9 @@ void menu(menu_ menu){
 			get_knobs_data(&(menu.prev_knobs));
 			prev_b_knob = menu.prev_knobs.b_knob;
 		}
-		if(!jumped && ((nw_state.receiving && nw_state.connected && !nw_state.copy) || (nw_state.sending && nw_state.connected && !nw_state.copy))){
+		if(!jumped && ((nw_state.receiving && nw_state.connected && !nw_state.copy) || 
+		(nw_state.sending && nw_state.connected && !nw_state.copy)))
+		{
 			jumped = true;
 			go_desk_menu(&menu);
 			get_knobs_data(&(menu.prev_knobs));
@@ -102,6 +104,9 @@ void draw_menu(menu_ menu){
 	}
 	strToFrame(menu.comment, 285, 30, RED, WHITE, big_text);
 	strToFrame(menu.comment2, 285, 350, BLUE, WHITE, big_text);
+	if((nw_state.sending && nw_state.connected) || (nw_state.receiving && nw_state.connected)){
+		strToFrame("CONNECTED", 285, 180, BLACK, WHITE, big_text);
+	}
 	frameToLCD();
 }
 
@@ -202,6 +207,7 @@ void choose_connection(menu_ *menu){
 			nw_state.ready[i] = false;
 		}
 		go_next_menu(menu);
+		menu->buttons_number = 2;
 	}
 }
 
@@ -228,7 +234,7 @@ void create_desk_menu(menu_ *menu){
 	menu->button1 = "Continuous";
 	menu->button2 = "Color flash";
 	menu->button3 = "Flash";
-	menu->name = "Desk";
+	menu->name = "Effects";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	

@@ -130,7 +130,6 @@ void choose_time(knobs_ *knobs, unsigned long *led1time, unsigned long *led2time
 		}
 		if(led2.change){
 			*led2time = change_long(*led2time, knobs->b_knob, &(prev_knobs2.b_knob), 100, border);
-			printf("led2time: %lu\n", *led2time);
 			int_to_frame(*led2time, lcd_pos, 240, WHITE, BLACK, big_text);
 		}
 		frameToLCD();

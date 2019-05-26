@@ -41,7 +41,6 @@ void turn_on_off_continuous(menu_ *menu){
 			led2.color_flash.on = false;
 			led1.cont.on = !led1.cont.on;
 			led2.cont.on = led1.cont.on;
-			
 			if(led1.cont.on){
 				cont_on(&led1, true);
 				cont_on(&led2, true);

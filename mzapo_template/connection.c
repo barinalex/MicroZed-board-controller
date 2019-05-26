@@ -20,6 +20,7 @@
 #include "led_control.h"
 #include "utils.h"
 #include "reg_manager.h"
+#include "lcdframe.h"
 
 char buffer[BUFSIZE];
 struct sockaddr_in sender_addr, receiver_addr;
@@ -230,6 +231,7 @@ void receive(){
 	}
 	if(get_cur_time_in_mlsec() - last_connection_time > 200){
 		nw_state.connected = false;
+		clear_screen();
 	}
 }
 
@@ -282,9 +284,7 @@ void* network_communication(void *vargp){
 				receive_init_message();
 			}
 		}
-		if(get_cur_time_in_mlsec() - last_connection_time > DISCONNECT){
-			//nw_state.connected = false;
-		}
+		if(get_cur_time_in_mlsec() - last_connection_time > DISCONNECT);
 	}
     close(nw_state.sockfd);
 }
