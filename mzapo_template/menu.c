@@ -41,7 +41,7 @@ void menu(menu_ menu){
 	rect_to_lcd(WHITE, top_comment);
 	rect_to_lcd(WHITE, bottom_comment);
 	while(true){
-		printf("%x\n", *knobs_mem_base);
+		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
 		actualize_buttons_state(&(menu.cur_knobs));
 		menu.pos = change_menu_pos(menu.buttons_number, menu.cur_knobs.b_knob, &(prev_b_knob), menu.pos);
@@ -126,14 +126,6 @@ void go_desk_menu(menu_ *menu){
 		*menu = *(menu->desk_menu);
 	}
 	menu->pos = 0;
-}
-
-void g0_next_menu(menu_ *menu, menu_ *next_menu){
-	knobs_ cur_knobs = menu->cur_knobs;
-	clear_screen();
-	*menu = *(menu->next0);
-	menu->cur_knobs = cur_knobs;
-	menu->prev_menu_pos = 0;
 }
 
 void go_next_menu(menu_ *menu){
@@ -221,8 +213,7 @@ void choose_connection(menu_ *menu){
 			nw_state.ready[i] = false;
 		}
 		go_next_menu(menu);
-		menu->buttons_number = 0;
-		find_all(menu);
+		//menu->buttons_number = 2;
 	}
 }
 
@@ -231,7 +222,7 @@ void create_main_menu(menu_ *menu){
 	menu->pos = 0;
 	menu->button0 = "Effects";
 	menu->button1 = "Network";
-	menu->button2 = "TEXT";
+	menu->button2 = "Text size";
 	menu->name = "Main";
 	menu->comment = "exit";
 	menu->comment2 = "choose";

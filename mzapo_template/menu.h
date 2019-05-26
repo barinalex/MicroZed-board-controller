@@ -33,7 +33,6 @@ typedef struct menu_{
 	void (*func4)();
 	
 	struct menu_ *desk_menu;
-	
 	struct menu_ *prev;
 	struct menu_ *next0;
 	struct menu_ *next1;

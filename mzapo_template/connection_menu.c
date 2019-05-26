@@ -11,18 +11,12 @@
 
 void add_ip_buttons(menu_ *menu){
 	if(nw_state.ready[0]){
-		menu->buttons_number = 1;
-	}
-	if(nw_state.ready[1]){
-		menu->buttons_number = 2;
-	}
-	if(nw_state.ready[2]){
 		menu->buttons_number = 3;
 	}
-	if(nw_state.ready[3]){
+	if(nw_state.ready[1]){
 		menu->buttons_number = 4;
 	}
-	if(nw_state.ready[4]){
+	if(nw_state.ready[2]){
 		menu->buttons_number = 5;
 	}
 }
@@ -43,25 +37,17 @@ void find_all(menu_ *menu){
 
 void set_ip(menu_ *menu){
 	switch(menu->prev_menu_pos){
-		case 0:
-			nw_state.receiver_ip = menu->prev->button0;
-			strcpy(nw_state.rec_ip, nw_state.ip_addr[0]);
-			break;
-		case 1:
-			nw_state.receiver_ip = menu->prev->button1;
-			strcpy(nw_state.rec_ip, nw_state.ip_addr[1]);
-			break;
 		case 2:
 			nw_state.receiver_ip = menu->prev->button2;
-			strcpy(nw_state.rec_ip, nw_state.ip_addr[2]);
+			strcpy(nw_state.rec_ip, nw_state.ip_addr[0]);
 			break;
 		case 3:
 			nw_state.receiver_ip = menu->prev->button3;
-			strcpy(nw_state.rec_ip, nw_state.ip_addr[3]);
+			strcpy(nw_state.rec_ip, nw_state.ip_addr[1]);
 			break;
 		case 4:
 			nw_state.receiver_ip = menu->prev->button4;
-			strcpy(nw_state.rec_ip, nw_state.ip_addr[4]);
+			strcpy(nw_state.rec_ip, nw_state.ip_addr[2]);
 			break;
 	}
 }
@@ -95,22 +81,22 @@ void disconnect(menu_ *menu){
 }
 
 void create_connection_menu(menu_ *menu){
-	menu->buttons_number = 0;
+	menu->buttons_number = 2;
 	menu->pos = 0;
 	for(int i = 0; i < 5; ++i){
 		strcpy(nw_state.ip_addr[i], "");
 	}
-	menu->button0 = nw_state.ip_addr[0]; 
-	menu->button1 = nw_state.ip_addr[1]; 
-	menu->button2 = nw_state.ip_addr[2]; 
-	menu->button3 = nw_state.ip_addr[3];
-	menu->button4 = nw_state.ip_addr[4];
+	menu->button0 = "Disconnect"; 
+	menu->button1 = "Find"; 
+	menu->button2 = nw_state.ip_addr[0]; 
+	menu->button3 = nw_state.ip_addr[1];
+	menu->button4 = nw_state.ip_addr[2];
 	menu->name = "Network";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
 	
-	menu->func0 = &go_next_menu;
-	menu->func1 = &go_next_menu;
+	menu->func0 = &disconnect;
+	menu->func1 = &find_all;
 	menu->func2 = &go_next_menu;
 	menu->func3 = &go_next_menu;
 	menu->func4 = &go_next_menu;

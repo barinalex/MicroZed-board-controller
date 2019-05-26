@@ -105,10 +105,12 @@ int int_to_frame(unsigned long number, int yRow, int xColumn, uint16_t forecolor
 void clear_screen(){
 	for (int r = 0; r < 320 ; r++) {
 		for (int c = 0; c < 480 ; c++) {
-			if(r < 45 || r >= 275)
+			if(r < 45 || r >= 275){
 				frame[r][c] = WHITE;
-			else
+			}
+			else{
 				frame[r][c] = BLACK;
+			}
 		}
 	}
 	frameToLCD();

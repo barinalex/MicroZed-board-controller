@@ -74,7 +74,6 @@ bool choose_colors(knobs_ *knobs, int color_num, int rect_pos, mode_ *mode1, mod
 	get_knobs_data(&prev_knobs1);
 	get_knobs_data(&prev_knobs2);
 	while(true){
-		printf("%x\n", *knobs_mem_base);
 		get_knobs_data(knobs);
 		actualize_buttons_state(knobs);
 		if(knobs->r_button && !knobs->r_pressed) {
