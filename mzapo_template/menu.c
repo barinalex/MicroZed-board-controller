@@ -21,26 +21,11 @@ void create_main_menu(menu_ *menu);
 void create_desk_menu(menu_ *menu);
 void change_text_size(menu_ *menu);
 
-void set_rects(rect_ *top, rect_ *bottom){
-	top->top = 0;
-	top->bottom = 45;
-	top->left = 0;
-	top->right = 480;
-	
-	bottom->top = 275;
-	bottom->bottom = 320;
-	bottom->left = 0;
-	bottom->right = 480;
-}
-
 void menu(menu_ menu){
 	clear_screen();
 	get_knobs_data(&(menu.prev_knobs));
 	bool jumped = false;
 	uint8_t prev_b_knob = menu.prev_knobs.b_knob;
-	set_rects(&top_comment, &bottom_comment);
-	//rect_to_lcd(GREEN, top_comment);
-	//rect_to_lcd(GREEN, bottom_comment);
 	while(true){
 		//printf("%x\n", *knobs_mem_base);
 		get_knobs_data(&(menu.cur_knobs));
@@ -195,6 +180,9 @@ void go_prev_menu(menu_ *menu){
 void change_text_size(menu_ *menu){
 	clear_screen();
 	big_text = !big_text;
+	menu->button2 = (big_text) ? "Small text":"Big text";
+	menu->next0->prev->button2 = (big_text) ? "Small text":"Big text";
+	menu->next1->prev->button2 = (big_text) ? "Small text":"Big text";
 }
 
 void set_no_links(menu_ *menu){
@@ -214,7 +202,6 @@ void choose_connection(menu_ *menu){
 			nw_state.ready[i] = false;
 		}
 		go_next_menu(menu);
-		//menu->buttons_number = 2;
 	}
 }
 
@@ -223,7 +210,7 @@ void create_main_menu(menu_ *menu){
 	menu->pos = 0;
 	menu->button0 = "Effects";
 	menu->button1 = "Network";
-	menu->button2 = "Text size";
+	menu->button2 = "Big text";
 	menu->name = "Main";
 	menu->comment = "exit";
 	menu->comment2 = "choose";
