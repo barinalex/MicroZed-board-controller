@@ -1,0 +1,16 @@
+Lighting control unit.
+Use blue knob to navigate in the menu, choose and to save changes.
+Use red one to go to the previous menu or to forgot changes.
+From the main menu you can change text size, go to the network connection menu and to the light effects menu.
+ Network:
+  ●Press “Disconnect” to stop sending data to the other unit
+  ●Press “Find” to discover other units
+  ●Choose certain unit and press to go to the unit menu
+ Connection:
+  ●Press “Connect” to start to control certain unit
+  ●Press “Copy to” to copy led settings from your unit to the other
+ Effects:
+  ●Press “Static” to set static light
+  ●Press “Continuous” to set continuously changing lighting
+  ●Press “Color flash” to set flashing between two colours
+  ●Press “Flash” to set illumination and extinction time for the ledsIn each effects menu you can choose led1, led2 and both of them.
